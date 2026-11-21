@@ -77,8 +77,11 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
+      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="recrutement.html">Recrutement</a>
       <a href="profil.html">Profil</a>
+      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
       <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -130,12 +133,15 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('nav a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
   </script>
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
@@ -144,10 +150,13 @@
     const authBtn = document.getElementById('drawer-auth-btn');
     const logoutBtn = document.getElementById('drawer-logout-btn');
     const adminLink = document.getElementById('drawer-admin-link');
+    const mailLink = document.getElementById('drawer-mail-link');
 
     const gradeBadge = document.getElementById('error-grade-badge');
     const errorTitle = document.getElementById('error-title');
     const errorText = document.getElementById('error-text');
+
+    let unsubscribeUser = null;
 
     const PHRASES_BY_CATEGORY = {
       jsp: [
@@ -230,7 +239,9 @@
     }
 
     function getInitials(label) {
-      const clean = (label || 'JS').trim();
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) {
         return (parts[0][0] + parts[1][0]).toUpperCase();
@@ -238,46 +249,70 @@
       return clean.slice(0, 2).toUpperCase();
     }
 
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
+    }
+
     apply404Message('');
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
+      if (unsubscribeUser) {
+        unsubscribeUser();
+        unsubscribeUser = null;
+      }
+
       if (!user) {
         profileBox.style.display = 'none';
         logoutBtn.style.display = 'none';
         adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
         authBtn.style.display = 'inline-flex';
         apply404Message('');
         return;
       }
 
-      let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-      let role = 'membre';
-      let grade = '';
-      let isBanned = false;
-
-      try {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.pseudo) pseudo = data.pseudo;
-          if (data.role) role = data.role;
-          if (data.grade) grade = data.grade;
-          isBanned = data.banned === true;
-        }
-      } catch (e) {}
-
-      const isAdmin = !isBanned && (role === 'admin' || role === 'superadmin');
-
-      profileName.textContent = pseudo;
-      profileAvatar.textContent = getInitials(pseudo);
-      profileRole.textContent = isBanned ? 'banni' : role;
-      profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-      adminLink.style.display = isAdmin ? 'flex' : 'none';
-      profileBox.style.display = 'flex';
       authBtn.style.display = 'none';
       logoutBtn.style.display = 'inline-flex';
 
-      apply404Message(grade);
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+
+      unsubscribeUser = onSnapshot(doc(db, "users", user.uid), (snap) => {
+        const data = snap.exists() ? (snap.data() || {}) : {};
+        if (data.banned === true) {
+          window.location.replace('ban.html');
+          return;
+        }
+
+        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
+        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        const pseudo = isAdmin
+          ? formatAdminPseudo(data, fallbackName)
+          : (data.pseudo || fallbackName);
+        const grade = data.grade || '';
+
+        profileName.textContent = pseudo;
+        profileAvatar.textContent = getInitials(pseudo);
+        profileRole.textContent = roleLabel;
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+        adminLink.style.display = isAdmin ? 'block' : 'none';
+        mailLink.style.display = isAdmin ? 'block' : 'none';
+        profileBox.style.display = 'flex';
+
+        apply404Message(grade);
+      }, () => {
+        profileName.textContent = fallbackName;
+        profileAvatar.textContent = getInitials(fallbackName);
+        profileRole.textContent = 'membre';
+        profileRole.className = 'profile-tag';
+        adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
+        profileBox.style.display = 'flex';
+        apply404Message('');
+      });
     });
 
     logoutBtn.addEventListener('click', async () => {

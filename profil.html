@@ -3,88 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Mon profil</title>
+  <title>Vos JSP — Profil</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .profile-banner {
-      position: relative;
-      border-radius: 24px;
-      padding: 2.2rem 2rem;
-      margin-bottom: 1.5rem;
+    .maint-wrap {
+      max-width: 680px;
+      margin: 2.6rem auto 3.8rem;
+    }
+
+    .maint-card {
       background: var(--surface);
       border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2rem 1.85rem;
       box-shadow: var(--shadow);
-      overflow: hidden;
+      text-align: center;
     }
 
-    .profile-banner::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 6px;
-      background: var(--accent-custom, #e11d48);
-    }
-
-    .profile-top-row {
+    .maint-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      margin: 0 auto 1rem;
+      background: rgba(225, 29, 42, 0.12);
+      color: var(--primary);
       display: flex;
       align-items: center;
-      gap: 1.1rem;
-      flex-wrap: wrap;
-      margin-bottom: 0.75rem;
+      justify-content: center;
     }
 
-    .big-avatar {
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      font-size: 1.35rem;
-      color: #fff;
-      background: var(--accent-custom, #e11d48);
-      flex-shrink: 0;
+    .maint-card h1 {
+      margin: 0.45rem 0 0.6rem;
+      font-size: 1.75rem;
+      letter-spacing: -0.02em;
     }
 
-    .chips-row {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-top: 0.5rem;
+    .maint-card p {
+      margin: 0 auto 1.25rem;
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 0.96rem;
+      line-height: 1.58;
     }
 
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.28rem 0.7rem;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      background: var(--surface-2, #f1f5f9);
+    .maint-wait-pill {
+      display: inline-block;
+      background: var(--bg);
       border: 1px solid var(--border);
-    }
-
-    .swatch-grid {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      margin-top: 0.35rem;
-    }
-
-    .swatch-btn {
-      width: 34px;
-      height: 34px;
       border-radius: 999px;
-      border: 3px solid transparent;
-      cursor: pointer;
-      outline: 1px solid var(--border);
-      transition: transform 0.12s ease;
+      padding: 0.48rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1.4rem;
     }
 
-    .swatch-btn.active {
-      border-color: #ffffff;
-      box-shadow: 0 0 0 2px var(--text);
-      transform: scale(1.08);
+    .maint-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .maint-svg {
+      width: 26px;
+      height: 26px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
   </style>
 </head>
@@ -140,88 +128,23 @@
   </aside>
 
   <main>
-    <div class="card" id="guest-profile" style="display: none; max-width: 560px; margin: 2rem auto; text-align: center;">
-      <span class="card-meta" style="margin: 0 auto;">Compte membre</span>
-      <h1 style="font-size: 1.55rem; margin: 0.4rem 0;">Tu n'es pas connecté</h1>
-      <p style="margin-bottom: 1rem;">Connecte-toi avec ton compte Vos JSP pour personnaliser ton profil.</p>
-      <a href="login.html" class="btn btn-small">Se connecter</a>
-    </div>
-
-    <div id="user-profile" style="display: none; max-width: 720px; margin: 0 auto;">
-      <section class="profile-banner" id="profile-banner">
-        <div class="profile-top-row">
-          <div class="big-avatar" id="preview-avatar">JS</div>
-          <div>
-            <span class="badge" id="preview-role-badge">membre</span>
-            <h1 id="preview-heading" style="margin-top: 0.35rem; font-size: 1.75rem;">Mon profil</h1>
-            <p id="profile-email-text" class="subtitle" style="margin: 0; font-size: 0.9rem;"></p>
-          </div>
+    <div class="maint-wrap">
+      <section class="maint-card">
+        <div class="maint-icon" aria-hidden="true">
+          <svg class="maint-svg" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9"/>
+            <polyline points="12 7 12 12 15 15"/>
+          </svg>
         </div>
-
-        <p id="preview-bio" style="margin-top: 0.5rem; color: var(--text);">Aucune bio renseignée pour l'instant.</p>
-
-        <div class="chips-row">
-          <span class="chip" id="preview-grade">JSP</span>
-          <span class="chip" id="preview-section">Section / Centre non précisé</span>
+        <span class="badge">Page Profil • Travaux en cours</span>
+        <h1>Page temporairement indisponible</h1>
+        <p>Des modifications sont en cours sur cette page.</p>
+        <div class="maint-wait-pill">1h d'attente minimum</div>
+        <div class="maint-actions">
+          <a href="index.html" class="btn">Retour à l'accueil</a>
+          <a href="forum.html" class="btn btn-secondary">Aller au forum</a>
         </div>
       </section>
-
-      <div id="profile-alert" class="alert"></div>
-
-      <div class="card" style="margin-bottom: 1.25rem;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.15rem;">
-          <div>
-            <div style="font-size: 0.8rem; color: var(--muted);">Statut &amp; accès</div>
-            <strong id="profile-status-text" style="font-size: 1.02rem;">Compte actif</strong>
-          </div>
-          <div id="profile-extra-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
-        </div>
-
-        <form id="custom-profile-form">
-          <div class="form-group">
-            <label for="pseudo-input">Pseudo</label>
-            <input type="text" id="pseudo-input" placeholder="Ton pseudo" required>
-          </div>
-
-          <div class="form-group">
-            <label for="grade-select">Niveau / Parcours</label>
-            <select id="grade-select">
-              <option value="JSP1">JSP1</option>
-              <option value="JSP2">JSP2</option>
-              <option value="JSP3">JSP3</option>
-              <option value="JSP4">JSP4</option>
-              <option value="Ancien JSP">Ancien JSP</option>
-              <option value="SPV">SPV</option>
-              <option value="Sympathisant">Sympathisant</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="section-input">Section / Centre de secours (optionnel)</label>
-            <input type="text" id="section-input" placeholder="Ex: Arpajon • SDIS 91">
-          </div>
-
-          <div class="form-group">
-            <label for="bio-input">Bio / Présentation</label>
-            <textarea id="bio-input" rows="3" maxlength="240" placeholder="Quelques mots sur ton parcours, tes manœuvres ou ce que tu aimes sur Vos JSP..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Couleur d'accent du profil</label>
-            <div class="swatch-grid" id="swatch-grid">
-              <button type="button" class="swatch-btn active" data-color="#e11d48" style="background:#e11d48;" aria-label="Rouge"></button>
-              <button type="button" class="swatch-btn" data-color="#2563eb" style="background:#2563eb;" aria-label="Bleu"></button>
-              <button type="button" class="swatch-btn" data-color="#ec4899" style="background:#ec4899;" aria-label="Rose"></button>
-              <button type="button" class="swatch-btn" data-color="#7c3aed" style="background:#7c3aed;" aria-label="Violet"></button>
-              <button type="button" class="swatch-btn" data-color="#059669" style="background:#059669;" aria-label="Vert"></button>
-            </div>
-          </div>
-
-          <button type="submit" id="profile-save-btn" class="btn" style="width: 100%;">Enregistrer ma personnalisation</button>
-        </form>
-      </div>
-
-      <button type="button" id="profile-logout-btn" class="btn btn-secondary" style="width: 100%;">Se déconnecter</button>
     </div>
   </main>
 
@@ -255,219 +178,96 @@
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-
-    const guestEl = document.getElementById('guest-profile');
-    const userEl = document.getElementById('user-profile');
-    const bannerEl = document.getElementById('profile-banner');
-    const previewAvatar = document.getElementById('preview-avatar');
-    const previewRoleBadge = document.getElementById('preview-role-badge');
-    const previewHeading = document.getElementById('preview-heading');
-    const previewBio = document.getElementById('preview-bio');
-    const previewGrade = document.getElementById('preview-grade');
-    const previewSection = document.getElementById('preview-section');
-    const emailTextEl = document.getElementById('profile-email-text');
-    const statusTextEl = document.getElementById('profile-status-text');
-    const extraActionsEl = document.getElementById('profile-extra-actions');
-
-    const form = document.getElementById('custom-profile-form');
-    const pseudoInput = document.getElementById('pseudo-input');
-    const gradeSelect = document.getElementById('grade-select');
-    const sectionInput = document.getElementById('section-input');
-    const bioInput = document.getElementById('bio-input');
-    const swatchBtns = Array.from(document.querySelectorAll('.swatch-btn'));
-    const saveBtn = document.getElementById('profile-save-btn');
-    const alertBox = document.getElementById('profile-alert');
-    const logoutMainBtn = document.getElementById('profile-logout-btn');
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      doc,
+      getDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
     const profileName = document.getElementById('drawer-profile-name');
     const profileRole = document.getElementById('drawer-profile-role');
-    const authBtn = document.getElementById('drawer-auth-btn');
-    const logoutBtn = document.getElementById('drawer-logout-btn');
-    const adminLink = document.getElementById('drawer-admin-link');
+    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
+    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
+    const drawerAdminLink = document.getElementById('drawer-admin-link');
 
-    let currentUser = null;
-    let isBanned = false;
-    let selectedColor = '#e11d48';
+    let userUnsubscribe = null;
 
     function getInitials(label) {
-      const clean = (label || 'JS').trim();
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
     }
 
-    function showAlert(msg, isSuccess = false) {
-      alertBox.style.display = 'block';
-      alertBox.className = isSuccess ? 'alert success' : 'alert';
-      alertBox.textContent = msg;
+    function sanitizeIpDocId(ip) {
+      return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
     }
 
-    function setAccentColor(color) {
-      selectedColor = color || '#e11d48';
-      bannerEl.style.setProperty('--accent-custom', selectedColor);
-      previewAvatar.style.background = selectedColor;
-      swatchBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.color === selectedColor);
-      });
-    }
-
-    function refreshPreview() {
-      const p = pseudoInput.value.trim() || 'Membre';
-      const g = gradeSelect.value || 'JSP2';
-      const s = sectionInput.value.trim();
-      const b = bioInput.value.trim();
-
-      previewHeading.textContent = p;
-      previewAvatar.textContent = getInitials(p);
-      profileName.textContent = p;
-      profileAvatar.textContent = getInitials(p);
-      previewGrade.textContent = g;
-      previewSection.textContent = s || 'Section / Centre non précisé';
-      previewBio.textContent = b || 'Aucune bio renseignée pour l\'instant.';
-    }
-
-    swatchBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        setAccentColor(btn.dataset.color);
-      });
-    });
-
-    pseudoInput.addEventListener('input', refreshPreview);
-    gradeSelect.addEventListener('change', refreshPreview);
-    sectionInput.addEventListener('input', refreshPreview);
-    bioInput.addEventListener('input', refreshPreview);
-
-    async function doLogout() {
-      await signOut(auth);
-      window.location.replace('index.html');
-    }
-
-    logoutBtn.addEventListener('click', doLogout);
-    logoutMainBtn.addEventListener('click', doLogout);
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!currentUser) return;
-      if (isBanned) {
-        showAlert('Ton compte est suspendu : modification impossible.');
-        return;
-      }
-
-      const nextPseudo = pseudoInput.value.trim();
-      const nextGrade = gradeSelect.value;
-      const nextSection = sectionInput.value.trim();
-      const nextBio = bioInput.value.trim();
-
-      if (!nextPseudo) {
-        showAlert('Entre un pseudo valide.');
-        return;
-      }
-
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'Enregistrement...';
-      alertBox.style.display = 'none';
-
+    async function redirectIfIpBanned() {
       try {
-        await updateProfile(currentUser, { displayName: nextPseudo });
-        await setDoc(doc(db, "users", currentUser.uid), {
-          pseudo: nextPseudo,
-          grade: nextGrade,
-          section: nextSection,
-          bio: nextBio,
-          accentColor: selectedColor
-        }, { merge: true });
+        const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
+        if (!res.ok) return false;
+        const data = await res.json();
+        const ip = data && data.ip ? String(data.ip).trim() : '';
+        if (!ip) return false;
+        const snap = await getDoc(doc(db, "banned_ips", sanitizeIpDocId(ip)));
+        if (snap.exists()) {
+          window.location.replace('ban.html');
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
 
-        refreshPreview();
-        showAlert('Profil personnalisé et enregistré !', true);
-      } catch (err) {
-        showAlert('Impossible d\'enregistrer (' + (err.code || err.message) + ').');
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Enregistrer ma personnalisation';
-      }
+    drawerLogoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('login.html');
     });
 
     onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      isBanned = false;
+      if (userUnsubscribe) {
+        userUnsubscribe();
+        userUnsubscribe = null;
+      }
+
+      if (await redirectIfIpBanned()) return;
 
       if (!user) {
-        userEl.style.display = 'none';
-        guestEl.style.display = 'flex';
         profileBox.style.display = 'none';
-        logoutBtn.style.display = 'none';
-        adminLink.style.display = 'none';
-        authBtn.style.display = 'inline-flex';
+        drawerLogoutBtn.style.display = 'none';
+        drawerAdminLink.style.display = 'none';
+        drawerAuthBtn.style.display = 'inline-flex';
         return;
       }
 
-      let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-      let role = 'membre';
-      let grade = 'JSP2';
-      let section = '';
-      let bio = '';
-      let accentColor = '#e11d48';
+      drawerAuthBtn.style.display = 'none';
+      drawerLogoutBtn.style.display = 'inline-flex';
 
-      try {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.pseudo) pseudo = data.pseudo;
-          if (data.role) role = data.role;
-          if (data.grade) grade = data.grade;
-          if (data.section) section = data.section;
-          if (data.bio) bio = data.bio;
-          if (data.accentColor) accentColor = data.accentColor;
-          isBanned = data.banned === true;
+      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
+        const data = snap.exists() ? (snap.data() || {}) : {};
+        if (data.banned === true) {
+          window.location.replace('ban.html');
+          return;
         }
-      } catch (e) {}
 
-      const isAdmin = !isBanned && (role === 'admin' || role === 'superadmin');
+        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+        const role = data.role || 'membre';
 
-      profileRole.textContent = isBanned ? 'banni' : role;
-      profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-      adminLink.style.display = isAdmin ? 'flex' : 'none';
-      profileBox.style.display = 'flex';
-      authBtn.style.display = 'none';
-      logoutBtn.style.display = 'inline-flex';
-
-      guestEl.style.display = 'none';
-      userEl.style.display = 'block';
-      emailTextEl.textContent = user.email || '';
-      previewRoleBadge.textContent = isBanned ? 'banni' : role;
-      statusTextEl.textContent = isBanned ? 'Compte banni' : ('Compte actif • Rôle : ' + role);
-
-      pseudoInput.value = pseudo;
-      gradeSelect.value = grade;
-      sectionInput.value = section;
-      bioInput.value = bio;
-      setAccentColor(accentColor);
-      refreshPreview();
-
-      extraActionsEl.innerHTML = '';
-      if (isAdmin) {
-        const adm = document.createElement('a');
-        adm.href = 'admin.html';
-        adm.className = 'btn btn-small';
-        adm.textContent = 'Ouvrir Panel Admin';
-        extraActionsEl.appendChild(adm);
-      }
-      if (isBanned) {
-        saveBtn.disabled = true;
-        const app = document.createElement('a');
-        app.href = 'contester.html';
-        app.className = 'btn btn-small';
-        app.textContent = 'Contester le ban';
-        extraActionsEl.appendChild(app);
-      } else {
-        saveBtn.disabled = false;
-      }
+        profileBox.style.display = 'flex';
+        profileAvatar.textContent = getInitials(pseudo);
+        profileName.textContent = pseudo;
+        profileRole.textContent = role;
+        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
+        drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
+      });
     });
   </script>
 </body>

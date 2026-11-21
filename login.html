@@ -40,50 +40,42 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
+      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
-      <a href="login.html" class="active">Connexion</a>
     </nav>
 
-    <a href="index.html" class="btn btn-secondary">Retour à l'accueil</a>
+    <a href="login.html" class="btn active">Connexion</a>
   </aside>
 
   <main>
-    <div class="form-box" id="auth-box">
-      <span class="badge">Portail Vos JSP</span>
-      <h2 id="auth-title">Bon retour parmi nous</h2>
-      <p id="auth-sub" class="subtitle" style="margin-bottom: 1.25rem;">Connecte-toi ou crée ton compte avec le pseudo qui te suivra sur le site.</p>
-
-      <div class="auth-tabs">
-        <button type="button" class="auth-tab active" id="tab-login">Connexion</button>
-        <button type="button" class="auth-tab" id="tab-register">Inscription</button>
-      </div>
+    <div class="card" style="max-width: 480px; margin: 2rem auto;">
+      <span class="card-meta">Espace membre</span>
+      <h1 id="auth-heading" style="font-size: 1.7rem; margin: 0.35rem 0 0.25rem;">Connexion</h1>
+      <p id="auth-sub" style="color: var(--muted); font-size: 0.92rem; margin-top: 0;">Connecte-toi à ton compte Vos JSP.</p>
 
       <div id="auth-alert" class="alert"></div>
 
       <form id="auth-form">
         <div class="form-group" id="pseudo-group" style="display: none;">
-          <label for="pseudo">Pseudo</label>
-          <input type="text" id="pseudo" placeholder="Ex: Léo JSP">
+          <label for="auth-pseudo">Pseudo</label>
+          <input type="text" id="auth-pseudo" placeholder="Ton pseudo">
         </div>
-        <div class="form-group">
-          <label for="email">Adresse e-mail</label>
-          <input type="email" id="email" placeholder="toi@exemple.fr" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Mot de passe</label>
-          <input type="password" id="password" placeholder="6 caractères minimum" required>
-        </div>
-        <button type="submit" id="submit-btn" class="btn" style="width: 100%;">Se connecter</button>
-      </form>
-    </div>
 
-    <div class="card" id="banned-box" style="display: none; max-width: 560px; margin: 2rem auto; text-align: center;">
-      <span class="card-meta" style="margin: 0 auto;">Compte suspendu</span>
-      <h2 style="font-size: 1.55rem; margin: 0.4rem 0;">Ton compte est banni</h2>
-      <p style="margin-bottom: 1.1rem;">L'accès à la plateforme est bloqué pour ce compte. Tu peux envoyer une demande de réexamen sur la page de contestation.</p>
-      <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
-        <a href="contester.html" class="btn btn-small">Contester le bannissement</a>
-        <button type="button" id="banned-logout-btn" class="btn btn-secondary btn-small">Se déconnecter</button>
+        <div class="form-group">
+          <label for="auth-email">Adresse e-mail</label>
+          <input type="email" id="auth-email" placeholder="exemple@mail.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="auth-password">Mot de passe</label>
+          <input type="password" id="auth-password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="auth-submit" class="btn" style="width: 100%;">Se connecter</button>
+      </form>
+
+      <div style="margin-top: 1rem; text-align: center;">
+        <button type="button" id="toggle-mode-btn" class="btn btn-secondary btn-small" style="width: 100%;">Créer un compte</button>
       </div>
     </div>
   </main>
@@ -118,156 +110,156 @@
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
-    import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import {
+      onAuthStateChanged,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      doc,
+      getDoc,
+      setDoc,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    let mode = 'login';
-
-    const tabLogin = document.getElementById('tab-login');
-    const tabRegister = document.getElementById('tab-register');
+    const headingEl = document.getElementById('auth-heading');
+    const subEl = document.getElementById('auth-sub');
+    const alertEl = document.getElementById('auth-alert');
+    const formEl = document.getElementById('auth-form');
     const pseudoGroup = document.getElementById('pseudo-group');
-    const title = document.getElementById('auth-title');
-    const sub = document.getElementById('auth-sub');
-    const submitBtn = document.getElementById('submit-btn');
-    const alertBox = document.getElementById('auth-alert');
-    const authBox = document.getElementById('auth-box');
-    const bannedBox = document.getElementById('banned-box');
-    const bannedLogoutBtn = document.getElementById('banned-logout-btn');
+    const pseudoInput = document.getElementById('auth-pseudo');
+    const emailInput = document.getElementById('auth-email');
+    const passwordInput = document.getElementById('auth-password');
+    const submitBtn = document.getElementById('auth-submit');
+    const toggleBtn = document.getElementById('toggle-mode-btn');
 
-    function showMsg(msg, isSuccess = false) {
-      alertBox.style.display = 'block';
-      alertBox.className = isSuccess ? 'alert success' : 'alert';
-      alertBox.textContent = msg;
+    let isRegisterMode = false;
+
+    function showAlert(msg, isSuccess = false) {
+      alertEl.style.display = 'block';
+      alertEl.className = isSuccess ? 'alert success' : 'alert';
+      alertEl.textContent = msg;
     }
 
-    function showBannedScreen() {
-      authBox.style.display = 'none';
-      bannedBox.style.display = 'flex';
+    function sanitizeIpDocId(ip) {
+      return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
     }
 
-    function translateError(code) {
-      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
-        return 'Adresse e-mail ou mot de passe incorrect.';
+    async function fetchPublicIp() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
+        if (!res.ok) return '';
+        const data = await res.json();
+        return data && data.ip ? String(data.ip).trim() : '';
+      } catch (_) {
+        return '';
       }
-      if (code === 'auth/email-already-in-use') {
-        return 'Cette adresse e-mail est déjà utilisée.';
-      }
-      if (code === 'auth/weak-password') {
-        return 'Le mot de passe doit faire au moins 6 caractères.';
-      }
-      if (code === 'auth/invalid-email') {
-        return 'Adresse e-mail invalide.';
-      }
-      if (code === 'auth/too-many-requests') {
-        return 'Trop de tentatives. Réessaie plus tard.';
-      }
-      return 'Erreur (' + code + ').';
     }
 
-    bannedLogoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      bannedBox.style.display = 'none';
-      authBox.style.display = 'block';
-      alertBox.style.display = 'none';
-      submitBtn.disabled = false;
-      submitBtn.textContent = mode === 'login' ? 'Se connecter' : 'Créer mon compte';
+    async function redirectIfIpBanned() {
+      const ip = await fetchPublicIp();
+      if (!ip) return false;
+      try {
+        const snap = await getDoc(doc(db, "banned_ips", sanitizeIpDocId(ip)));
+        if (snap.exists()) {
+          window.location.replace('ban.html');
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      isRegisterMode = !isRegisterMode;
+      alertEl.style.display = 'none';
+      if (isRegisterMode) {
+        headingEl.textContent = 'Inscription';
+        subEl.textContent = 'Crée ton compte membre Vos JSP.';
+        pseudoGroup.style.display = 'block';
+        pseudoInput.required = true;
+        submitBtn.textContent = 'Créer mon compte';
+        toggleBtn.textContent = 'J’ai déjà un compte';
+      } else {
+        headingEl.textContent = 'Connexion';
+        subEl.textContent = 'Connecte-toi à ton compte Vos JSP.';
+        pseudoGroup.style.display = 'none';
+        pseudoInput.required = false;
+        submitBtn.textContent = 'Se connecter';
+        toggleBtn.textContent = 'Créer un compte';
+      }
     });
 
-    tabLogin.addEventListener('click', () => {
-      mode = 'login';
-      tabLogin.classList.add('active');
-      tabRegister.classList.remove('active');
-      pseudoGroup.style.display = 'none';
-      title.textContent = 'Bon retour parmi nous';
-      sub.textContent = 'Connecte-toi à ton compte Vos JSP.';
-      submitBtn.textContent = 'Se connecter';
-      alertBox.style.display = 'none';
-    });
-
-    tabRegister.addEventListener('click', () => {
-      mode = 'register';
-      tabRegister.classList.add('active');
-      tabLogin.classList.remove('active');
-      pseudoGroup.style.display = 'block';
-      title.textContent = 'Créer un compte';
-      sub.textContent = 'Choisis ton pseudo pour rejoindre la communauté Vos JSP.';
-      submitBtn.textContent = 'Créer mon compte';
-      alertBox.style.display = 'none';
-    });
-
-    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+    formEl.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
+      alertEl.style.display = 'none';
+
+      if (await redirectIfIpBanned()) return;
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const pseudo = pseudoInput.value.trim();
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Patiente...';
-      alertBox.style.display = 'none';
+      submitBtn.textContent = isRegisterMode ? 'Création...' : 'Connexion...';
 
-      if (mode === 'login') {
-        try {
-          const cred = await signInWithEmailAndPassword(auth, email, password);
-          const user = cred.user;
-          const userRef = doc(db, "users", user.uid);
-          const snap = await getDoc(userRef);
+      try {
+        const currentIp = await fetchPublicIp();
 
-          if (snap.exists()) {
-            const data = snap.data();
-            if (data.banned === true) {
-              showBannedScreen();
-              return;
-            }
-            const patch = {};
-            if (!data.email && user.email) patch.email = user.email;
-            if (!data.pseudo) patch.pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-            if (typeof data.banned !== 'boolean') patch.banned = false;
-            if (Object.keys(patch).length > 0) {
-              await setDoc(userRef, patch, { merge: true });
-            }
-          } else {
-            const fallbackPseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-            await setDoc(userRef, {
-              pseudo: fallbackPseudo,
-              email: user.email || email,
-              role: 'membre',
-              banned: false,
-              createdAt: serverTimestamp()
-            }, { merge: true });
-          }
-
-          showMsg('Connexion réussie ! Redirection...', true);
-          window.location.replace('index.html');
-        } catch (err) {
-          showMsg(translateError(err.code));
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Se connecter';
-        }
-      } else {
-        const pseudo = document.getElementById('pseudo').value.trim();
-        if (!pseudo) {
-          showMsg('Entre un pseudo avant de créer ton compte.');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Créer mon compte';
-          return;
-        }
-        try {
+        if (isRegisterMode) {
           const cred = await createUserWithEmailAndPassword(auth, email, password);
-          await updateProfile(cred.user, { displayName: pseudo });
+          const finalPseudo = pseudo || email.split('@')[0];
+          await updateProfile(cred.user, { displayName: finalPseudo });
           await setDoc(doc(db, "users", cred.user.uid), {
-            pseudo: pseudo,
-            email: cred.user.email || email,
+            pseudo: finalPseudo,
+            email,
             role: 'membre',
             banned: false,
-            createdAt: serverTimestamp()
-          });
-          showMsg('Compte créé ! Redirection...', true);
-          window.location.replace('index.html');
-        } catch (err) {
-          showMsg(err.code ? translateError(err.code) : 'Compte créé mais profil non enregistré : ' + err.message);
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Créer mon compte';
+            lastIp: currentIp,
+            createdAt: serverTimestamp(),
+            lastLoginAt: serverTimestamp()
+          }, { merge: true });
+        } else {
+          const cred = await signInWithEmailAndPassword(auth, email, password);
+          const userRef = doc(db, "users", cred.user.uid);
+          const snap = await getDoc(userRef);
+
+          if (snap.exists() && snap.data().banned === true) {
+            window.location.replace('ban.html');
+            return;
+          }
+
+          const patch = {
+            email,
+            lastLoginAt: serverTimestamp()
+          };
+          if (currentIp) patch.lastIp = currentIp;
+          if (!snap.exists()) {
+            patch.pseudo = cred.user.displayName || email.split('@')[0];
+            patch.role = 'membre';
+            patch.banned = false;
+          }
+          await setDoc(userRef, patch, { merge: true });
         }
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = isRegisterMode ? 'Créer mon compte' : 'Se connecter';
+        showAlert('Erreur : ' + (err.code || err.message));
       }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (await redirectIfIpBanned()) return;
+      if (!user) return;
+
+      onSnapshot(doc(db, "users", user.uid), (snap) => {
+        if (snap.exists() && snap.data().banned === true) {
+          window.location.replace('ban.html');
+        } else {
+          window.location.replace('index.html');
+        }
+      });
     });
   </script>
 </body>

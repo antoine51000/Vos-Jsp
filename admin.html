@@ -93,6 +93,13 @@
       margin: 0;
     }
 
+    .btn-disabled {
+      opacity: 0.45;
+      pointer-events: none;
+      cursor: not-allowed;
+      filter: grayscale(0.7);
+    }
+
     .actu-row,
     .user-row {
       display: flex;
@@ -247,13 +254,13 @@
                 </div>
               </div>
 
-              <div class="resource-card">
+              <div class="resource-card" id="firebase-resource-card">
                 <div>
                   <strong>Firebase Console</strong>
-                  <p>Gérer l'authentification, les collections Firestore et les règles de sécurité.</p>
+                  <p id="firebase-resource-desc">Réservée au superadmin (authentification, Firestore et règles de sécurité).</p>
                 </div>
                 <div>
-                  <a href="https://console.firebase.google.com/project/vos-jsp" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-small">Ouvrir Firebase</a>
+                  <a href="https://console.firebase.google.com/project/vos-jsp" target="_blank" rel="noopener noreferrer" id="firebase-console-btn" class="btn btn-secondary btn-small btn-disabled" aria-disabled="true" tabindex="-1">Ouvrir Firebase</a>
                 </div>
               </div>
             </div>
@@ -437,6 +444,25 @@
         .trim();
       const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
       return `[ ADMIN ] ${firstName}`;
+    }
+
+    function updateFirebaseResourceAccess() {
+      const fbBtn = document.getElementById('firebase-console-btn');
+      const fbDesc = document.getElementById('firebase-resource-desc');
+      if (!fbBtn || !fbDesc) return;
+
+      const isSuperAdmin = currentRole === 'superadmin';
+      if (isSuperAdmin) {
+        fbBtn.classList.remove('btn-disabled');
+        fbBtn.removeAttribute('aria-disabled');
+        fbBtn.setAttribute('tabindex', '0');
+        fbDesc.textContent = 'Accès superadmin actif : authentification, Firestore et règles de sécurité.';
+      } else {
+        fbBtn.classList.add('btn-disabled');
+        fbBtn.setAttribute('aria-disabled', 'true');
+        fbBtn.setAttribute('tabindex', '-1');
+        fbDesc.textContent = 'Grisé : accès réservé uniquement au superadmin.';
+      }
     }
 
     function showAlert(msg, isSuccess = false) {
@@ -1161,6 +1187,7 @@
 
       currentRole = role;
       currentPseudo = pseudo;
+      updateFirebaseResourceAccess();
 
       profileBox.style.display = 'flex';
       profileAvatar.textContent = getInitials(pseudo);

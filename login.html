@@ -3,26 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Connexion (temporaire)</title>
+  <title>Vos JSP — Login (en modif)</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .old-temp-box {
-      max-width: 450px;
-      margin: 2rem auto;
-      background: #fff3cd;
-      color: #4a3500;
-      border: 2px dashed #b58100;
-      border-radius: 6px;
-      padding: 1rem;
-      font-size: 0.9rem;
+    .raw-box {
+      max-width: 420px;
+      margin: 2rem auto 1rem;
+      background: #ffeb3b;
+      color: #111;
+      border: 3px solid #111;
+      box-shadow: 5px 5px 0 #e11d2a;
+      padding: 0.85rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
     }
-    .old-temp-card {
-      max-width: 450px;
-      margin: 1rem auto 2rem;
-      background: #ffffff;
-      border: 1px solid #999;
-      border-radius: 6px;
+
+    .raw-card {
+      max-width: 420px;
+      margin: 0 auto 2.5rem;
+      background: #fff;
+      color: #111;
+      border: 2px solid #111;
+      box-shadow: 5px 5px 0 #111;
       padding: 1.2rem;
+    }
+
+    .raw-card input {
+      border-radius: 2px;
+      border: 1.5px solid #111;
     }
   </style>
 </head>
@@ -68,14 +76,13 @@
   </aside>
 
   <main>
-    <div class="old-temp-box">
-      <strong>⚠️ Page de connexion en cours de modification</strong><br>
-      Le système de connexion est actuellement en cours de modification et d'ajustement. Voici un login temporaire en attendant : tu peux te connecter ou créer un compte normalement en attendant la mise à jour finale.
+    <div class="raw-box">
+      🚧 LOGIN EN COURS DE MODIFICATION — Login temporaire en attendant la refonte finale (on règle ça tranquille). Tu peux te connecter ou créer un compte normalement.
     </div>
 
-    <div class="old-temp-card">
-      <h1 id="auth-heading" style="font-size: 1.4rem; margin-top: 0;">Connexion (temporaire)</h1>
-      <p id="auth-sub" style="font-size: 0.88rem; color: #555;">Login temporaire pendant les modifications en cours.</p>
+    <div class="raw-card">
+      <h1 id="auth-heading" style="font-size: 1.35rem; margin: 0 0 0.25rem;">Connexion (temp)</h1>
+      <p id="auth-sub" style="font-size: 0.84rem; color: #555; margin: 0 0 1rem;">Version simple en attendant la fin des réglages.</p>
 
       <div id="auth-alert" class="alert"></div>
 
@@ -86,7 +93,7 @@
         </div>
 
         <div class="form-group">
-          <label for="auth-email">Adresse e-mail</label>
+          <label for="auth-email">E-mail</label>
           <input type="email" id="auth-email" placeholder="exemple@mail.com" required>
         </div>
 
@@ -95,11 +102,11 @@
           <input type="password" id="auth-password" placeholder="••••••••" required>
         </div>
 
-        <button type="submit" id="auth-submit" class="btn" style="width: 100%;">Se connecter</button>
+        <button type="submit" id="auth-submit" class="btn" style="width: 100%; border-radius: 2px;">Connexion</button>
       </form>
 
-      <div style="margin-top: 0.85rem;">
-        <button type="button" id="toggle-mode-btn" class="btn btn-secondary btn-small" style="width: 100%;">Créer un compte</button>
+      <div style="margin-top: 0.7rem;">
+        <button type="button" id="toggle-mode-btn" class="btn btn-secondary btn-small" style="width: 100%; border-radius: 2px;">Passer en inscription</button>
       </div>
     </div>
   </main>
@@ -200,19 +207,19 @@
       isRegisterMode = !isRegisterMode;
       alertEl.style.display = 'none';
       if (isRegisterMode) {
-        headingEl.textContent = 'Inscription (temporaire)';
-        subEl.textContent = 'Création de compte en attendant la fin des modifications.';
+        headingEl.textContent = 'Inscription (temp)';
+        subEl.textContent = 'Création de compte temporaire.';
         pseudoGroup.style.display = 'block';
         pseudoInput.required = true;
-        submitBtn.textContent = 'Créer mon compte';
-        toggleBtn.textContent = 'J’ai déjà un compte';
+        submitBtn.textContent = 'Créer le compte';
+        toggleBtn.textContent = 'Passer en connexion';
       } else {
-        headingEl.textContent = 'Connexion (temporaire)';
-        subEl.textContent = 'Login temporaire pendant les modifications en cours.';
+        headingEl.textContent = 'Connexion (temp)';
+        subEl.textContent = 'Version simple en attendant la fin des réglages.';
         pseudoGroup.style.display = 'none';
         pseudoInput.required = false;
-        submitBtn.textContent = 'Se connecter';
-        toggleBtn.textContent = 'Créer un compte';
+        submitBtn.textContent = 'Connexion';
+        toggleBtn.textContent = 'Passer en inscription';
       }
     });
 
@@ -269,7 +276,7 @@
         }
       } catch (err) {
         submitBtn.disabled = false;
-        submitBtn.textContent = isRegisterMode ? 'Créer mon compte' : 'Se connecter';
+        submitBtn.textContent = isRegisterMode ? 'Créer le compte' : 'Connexion';
         showAlert('Erreur : ' + (err.code || err.message));
       }
     });

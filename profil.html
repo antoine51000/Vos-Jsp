@@ -3,89 +3,335 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Profil</title>
+  <title>Vos JSP — Mon Profil</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .profil-maint-wrap {
-      max-width: 740px;
-      margin: 2.3rem auto 3.8rem;
+    .pr-page {
+      max-width: 1060px;
+      margin: 2rem auto 3.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.35rem;
     }
 
-    .profil-maint-card {
-      background: linear-gradient(155deg, var(--surface) 0%, var(--bg) 100%);
+    .pr-banner {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
       border: 1px solid var(--border);
       border-radius: 26px;
-      padding: 2.1rem 1.85rem;
+      padding: 1.75rem 1.9rem;
       box-shadow: var(--shadow);
-      text-align: center;
-      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .pr-identity {
+      display: flex;
+      align-items: center;
+      gap: 1.05rem;
+    }
+
+    .pr-avatar-lg {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      background: rgba(225, 29, 42, 0.14);
+      color: var(--primary);
+      font-weight: 900;
+      font-size: 1.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
       overflow: hidden;
+      border: 2px solid var(--border);
     }
 
-    .profil-maint-card::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary), rgba(225, 29, 42, 0.25));
+    .pr-avatar-lg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
-    .profil-greeting {
-      margin: 0.7rem 0 0.35rem;
-      font-size: 1.85rem;
-      line-height: 1.18;
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      display: block;
+    }
+
+    .pr-name {
+      margin: 0.25rem 0 0.2rem;
+      font-size: 1.65rem;
       letter-spacing: -0.02em;
+      line-height: 1.15;
     }
 
-    .profil-status-line {
-      margin: 0 auto 1.55rem;
-      max-width: 540px;
+    .pr-submeta {
+      font-size: 0.82rem;
       color: var(--muted);
-      font-size: 0.96rem;
-      line-height: 1.55;
+      font-weight: 600;
     }
 
-    .timer-panel {
+    .pr-bio {
+      margin: 0.35rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 540px;
+      line-height: 1.48;
+      white-space: pre-wrap;
+    }
+
+    .pr-banner-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .pr-tabs-bar {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.5rem;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+    }
+
+    .pr-tab {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.58rem 0.95rem;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .pr-tab:hover {
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .pr-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .pr-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 720px) {
+      .pr-kpis {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pr-kpi-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 22px;
-      padding: 1.35rem 1.2rem;
-      max-width: 460px;
-      margin: 0 auto 1.45rem;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      padding: 1.25rem 1.35rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
     }
 
-    .timer-label {
+    .pr-kpi-card small {
       display: block;
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
+      font-size: 0.76rem;
+      font-weight: 700;
       color: var(--muted);
-      margin-bottom: 0.65rem;
     }
 
-    .timer-clock {
-      font-variant-numeric: tabular-nums;
-      font-size: clamp(2.1rem, 6vw, 3rem);
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      color: var(--primary);
-      line-height: 1.05;
-    }
-
-    .timer-sub {
+    .pr-kpi-card strong {
       display: block;
-      margin-top: 0.55rem;
+      font-size: 1.65rem;
+      font-weight: 900;
+      margin-top: 0.25rem;
+      color: var(--primary);
+    }
+
+    .pr-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.6rem;
+      box-shadow: var(--shadow);
+    }
+
+    .pr-panel h2 {
+      margin: 0 0 0.35rem;
+      font-size: 1.25rem;
+    }
+
+    .pr-panel-sub {
+      margin: 0 0 1.2rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .pr-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.9rem;
+    }
+
+    @media (max-width: 640px) {
+      .pr-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pr-avatar-dropzone {
+      border: 1.5px dashed var(--border);
+      background: var(--bg);
+      border-radius: 18px;
+      padding: 1.15rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.18s ease, background 0.18s ease;
+      margin-bottom: 1rem;
+    }
+
+    .pr-avatar-dropzone:hover,
+    .pr-avatar-dropzone.dragover {
+      border-color: var(--primary);
+      background: rgba(225, 29, 42, 0.04);
+    }
+
+    .pr-avatar-controls {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .pr-quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+      margin-top: 1.25rem;
+    }
+
+    @media (max-width: 720px) {
+      .pr-quick-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pr-quick-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .pr-quick-box strong {
+      font-size: 0.96rem;
+    }
+
+    .pr-quick-box span {
       font-size: 0.82rem;
       color: var(--muted);
+      line-height: 1.4;
     }
 
-    .profil-actions {
+    .pr-panel textarea {
+      width: 100%;
+      min-height: 88px;
+      resize: vertical;
+      border-radius: 14px;
+      padding: 0.8rem 0.95rem;
+      font-family: inherit;
+    }
+
+    .pr-activity-list {
       display: flex;
-      justify-content: center;
-      gap: 0.65rem;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .pr-activity-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.95rem 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.85rem;
       flex-wrap: wrap;
+    }
+
+    .pr-activity-title {
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: block;
+    }
+
+    .pr-activity-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+      display: block;
+    }
+
+    .pr-empty {
+      text-align: center;
+      padding: 1.8rem 1rem;
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .pr-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      margin-bottom: 0.65rem;
+      font-size: 0.88rem;
+      flex-wrap: wrap;
+    }
+
+    .pr-sec-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .pr-sec-card h3 {
+      margin: 0 0 0.25rem;
+      font-size: 1.02rem;
+    }
+
+    .pr-sec-card p {
+      margin: 0 0 0.95rem;
+      font-size: 0.83rem;
+      color: var(--muted);
     }
   </style>
 </head>
@@ -141,23 +387,209 @@
   </aside>
 
   <main>
-    <div class="profil-maint-wrap">
-      <section class="profil-maint-card">
-        <span class="badge">Espace Profil • Maintenance</span>
-        <h1 class="profil-greeting" id="profil-greeting-title">Bonjour membre, la page est temporairement indisponible</h1>
-        <p class="profil-status-line">Des modifications sont en cours sur cette page — 1h d'attente minimum avant réouverture.</p>
+    <div class="pr-page">
+      <div id="pr-alert" class="alert"></div>
 
-        <div class="timer-panel">
-          <span class="timer-label">Minuteur de maintenance (1h)</span>
-          <div class="timer-clock" id="profil-countdown">01:00:00</div>
-          <span class="timer-sub" id="profil-timer-sub">Décompte en cours...</span>
-        </div>
+      <div id="pr-guest-card" class="pr-panel" style="display: none; text-align: center;">
+        <span class="badge">Espace Profil</span>
+        <h1 style="margin: 0.6rem 0 0.35rem; font-size: 1.65rem;">Connecte-toi pour gérer ton profil</h1>
+        <p class="pr-panel-sub" style="margin-bottom: 1.2rem;">Modifie ta photo de profil, ton pseudo, ton e-mail, ton mot de passe et suis ton activité.</p>
+        <a href="login.html" class="btn">Se connecter</a>
+      </div>
 
-        <div class="profil-actions">
-          <a href="index.html" class="btn">Retour à l'accueil</a>
-          <a href="forum.html" class="btn btn-secondary">Aller au forum</a>
-        </div>
-      </section>
+      <div id="pr-dashboard" style="display: none; flex-direction: column; gap: 1.25rem;">
+        <header class="pr-banner">
+          <div class="pr-identity">
+            <div class="pr-avatar-lg" id="pr-avatar-lg">JS</div>
+            <div>
+              <span class="badge" id="pr-role-badge">membre</span>
+              <h1 class="pr-name" id="pr-display-name">Membre</h1>
+              <div class="pr-submeta" id="pr-submeta-line">JSP • France</div>
+              <p class="pr-bio" id="pr-display-bio">Aucune bio renseignée pour le moment.</p>
+            </div>
+          </div>
+
+          <div class="pr-banner-actions">
+            <button type="button" class="btn btn-small" data-tab-jump="edit">Modifier le profil</button>
+            <button type="button" class="btn btn-secondary btn-small" data-tab-jump="security">Sécurité</button>
+            <button type="button" class="btn btn-secondary btn-small" id="pr-top-logout">Déconnexion</button>
+          </div>
+        </header>
+
+        <nav class="pr-tabs-bar" aria-label="Sections du profil">
+          <button type="button" class="pr-tab active" data-tab="overview">Aperçu</button>
+          <button type="button" class="pr-tab" data-tab="edit">Profil &amp; Photo</button>
+          <button type="button" class="pr-tab" data-tab="posts">Mes publications</button>
+          <button type="button" class="pr-tab" data-tab="security">E-mail &amp; Mot de passe</button>
+        </nav>
+
+        <!-- ONGLET APERÇU -->
+        <section class="pr-panel" id="tab-overview">
+          <div class="pr-kpis">
+            <div class="pr-kpi-card">
+              <small>Sujets forum publiés</small>
+              <strong id="kpi-forum-count">0</strong>
+            </div>
+            <div class="pr-kpi-card">
+              <small>Photos galerie publiées</small>
+              <strong id="kpi-gallery-count">0</strong>
+            </div>
+            <div class="pr-kpi-card">
+              <small>Soutiens reçus</small>
+              <strong id="kpi-likes-total">0</strong>
+            </div>
+          </div>
+
+          <div class="pr-quick-grid">
+            <div class="pr-quick-box">
+              <strong>Forum communautaire</strong>
+              <span>Lance un sujet ou échange avec les autres membres.</span>
+              <a href="forum.html" class="btn btn-secondary btn-small" style="align-self: flex-start; margin-top: 0.25rem;">Ouvrir le forum</a>
+            </div>
+            <div class="pr-quick-box">
+              <strong>Galerie photos</strong>
+              <span>Partage tes photos de manœuvres, d'engins et de cohésion.</span>
+              <a href="galerie.html" class="btn btn-secondary btn-small" style="align-self: flex-start; margin-top: 0.25rem;">Ouvrir la galerie</a>
+            </div>
+            <div class="pr-quick-box">
+              <strong>Proposer une actu</strong>
+              <span>Soumets une information ou un événement à l'équipe.</span>
+              <a href="proposer.html" class="btn btn-secondary btn-small" style="align-self: flex-start; margin-top: 0.25rem;">Faire une proposition</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- ONGLET PROFIL & PHOTO -->
+        <section class="pr-panel" id="tab-edit" style="display: none;">
+          <h2>Photo de profil &amp; informations</h2>
+          <p class="pr-panel-sub">Personnalise ton avatar, ton pseudo, ton niveau JSP et ta présentation.</p>
+
+          <input type="file" id="pr-avatar-file" accept="image/*" style="display: none;">
+          <div class="pr-avatar-dropzone" id="pr-avatar-dropzone" role="button" tabindex="0">
+            <strong style="display: block; font-size: 0.92rem;">Clique pour importer une photo de profil ou glisse-la ici</strong>
+            <span style="display: block; font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem;">JPG, PNG ou WebP — redimensionnement auto</span>
+          </div>
+
+          <div class="pr-avatar-controls">
+            <button type="button" id="pr-remove-avatar-btn" class="btn btn-secondary btn-small">Retirer la photo de profil</button>
+            <span id="pr-avatar-status" style="font-size: 0.8rem; color: var(--muted);"></span>
+          </div>
+
+          <form id="pr-edit-form">
+            <div class="pr-grid-2">
+              <div class="form-group">
+                <label for="pr-pseudo-input">Pseudo</label>
+                <input type="text" id="pr-pseudo-input" maxlength="60" required>
+              </div>
+              <div class="form-group">
+                <label for="pr-jsp-input">Niveau / Section JSP</label>
+                <input type="text" id="pr-jsp-input" maxlength="60" placeholder="Ex. : JSP2 • Arpajon">
+              </div>
+            </div>
+
+            <div class="pr-grid-2">
+              <div class="form-group">
+                <label for="pr-city-input">Ville / Département</label>
+                <input type="text" id="pr-city-input" maxlength="60" placeholder="Ex. : Essonne (91)">
+              </div>
+              <div class="form-group">
+                <label for="pr-visibility-select">Visibilité du profil</label>
+                <select id="pr-visibility-select">
+                  <option value="public">Visible par la communauté</option>
+                  <option value="discret">Mode discret</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="pr-bio-input">Bio / Présentation</label>
+              <textarea id="pr-bio-input" maxlength="280" placeholder="Présente-toi brièvement..."></textarea>
+            </div>
+
+            <button type="submit" id="pr-save-btn" class="btn">Enregistrer le profil</button>
+          </form>
+        </section>
+
+        <!-- ONGLET MES PUBLICATIONS -->
+        <section class="pr-panel" id="tab-posts" style="display: none;">
+          <h2>Mes publications</h2>
+          <p class="pr-panel-sub">Retrouve tes sujets du forum et tes photos de galerie en temps réel.</p>
+
+          <h3 style="margin: 0.5rem 0 0.65rem; font-size: 1rem;">Sujets du forum</h3>
+          <div class="pr-activity-list" id="pr-my-forum" style="margin-bottom: 1.3rem;">
+            <div class="pr-empty">Chargement...</div>
+          </div>
+
+          <h3 style="margin: 0.5rem 0 0.65rem; font-size: 1rem;">Photos de galerie</h3>
+          <div class="pr-activity-list" id="pr-my-gallery">
+            <div class="pr-empty">Chargement...</div>
+          </div>
+        </section>
+
+        <!-- ONGLET E-MAIL & MOT DE PASSE -->
+        <section class="pr-panel" id="tab-security" style="display: none;">
+          <h2>E-mail, mot de passe &amp; sécurité</h2>
+          <p class="pr-panel-sub">Gère tes identifiants de connexion et ta session active.</p>
+
+          <div class="pr-info-row">
+            <span>E-mail actuel</span>
+            <strong id="pr-email-val">—</strong>
+          </div>
+          <div class="pr-info-row">
+            <span>Identifiant compte (UID)</span>
+            <code id="pr-uid-val">—</code>
+          </div>
+          <div class="pr-info-row">
+            <span>Rôle</span>
+            <strong id="pr-role-val">membre</strong>
+          </div>
+
+          <div class="pr-sec-card">
+            <h3>Modifier l'adresse e-mail</h3>
+            <p>Saisis ta nouvelle adresse e-mail et ton mot de passe actuel pour confirmer.</p>
+            <form id="pr-email-form">
+              <div class="pr-grid-2">
+                <div class="form-group">
+                  <label for="pr-new-email">Nouvelle adresse e-mail</label>
+                  <input type="email" id="pr-new-email" required placeholder="nouveau@exemple.fr">
+                </div>
+                <div class="form-group">
+                  <label for="pr-email-current-pass">Mot de passe actuel</label>
+                  <input type="password" id="pr-email-current-pass" required placeholder="••••••••">
+                </div>
+              </div>
+              <button type="submit" id="pr-email-btn" class="btn btn-small">Mettre à jour l'e-mail</button>
+            </form>
+          </div>
+
+          <div class="pr-sec-card">
+            <h3>Modifier le mot de passe</h3>
+            <p>Choisis un nouveau mot de passe (6 caractères minimum).</p>
+            <form id="pr-pass-form">
+              <div class="form-group">
+                <label for="pr-old-pass">Mot de passe actuel</label>
+                <input type="password" id="pr-old-pass" required placeholder="••••••••">
+              </div>
+              <div class="pr-grid-2">
+                <div class="form-group">
+                  <label for="pr-new-pass">Nouveau mot de passe</label>
+                  <input type="password" id="pr-new-pass" minlength="6" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                  <label for="pr-confirm-pass">Confirmer le mot de passe</label>
+                  <input type="password" id="pr-confirm-pass" minlength="6" required placeholder="••••••••">
+                </div>
+              </div>
+              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                <button type="submit" id="pr-pass-btn" class="btn btn-small">Changer le mot de passe</button>
+                <button type="button" id="pr-reset-mail-btn" class="btn btn-secondary btn-small">Recevoir un lien de réinitialisation</button>
+              </div>
+            </form>
+          </div>
+
+          <button type="button" id="pr-logout-btn" class="btn btn-secondary">Se déconnecter</button>
+        </section>
+      </div>
     </div>
   </main>
 
@@ -187,59 +619,31 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
-
-    const countdownEl = document.getElementById('profil-countdown');
-    const timerSubEl = document.getElementById('profil-timer-sub');
-    const ONE_HOUR_MS = 60 * 60 * 1000;
-    const STORAGE_KEY = 'vosjsp_profil_maint_end_v1';
-
-    function getTargetEndTime() {
-      const saved = Number(localStorage.getItem(STORAGE_KEY) || 0);
-      const now = Date.now();
-      if (saved && saved > now) return saved;
-      const nextEnd = now + ONE_HOUR_MS;
-      localStorage.setItem(STORAGE_KEY, String(nextEnd));
-      return nextEnd;
-    }
-
-    let targetEnd = getTargetEndTime();
-
-    function formatHms(msLeft) {
-      const totalSec = Math.max(0, Math.ceil(msLeft / 1000));
-      const h = Math.floor(totalSec / 3600);
-      const m = Math.floor((totalSec % 3600) / 60);
-      const s = totalSec % 60;
-      return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':');
-    }
-
-    function updateCountdown() {
-      const diff = targetEnd - Date.now();
-      if (diff <= 0) {
-        countdownEl.textContent = '00:00:00';
-        timerSubEl.textContent = '1h écoulée — modifications toujours susceptibles d’être finalisées.';
-        return;
-      }
-      countdownEl.textContent = formatHms(diff);
-      timerSubEl.textContent = '1h d’attente minimum — merci de patienter.';
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
   </script>
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
     import {
       onAuthStateChanged,
-      signOut
+      signOut,
+      EmailAuthProvider,
+      reauthenticateWithCredential,
+      verifyBeforeUpdateEmail,
+      updatePassword,
+      sendPasswordResetEmail,
+      updateProfile
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
+      collection,
+      query,
+      where,
+      deleteDoc,
       doc,
       getDoc,
+      setDoc,
       onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    const greetingTitleEl = document.getElementById('profil-greeting-title');
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
     const profileName = document.getElementById('drawer-profile-name');
@@ -248,11 +652,89 @@
     const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
     const drawerAdminLink = document.getElementById('drawer-admin-link');
 
-    let userUnsubscribe = null;
+    const alertEl = document.getElementById('pr-alert');
+    const guestCard = document.getElementById('pr-guest-card');
+    const dashboardEl = document.getElementById('pr-dashboard');
 
-    function setGreetingName(name) {
-      const cleanName = String(name || 'membre').trim() || 'membre';
-      greetingTitleEl.textContent = `Bonjour ${cleanName}, la page est temporairement indisponible`;
+    const avatarLg = document.getElementById('pr-avatar-lg');
+    const roleBadge = document.getElementById('pr-role-badge');
+    const displayNameEl = document.getElementById('pr-display-name');
+    const submetaLineEl = document.getElementById('pr-submeta-line');
+    const displayBioEl = document.getElementById('pr-display-bio');
+
+    const tabs = Array.from(document.querySelectorAll('.pr-tab'));
+    const tabPanels = {
+      overview: document.getElementById('tab-overview'),
+      edit: document.getElementById('tab-edit'),
+      posts: document.getElementById('tab-posts'),
+      security: document.getElementById('tab-security')
+    };
+
+    const kpiForumCount = document.getElementById('kpi-forum-count');
+    const kpiGalleryCount = document.getElementById('kpi-gallery-count');
+    const kpiLikesTotal = document.getElementById('kpi-likes-total');
+
+    const avatarFileInput = document.getElementById('pr-avatar-file');
+    const avatarDropzone = document.getElementById('pr-avatar-dropzone');
+    const removeAvatarBtn = document.getElementById('pr-remove-avatar-btn');
+    const avatarStatusEl = document.getElementById('pr-avatar-status');
+
+    const editForm = document.getElementById('pr-edit-form');
+    const pseudoInput = document.getElementById('pr-pseudo-input');
+    const jspInput = document.getElementById('pr-jsp-input');
+    const cityInput = document.getElementById('pr-city-input');
+    const visibilitySelect = document.getElementById('pr-visibility-select');
+    const bioInput = document.getElementById('pr-bio-input');
+    const saveBtn = document.getElementById('pr-save-btn');
+
+    const myForumListEl = document.getElementById('pr-my-forum');
+    const myGalleryListEl = document.getElementById('pr-my-gallery');
+
+    const emailValEl = document.getElementById('pr-email-val');
+    const uidValEl = document.getElementById('pr-uid-val');
+    const roleValEl = document.getElementById('pr-role-val');
+
+    const emailForm = document.getElementById('pr-email-form');
+    const newEmailInput = document.getElementById('pr-new-email');
+    const emailCurrentPassInput = document.getElementById('pr-email-current-pass');
+    const emailBtn = document.getElementById('pr-email-btn');
+
+    const passForm = document.getElementById('pr-pass-form');
+    const oldPassInput = document.getElementById('pr-old-pass');
+    const newPassInput = document.getElementById('pr-new-pass');
+    const confirmPassInput = document.getElementById('pr-confirm-pass');
+    const passBtn = document.getElementById('pr-pass-btn');
+    const resetMailBtn = document.getElementById('pr-reset-mail-btn');
+
+    const topLogoutBtn = document.getElementById('pr-top-logout');
+    const logoutBtn = document.getElementById('pr-logout-btn');
+
+    let currentUser = null;
+    let currentProfile = {
+      pseudo: 'Membre',
+      role: 'membre',
+      bio: '',
+      jspSection: '',
+      city: '',
+      visibility: 'public',
+      photoDataUrl: ''
+    };
+    let draftAvatarDataUrl = '';
+    let userUnsubscribe = null;
+    let forumUnsubscribe = null;
+    let galleryUnsubscribe = null;
+    let myForumPosts = [];
+    let myGalleryItems = [];
+
+    function showAlert(msg, isSuccess = false) {
+      alertEl.style.display = 'block';
+      alertEl.className = isSuccess ? 'alert success' : 'alert';
+      alertEl.textContent = msg;
+    }
+
+    function hideAlert() {
+      alertEl.style.display = 'none';
+      alertEl.textContent = '';
     }
 
     function getInitials(label) {
@@ -263,6 +745,366 @@
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
     }
+
+    function paintAvatar(container, imgSrc, pseudo) {
+      container.innerHTML = '';
+      if (imgSrc) {
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.alt = pseudo || 'Avatar';
+        container.appendChild(img);
+      } else {
+        container.textContent = getInitials(pseudo);
+      }
+    }
+
+    function activateTab(tabName) {
+      tabs.forEach((t) => t.classList.toggle('active', t.dataset.tab === tabName));
+      Object.entries(tabPanels).forEach(([key, el]) => {
+        if (el) el.style.display = key === tabName ? 'block' : 'none';
+      });
+    }
+
+    tabs.forEach((t) => {
+      t.addEventListener('click', () => activateTab(t.dataset.tab));
+    });
+
+    document.querySelectorAll('[data-tab-jump]').forEach((btn) => {
+      btn.addEventListener('click', () => activateTab(btn.dataset.tabJump));
+    });
+
+    function compressAvatar(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const size = 280;
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const minSide = Math.min(img.width, img.height);
+            const sx = Math.floor((img.width - minSide) / 2);
+            const sy = Math.floor((img.height - minSide) / 2);
+            ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+            resolve(canvas.toDataURL('image/jpeg', 0.78));
+          };
+          img.onerror = () => reject(new Error('Image invalide'));
+          img.src = String(reader.result || '');
+        };
+        reader.onerror = () => reject(new Error('Lecture impossible'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleAvatarFile(file) {
+      hideAlert();
+      if (!file) return;
+      try {
+        const dataUrl = await compressAvatar(file);
+        if (dataUrl.length > 250000) {
+          showAlert('Photo trop volumineuse après recadrage, choisis une autre image.');
+          return;
+        }
+        draftAvatarDataUrl = dataUrl;
+        paintAvatar(avatarLg, draftAvatarDataUrl, currentProfile.pseudo);
+        paintAvatar(profileAvatar, draftAvatarDataUrl, currentProfile.pseudo);
+        avatarStatusEl.textContent = 'Nouvelle photo prête — clique sur "Enregistrer le profil".';
+      } catch (err) {
+        showAlert(err.message || 'Erreur image.');
+      }
+    }
+
+    avatarDropzone.addEventListener('click', () => avatarFileInput.click());
+    avatarDropzone.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        avatarFileInput.click();
+      }
+    });
+    avatarDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      avatarDropzone.classList.add('dragover');
+    });
+    avatarDropzone.addEventListener('dragleave', () => avatarDropzone.classList.remove('dragover'));
+    avatarDropzone.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      avatarDropzone.classList.remove('dragover');
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) await handleAvatarFile(file);
+    });
+    avatarFileInput.addEventListener('change', async () => {
+      const file = avatarFileInput.files && avatarFileInput.files[0];
+      if (file) await handleAvatarFile(file);
+    });
+
+    removeAvatarBtn.addEventListener('click', () => {
+      draftAvatarDataUrl = '';
+      currentProfile.photoDataUrl = '';
+      avatarFileInput.value = '';
+      paintAvatar(avatarLg, '', currentProfile.pseudo);
+      paintAvatar(profileAvatar, '', currentProfile.pseudo);
+      avatarStatusEl.textContent = 'Photo retirée (sera enregistrée au clic sur Enregistrer).';
+    });
+
+    editForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+      if (!currentUser) return;
+
+      const newPseudo = pseudoInput.value.trim();
+      const newJsp = jspInput.value.trim();
+      const newCity = cityInput.value.trim();
+      const newVis = visibilitySelect.value || 'public';
+      const newBio = bioInput.value.trim();
+
+      if (!newPseudo) {
+        showAlert('Le pseudo ne peut pas être vide.');
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Enregistrement...';
+      try {
+        const photoToSave = draftAvatarDataUrl || currentProfile.photoDataUrl || '';
+        await setDoc(doc(db, "users", currentUser.uid), {
+          pseudo: newPseudo,
+          jspSection: newJsp,
+          city: newCity,
+          visibility: newVis,
+          bio: newBio,
+          photoDataUrl: photoToSave
+        }, { merge: true });
+
+        try {
+          await updateProfile(currentUser, { displayName: newPseudo });
+        } catch (_) {}
+
+        avatarStatusEl.textContent = '';
+        showAlert('Profil et photo enregistrés.', true);
+      } catch (err) {
+        showAlert('Mise à jour impossible : ' + (err.code || err.message));
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Enregistrer le profil';
+      }
+    });
+
+    async function reauthCurrentUser(password) {
+      if (!currentUser || !currentUser.email) {
+        throw new Error('Session e-mail introuvable.');
+      }
+      const cred = EmailAuthProvider.credential(currentUser.email, password);
+      await reauthenticateWithCredential(currentUser, cred);
+    }
+
+    emailForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+      if (!currentUser) return;
+
+      const nextEmail = newEmailInput.value.trim();
+      const currPass = emailCurrentPassInput.value;
+
+      if (!nextEmail || !currPass) {
+        showAlert('Renseigne la nouvelle adresse e-mail et ton mot de passe actuel.');
+        return;
+      }
+
+      emailBtn.disabled = true;
+      emailBtn.textContent = 'Mise à jour...';
+      try {
+        await reauthCurrentUser(currPass);
+        await verifyBeforeUpdateEmail(currentUser, nextEmail);
+        newEmailInput.value = '';
+        emailCurrentPassInput.value = '';
+        showAlert('Un e-mail de confirmation a été envoyé à la nouvelle adresse.', true);
+      } catch (err) {
+        showAlert('Changement d’e-mail impossible : ' + (err.code || err.message));
+      } finally {
+        emailBtn.disabled = false;
+        emailBtn.textContent = 'Mettre à jour l\'e-mail';
+      }
+    });
+
+    passForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+      if (!currentUser) return;
+
+      const oldP = oldPassInput.value;
+      const newP = newPassInput.value;
+      const confP = confirmPassInput.value;
+
+      if (newP.length < 6) {
+        showAlert('Le nouveau mot de passe doit contenir au moins 6 caractères.');
+        return;
+      }
+      if (newP !== confP) {
+        showAlert('La confirmation du mot de passe ne correspond pas.');
+        return;
+      }
+
+      passBtn.disabled = true;
+      passBtn.textContent = 'Modification...';
+      try {
+        await reauthCurrentUser(oldP);
+        await updatePassword(currentUser, newP);
+        oldPassInput.value = '';
+        newPassInput.value = '';
+        confirmPassInput.value = '';
+        showAlert('Mot de passe modifié avec succès.', true);
+      } catch (err) {
+        showAlert('Changement de mot de passe impossible : ' + (err.code || err.message));
+      } finally {
+        passBtn.disabled = false;
+        passBtn.textContent = 'Changer le mot de passe';
+      }
+    });
+
+    resetMailBtn.addEventListener('click', async () => {
+      hideAlert();
+      if (!currentUser || !currentUser.email) return;
+      try {
+        await sendPasswordResetEmail(auth, currentUser.email);
+        showAlert(`Lien de réinitialisation envoyé à ${currentUser.email}.`, true);
+      } catch (err) {
+        showAlert('Envoi impossible : ' + (err.code || err.message));
+      }
+    });
+
+    function refreshKpis() {
+      kpiForumCount.textContent = String(myForumPosts.length);
+      kpiGalleryCount.textContent = String(myGalleryItems.length);
+      let likes = 0;
+      myForumPosts.forEach((p) => { likes += Number(p.likes || 0); });
+      myGalleryItems.forEach((g) => { likes += Number(g.likes || 0); });
+      kpiLikesTotal.textContent = String(likes);
+    }
+
+    function renderMyPosts() {
+      refreshKpis();
+
+      myForumListEl.innerHTML = '';
+      if (myForumPosts.length === 0) {
+        myForumListEl.innerHTML = '<div class="pr-empty">Aucun sujet publié sur le forum.</div>';
+      } else {
+        myForumPosts.forEach((post) => {
+          const row = document.createElement('div');
+          row.className = 'pr-activity-item';
+
+          const left = document.createElement('div');
+          const t = document.createElement('span');
+          t.className = 'pr-activity-title';
+          t.textContent = post.title || 'Sujet sans titre';
+          const m = document.createElement('span');
+          m.className = 'pr-activity-meta';
+          m.textContent = `${post.category || 'Général'} • ${Number(post.likes || 0)} soutien(s)`;
+          left.appendChild(t);
+          left.appendChild(m);
+
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'btn btn-secondary btn-small';
+          del.textContent = 'Supprimer';
+          del.addEventListener('click', async () => {
+            try {
+              await deleteDoc(doc(db, "forum", post.id));
+            } catch (err) {
+              showAlert('Suppression impossible : ' + (err.code || err.message));
+            }
+          });
+
+          row.appendChild(left);
+          row.appendChild(del);
+          myForumListEl.appendChild(row);
+        });
+      }
+
+      myGalleryListEl.innerHTML = '';
+      if (myGalleryItems.length === 0) {
+        myGalleryListEl.innerHTML = '<div class="pr-empty">Aucune photo publiée dans la galerie.</div>';
+      } else {
+        myGalleryItems.forEach((item) => {
+          const row = document.createElement('div');
+          row.className = 'pr-activity-item';
+
+          const left = document.createElement('div');
+          const t = document.createElement('span');
+          t.className = 'pr-activity-title';
+          t.textContent = item.title || 'Photo sans titre';
+          const m = document.createElement('span');
+          m.className = 'pr-activity-meta';
+          m.textContent = `${item.category || 'Autre'} • ${Number(item.likes || 0)} soutien(s)`;
+          left.appendChild(t);
+          left.appendChild(m);
+
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'btn btn-secondary btn-small';
+          del.textContent = 'Supprimer';
+          del.addEventListener('click', async () => {
+            try {
+              await deleteDoc(doc(db, "galerie", item.id));
+            } catch (err) {
+              showAlert('Suppression impossible : ' + (err.code || err.message));
+            }
+          });
+
+          row.appendChild(left);
+          row.appendChild(del);
+          myGalleryListEl.appendChild(row);
+        });
+      }
+    }
+
+    function stopActivityListeners() {
+      if (forumUnsubscribe) {
+        forumUnsubscribe();
+        forumUnsubscribe = null;
+      }
+      if (galleryUnsubscribe) {
+        galleryUnsubscribe();
+        galleryUnsubscribe = null;
+      }
+    }
+
+    function startActivityListeners(uid) {
+      stopActivityListeners();
+
+      forumUnsubscribe = onSnapshot(
+        query(collection(db, "forum"), where("authorUid", "==", uid)),
+        (snap) => {
+          const list = [];
+          snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+          myForumPosts = list;
+          renderMyPosts();
+        },
+        () => {}
+      );
+
+      galleryUnsubscribe = onSnapshot(
+        query(collection(db, "galerie"), where("authorUid", "==", uid)),
+        (snap) => {
+          const list = [];
+          snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+          myGalleryItems = list;
+          renderMyPosts();
+        },
+        () => {}
+      );
+    }
+
+    async function doLogout() {
+      stopActivityListeners();
+      await signOut(auth);
+      window.location.replace('login.html');
+    }
+
+    drawerLogoutBtn.addEventListener('click', doLogout);
+    topLogoutBtn.addEventListener('click', doLogout);
+    logoutBtn.addEventListener('click', doLogout);
 
     function sanitizeIpDocId(ip) {
       return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -284,21 +1126,20 @@
       return false;
     }
 
-    drawerLogoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.replace('login.html');
-    });
-
     onAuthStateChanged(auth, async (user) => {
       if (userUnsubscribe) {
         userUnsubscribe();
         userUnsubscribe = null;
       }
+      stopActivityListeners();
 
       if (await redirectIfIpBanned()) return;
 
+      currentUser = user || null;
+
       if (!user) {
-        setGreetingName('membre');
+        dashboardEl.style.display = 'none';
+        guestCard.style.display = 'block';
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
@@ -306,28 +1147,59 @@
         return;
       }
 
+      guestCard.style.display = 'none';
+      dashboardEl.style.display = 'flex';
       drawerAuthBtn.style.display = 'none';
       drawerLogoutBtn.style.display = 'inline-flex';
+
+      emailValEl.textContent = user.email || '—';
+      uidValEl.textContent = user.uid;
 
       userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
         const data = snap.exists() ? (snap.data() || {}) : {};
         if (data.banned === true) {
+          stopActivityListeners();
           window.location.replace('ban.html');
           return;
         }
 
-        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'membre');
+        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
         const role = data.role || 'membre';
+        const bio = data.bio || '';
+        const jspSection = data.jspSection || '';
+        const city = data.city || '';
+        const visibility = data.visibility || 'public';
+        const photoDataUrl = data.photoDataUrl || '';
 
-        setGreetingName(pseudo);
+        currentProfile = { pseudo, role, bio, jspSection, city, visibility, photoDataUrl };
+        if (!draftAvatarDataUrl) {
+          paintAvatar(avatarLg, photoDataUrl, pseudo);
+          paintAvatar(profileAvatar, photoDataUrl, pseudo);
+        }
+
+        roleBadge.textContent = role;
+        roleValEl.textContent = role;
+        displayNameEl.textContent = pseudo;
+        submetaLineEl.textContent = [jspSection, city, visibility === 'discret' ? 'Profil discret' : 'Profil visible'].filter(Boolean).join(' • ') || 'Membre Vos JSP';
+        displayBioEl.textContent = bio || 'Aucune bio renseignée pour le moment.';
+
+        if (document.activeElement !== pseudoInput) pseudoInput.value = pseudo;
+        if (document.activeElement !== jspInput) jspInput.value = jspSection;
+        if (document.activeElement !== cityInput) cityInput.value = city;
+        if (document.activeElement !== visibilitySelect) visibilitySelect.value = visibility;
+        if (document.activeElement !== bioInput) bioInput.value = bio;
+
         profileBox.style.display = 'flex';
-        profileAvatar.textContent = getInitials(pseudo);
         profileName.textContent = pseudo;
         profileRole.textContent = role;
         profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
         drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
+
+        if (!forumUnsubscribe || !galleryUnsubscribe) {
+          startActivityListeners(user.uid);
+        }
       });
     });
   </script>
 </body>
-</html>
+</html>s

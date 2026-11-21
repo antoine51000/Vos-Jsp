@@ -510,17 +510,34 @@
       return 'Erreur : ' + (code || (err && err.message) || 'inconnue');
     }
 
-    async function findAccountByEmail(email) {
+    async function syncPublicProfile(uid, email, rawPseudo) {
+      if (!uid || !email) return;
+      const cleanPseudo = stripAdminTag(rawPseudo) || email.split('@')[0];
       try {
-        const q = query(collection(db, "users"), where("email", "==", email), limit(1));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          const data = snap.docs[0].data() || {};
-          const rawName = data.pseudo || data.prenom || data.displayName || email.split('@')[0];
-          const cleanName = stripAdminTag(rawName) || email.split('@')[0];
-          return { found: true, cleanName };
-        }
+        await setDoc(doc(db, "public_profiles", uid), {
+          email: email.toLowerCase(),
+          pseudo: cleanPseudo
+        }, { merge: true });
       } catch (_) {}
+    }
+
+    async function findAccountByEmail(email) {
+      const cleanEmail = String(email || '').trim();
+      const lowerEmail = cleanEmail.toLowerCase();
+      const candidates = Array.from(new Set([lowerEmail, cleanEmail].filter(Boolean)));
+
+      for (const target of candidates) {
+        try {
+          const q = query(collection(db, "public_profiles"), where("email", "==", target), limit(1));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            const data = snap.docs[0].data() || {};
+            const rawName = data.pseudo || cleanEmail.split('@')[0];
+            const cleanName = stripAdminTag(rawName) || cleanEmail.split('@')[0];
+            return { found: true, cleanName };
+          }
+        } catch (_) {}
+      }
       return { found: false, cleanName: '' };
     }
 
@@ -708,15 +725,20 @@
             createdAt: serverTimestamp(),
             lastLoginAt: serverTimestamp()
           }, { merge: true });
+          await syncPublicProfile(cred.user.uid, email, finalPseudo);
         } else {
           const cred = await signInWithEmailAndPassword(auth, email, password);
           const userRef = doc(db, "users", cred.user.uid);
           const snap = await getDoc(userRef);
+          const existingData = snap.exists() ? (snap.data() || {}) : {};
 
-          if (snap.exists() && snap.data().banned === true) {
+          if (existingData.banned === true) {
             window.location.replace('ban.html');
             return;
           }
+
+          const resolvedPseudo = existingData.pseudo || cred.user.displayName || email.split('@')[0];
+          await syncPublicProfile(cred.user.uid, email, resolvedPseudo);
 
           const patch = {
             email,
@@ -724,7 +746,7 @@
           };
           if (currentIp) patch.lastIp = currentIp;
           if (!snap.exists()) {
-            patch.pseudo = cred.user.displayName || email.split('@')[0];
+            patch.pseudo = resolvedPseudo;
             patch.role = 'membre';
             patch.banned = false;
           }
@@ -759,7 +781,7 @@
         return;
       }
 
-      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
+      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), async (snap) => {
         const data = snap.exists() ? (snap.data() || {}) : {};
         if (data.banned === true) {
           window.location.replace('ban.html');
@@ -768,6 +790,9 @@
 
         const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
         const role = data.role || 'membre';
+        if (user.email) {
+          await syncPublicProfile(user.uid, user.email, pseudo);
+        }
 
         profileBox.style.display = 'flex';
         profileAvatar.textContent = getInitials(pseudo);

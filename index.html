@@ -5,6 +5,220 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vos JSP — Accueil</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .idx-page {
+      max-width: 1120px;
+      margin: 2rem auto 3.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .idx-hero {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 2.1rem 2rem;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1.35fr 0.85fr;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 820px) {
+      .idx-hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .idx-hero h1 {
+      margin: 0.65rem 0 0.5rem;
+      font-size: clamp(1.9rem, 4vw, 2.55rem);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+    }
+
+    .idx-hero p {
+      margin: 0 0 1.35rem;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.58;
+      max-width: 560px;
+    }
+
+    .idx-cta-row {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .idx-highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.35rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .idx-highlight-item {
+      padding: 0.7rem 0.85rem;
+      border-radius: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .idx-highlight-item strong {
+      display: block;
+      font-size: 0.9rem;
+    }
+
+    .idx-highlight-item span {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .idx-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.1rem;
+    }
+
+    @media (max-width: 820px) {
+      .idx-features {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .idx-feat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.4rem 1.45rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .idx-feat-card h2 {
+      margin: 0;
+      font-size: 1.12rem;
+    }
+
+    .idx-feat-card p {
+      margin: 0 0 0.5rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .idx-recruit-banner {
+      background: linear-gradient(135deg, rgba(225, 29, 42, 0.08) 0%, var(--surface) 60%);
+      border: 1px solid rgba(225, 29, 42, 0.28);
+      border-radius: 26px;
+      padding: 1.85rem 1.9rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .idx-recruit-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .idx-recruit-top h2 {
+      margin: 0.5rem 0 0.3rem;
+      font-size: 1.55rem;
+      letter-spacing: -0.02em;
+    }
+
+    .idx-recruit-top p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      max-width: 620px;
+      line-height: 1.52;
+    }
+
+    .idx-roles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+    }
+
+    @media (max-width: 820px) {
+      .idx-roles-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .idx-role-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.05rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .idx-role-tag {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: rgba(225, 29, 42, 0.1);
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+    }
+
+    .idx-role-card strong {
+      font-size: 0.98rem;
+      margin-top: 0.15rem;
+    }
+
+    .idx-role-card span {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.42;
+    }
+
+    .idx-discord-strip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.35rem 1.55rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .idx-discord-strip h3 {
+      margin: 0 0 0.2rem;
+      font-size: 1.1rem;
+    }
+
+    .idx-discord-strip p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+  </style>
 </head>
 <body>
   <div class="topbar">
@@ -19,6 +233,7 @@
         <div>VOS <span>JSP</span></div>
       </a>
     </div>
+    <a href="login.html" id="top-auth-btn" class="btn btn-small">Connexion</a>
   </div>
 
   <div class="nav-backdrop" id="nav-backdrop"></div>
@@ -40,6 +255,7 @@
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
       <a href="forum.html">Forum</a>
+      <a href="profil.html">Profil</a>
       <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -56,68 +272,97 @@
   </aside>
 
   <main>
-    <section class="hero">
-      <span class="badge">Vos JSP • Communauté</span>
-      <h1>L'actualité, le matériel et la cohésion des JSP.</h1>
-      <p class="subtitle">Un espace clair et moderne dédié aux Jeunes Sapeurs-Pompiers : retours de manœuvres, repères de formation, infos vérifiées et propositions de la communauté.</p>
-      <div class="actions">
-        <a href="actus.html" class="btn">Voir les actualités</a>
-        <a href="galerie.html" class="btn btn-secondary">Galerie</a>
-        <a href="proposer.html" class="btn btn-secondary">Proposer une actu</a>
-      </div>
-    </section>
+    <div class="idx-page">
+      <!-- HERO -->
+      <section class="idx-hero">
+        <div>
+          <span class="badge">Communauté Indépendante • Jeunes Sapeurs-Pompiers</span>
+          <h1>Le rendez-vous des passionnés de l'univers JSP</h1>
+          <p>Suis les actualités, partage tes photos de manœuvres et d'engins, échange sur le forum et rejoins l'équipe derrière le projet.</p>
+          <div class="idx-cta-row">
+            <a href="login.html" class="btn">Créer un compte / Connexion</a>
+            <a href="#recrutement-bloc" class="btn btn-secondary">Voir le recrutement</a>
+          </div>
+        </div>
 
-    <div id="latest-actus-section" style="display: none; margin-bottom: 2.5rem;">
-      <h2>Publications de la communauté</h2>
-      <div id="latest-actus" class="grid"></div>
-    </div>
+        <div class="idx-highlight-box">
+          <div class="idx-highlight-item">
+            <strong>Galerie &amp; Album</strong>
+            <span>Publie tes photos en 2 étapes, filtre par catégorie et soutiens la communauté.</span>
+          </div>
+          <div class="idx-highlight-item">
+            <strong>Forum d'entraide</strong>
+            <span>Pose tes questions, partage ton expérience et discute entre passionnés.</span>
+          </div>
+          <div class="idx-highlight-item">
+            <strong>Discord à venir</strong>
+            <span>Un serveur Discord sera bientôt mis en place pour suivre toutes les annonces.</span>
+          </div>
+        </div>
+      </section>
 
-    <h2>À la une : JSP, secourisme &amp; sécurité civile</h2>
-    <div class="grid" style="margin-bottom: 2.5rem;">
-      <article class="card">
-        <span class="card-meta">Secourisme • 2026</span>
-        <h3>Programme de formation continue 2027 (PSE &amp; PSC)</h3>
-        <p>Une circulaire du 4 juin 2026 encadre le programme de formation continue pour les unités d'enseignement aux premiers secours des filières de sécurité civile, avec des fiches techniques mises à jour (obstruction des voies aériennes, arrêt cardiaque, hémorragies).</p>
-        <p style="font-size: 0.8rem;">Source : <a href="https://www.secourisme.net/spip.php?article923&lang=fr" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Secourisme.net (Circulaire du 4 juin 2026)</a></p>
-      </article>
+      <!-- ACCÈS RAPIDE -->
+      <section class="idx-features">
+        <article class="idx-feat-card">
+          <h2>Actualités</h2>
+          <p>Retrouve les dernières infos, annonces de la plateforme et moments forts de la communauté.</p>
+          <a href="actus.html" class="btn btn-secondary btn-small" style="align-self: flex-start;">Voir les actus</a>
+        </article>
 
-      <article class="card">
-        <span class="card-meta">Volontariat • 2026</span>
-        <h3>Plan d'actions 2026-2028 pour les sapeurs-pompiers volontaires</h3>
-        <p>Lancée en avril 2026 par la Sécurité civile, cette feuille de route vise à faciliter l'engagement, associer davantage les employeurs et sensibiliser le public, notamment les jeunes, au volontariat.</p>
-        <p style="font-size: 0.8rem;">Source : <a href="https://www.securite-civile.interieur.gouv.fr/actualites/actualites/lancement-du-plan-dactions-2026-2028-pour-sapeurs-pompiers-volontaires" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Sécurité Civile — Ministère de l'Intérieur</a></p>
-      </article>
+        <article class="idx-feat-card">
+          <h2>Galerie Photos</h2>
+          <p>Explore les manœuvres, matériels, engins et moments de cohésion partagés par les membres.</p>
+          <a href="galerie.html" class="btn btn-secondary btn-small" style="align-self: flex-start;">Ouvrir la galerie</a>
+        </article>
 
-      <article class="card">
-        <span class="card-meta">Événement • 2026</span>
-        <h3>Mondial Secours et Protection 2026 à La Roche-sur-Foron</h3>
-        <p>Le rendez-vous national et international des acteurs du secours et de la sécurité civile a réuni conférences, tables rondes sur l'avenir des missions, innovations techniques et animations grand public.</p>
-        <p style="font-size: 0.8rem;">Source : <a href="https://www.pompiers.fr/mondial-secours-protection-2026-programme/" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Pompiers.fr (FNSPF)</a></p>
-      </article>
-    </div>
+        <article class="idx-feat-card">
+          <h2>Forum &amp; Propositions</h2>
+          <p>Démarre une discussion sur le forum ou soumets une idée de contenu via la page proposer.</p>
+          <a href="forum.html" class="btn btn-secondary btn-small" style="align-self: flex-start;">Accéder au forum</a>
+        </article>
+      </section>
 
-    <h2>Repères utiles : le cursus JSP</h2>
-    <div class="grid">
-      <article class="card">
-        <span class="card-meta">Cursus • 4 cycles</span>
-        <h3>De JSP 1 à JSP 4</h3>
-        <p>La formation s'articule sur quatre cycles annuels autour du prompt secours, de la lutte contre les incendies, de la protection des biens et de l'environnement, de l'engagement citoyen et du sport.</p>
-        <p style="font-size: 0.8rem;">Source : <a href="https://www.pompiers.fr/jeune-sapeur-pompier/" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Pompiers.fr — Jeune sapeur-pompier</a></p>
-      </article>
+      <!-- BLOC RECRUTEMENT -->
+      <section class="idx-recruit-banner" id="recrutement-bloc">
+        <div class="idx-recruit-top">
+          <div>
+            <span class="badge">Recrutement Ouvert • Équipe Vos JSP</span>
+            <h2>Envie de faire grandir Vos JSP avec nous ?</h2>
+            <p>On recherche des profils motivés, sérieux et passionnés pour animer la communauté, modérer les échanges et faire tourner le futur serveur Discord.</p>
+          </div>
+          <a href="recrutement.html" class="btn">Postuler maintenant →</a>
+        </div>
 
-      <article class="card">
-        <span class="card-meta">Examen • BNJSP</span>
-        <h3>Le Brevet National de Jeune Sapeur-Pompier</h3>
-        <p>En fin de parcours (à partir de 16 ans selon les conditions prévues), le BNJSP évalue les connaissances théoriques, les épreuves pratiques (ARI, lances, échelles, sauvetage) et les épreuves sportives.</p>
-        <p style="font-size: 0.8rem;">Source : <a href="https://www.pompiers.fr/jeune-sapeur-pompier/" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Pompiers.fr — Brevet national</a></p>
-      </article>
+        <div class="idx-roles-grid">
+          <div class="idx-role-card">
+            <span class="idx-role-tag">Modération</span>
+            <strong>Modérateur / Modératrice</strong>
+            <span>Veiller au respect des règles sur le forum, la galerie et le futur Discord.</span>
+          </div>
+          <div class="idx-role-card">
+            <span class="idx-role-tag">Contenu &amp; Actus</span>
+            <strong>Rédacteur / Rédactrice</strong>
+            <span>Rédiger des articles, résumés d'actu et mettre en avant les temps forts JSP.</span>
+          </div>
+          <div class="idx-role-card">
+            <span class="idx-role-tag">Communauté</span>
+            <strong>Animateur / Staff Discord</strong>
+            <span>Préparer l'ouverture du serveur Discord, animer les salons et accueillir les membres.</span>
+          </div>
+        </div>
+      </section>
 
-      <article class="card">
-        <span class="card-meta">Vie de section</span>
-        <h3>Manœuvres, sport &amp; cérémonies</h3>
-        <p>Tout au long de l'année, les sections rythment leur formation par les manœuvres, le cross, les épreuves sportives, les cérémonies commémoratives et la Sainte-Barbe.</p>
-        <p style="font-size: 0.8rem;">Source : <a href="https://ebrigade.app/articles/formation-jsp-jeune-sapeur-pompier/" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">eBrigade — Formation JSP</a></p>
-      </article>
+      <!-- ANNONCE INSCRIPTION & FUTUR DISCORD -->
+      <section class="idx-discord-strip">
+        <div>
+          <h3>Serveur Discord bientôt disponible</h3>
+          <p>Inscris-toi sur le site dès maintenant pour ne louper aucune mise à jour, annonce ou ouverture officielle.</p>
+        </div>
+        <div class="idx-cta-row">
+          <a href="login.html" class="btn btn-small">S'inscrire sur le site</a>
+          <a href="a-propos.html" class="btn btn-secondary btn-small">À propos</a>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -151,89 +396,120 @@
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import { collection, query, orderBy, limit, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      doc,
+      getDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
+    const topAuthBtn = document.getElementById('top-auth-btn');
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
     const profileName = document.getElementById('drawer-profile-name');
     const profileRole = document.getElementById('drawer-profile-role');
-    const authBtn = document.getElementById('drawer-auth-btn');
-    const logoutBtn = document.getElementById('drawer-logout-btn');
-    const adminLink = document.getElementById('drawer-admin-link');
-    const latestSection = document.getElementById('latest-actus-section');
-    const container = document.getElementById('latest-actus');
+    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
+    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
+    const drawerAdminLink = document.getElementById('drawer-admin-link');
+
+    let userUnsubscribe = null;
 
     function getInitials(label) {
-      const clean = (label || 'JS').trim();
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-        let role = 'membre';
+    function paintAvatar(container, imgSrc, pseudo) {
+      container.innerHTML = '';
+      if (imgSrc) {
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.alt = pseudo || 'Avatar';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = 'inherit';
+        img.style.display = 'block';
+        container.appendChild(img);
+      } else {
+        container.textContent = getInitials(pseudo);
+      }
+    }
 
-        profileName.textContent = pseudo;
-        profileAvatar.textContent = getInitials(pseudo);
-        profileRole.textContent = role;
-        profileRole.className = 'profile-tag';
+    function sanitizeIpDocId(ip) {
+      return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    }
+
+    async function redirectIfIpBanned() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
+        if (!res.ok) return false;
+        const data = await res.json();
+        const ip = data && data.ip ? String(data.ip).trim() : '';
+        if (!ip) return false;
+        const snap = await getDoc(doc(db, "banned_ips", sanitizeIpDocId(ip)));
+        if (snap.exists()) {
+          window.location.replace('ban.html');
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
+
+    drawerLogoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('login.html');
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (userUnsubscribe) {
+        userUnsubscribe();
+        userUnsubscribe = null;
+      }
+
+      if (await redirectIfIpBanned()) return;
+
+      if (!user) {
+        topAuthBtn.textContent = 'Connexion';
+        topAuthBtn.href = 'login.html';
+        profileBox.style.display = 'none';
+        drawerLogoutBtn.style.display = 'none';
+        drawerAdminLink.style.display = 'none';
+        drawerAuthBtn.style.display = 'inline-flex';
+        return;
+      }
+
+      topAuthBtn.textContent = 'Mon profil';
+      topAuthBtn.href = 'profil.html';
+      drawerAuthBtn.style.display = 'none';
+      drawerLogoutBtn.style.display = 'inline-flex';
+
+      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
+        const data = snap.exists() ? (snap.data() || {}) : {};
+        if (data.banned === true) {
+          window.location.replace('ban.html');
+          return;
+        }
+
+        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+        const role = data.role || 'membre';
+        const photoDataUrl = data.photoDataUrl || '';
 
         profileBox.style.display = 'flex';
-        authBtn.style.display = 'none';
-        logoutBtn.style.display = 'inline-flex';
-
-        try {
-          const snap = await getDoc(doc(db, "users", user.uid));
-          if (snap.exists()) {
-            const data = snap.data();
-            if (data.pseudo) {
-              pseudo = data.pseudo;
-              profileName.textContent = pseudo;
-              profileAvatar.textContent = getInitials(pseudo);
-            }
-            if (data.role) {
-              role = data.role;
-              profileRole.textContent = role;
-              const isAdmin = role === 'admin' || role === 'superadmin';
-              profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-              adminLink.style.display = isAdmin ? 'flex' : 'none';
-            }
-          }
-        } catch (e) {}
-      } else {
-        profileBox.style.display = 'none';
-        logoutBtn.style.display = 'none';
-        adminLink.style.display = 'none';
-        authBtn.style.display = 'inline-flex';
-        authBtn.textContent = 'Connexion';
-        authBtn.href = 'login.html';
-      }
+        paintAvatar(profileAvatar, photoDataUrl, pseudo);
+        profileName.textContent = pseudo;
+        profileRole.textContent = role;
+        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
+        drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
+      });
     });
-
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.replace('index.html');
-    });
-
-    async function loadLatest() {
-      try {
-        const q = query(collection(db, "actus"), orderBy("createdAt", "desc"), limit(3));
-        const snap = await getDocs(q);
-        if (snap.empty) return;
-        container.innerHTML = '';
-        snap.forEach(d => {
-          const item = d.data();
-          container.innerHTML += '<article class="card"><span class="card-meta">' + (item.category || 'Info JSP') + '</span><h3>' + item.title + '</h3><p>' + item.content + '</p></article>';
-        });
-        latestSection.style.display = 'block';
-      } catch (e) {}
-    }
-    loadLatest();
   </script>
 </body>
 </html>

@@ -46,6 +46,7 @@
       display: flex;
       gap: 0.65rem;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .gal-stat-box {
@@ -119,7 +120,6 @@
       font-size: 0.84rem;
     }
 
-    /* ASSISTANT D'AJOUT EN 2 ÉTAPES (ESPRIT LOGIN) */
     .gal-wizard-wrap {
       max-width: 600px;
       width: 100%;
@@ -525,12 +525,12 @@
             <small>Soutiens cumulés</small>
             <strong id="gal-total-likes">0</strong>
           </div>
+          <button type="button" id="gal-purge-all-btn" class="btn btn-secondary btn-small" style="display: none;">Tout supprimer</button>
         </div>
       </header>
 
       <div id="gal-alert" class="alert"></div>
 
-      <!-- AJOUT GUIDÉ EN 2 ÉTAPES (ESPRIT LOGIN) -->
       <div class="gal-wizard-wrap" id="gal-composer-box">
         <div class="gal-wizard-card">
           <div class="gal-step-top">
@@ -546,7 +546,6 @@
             <p id="gal-step-sub" style="color: var(--muted); font-size: 0.86rem; margin: 0 0 1rem;">Étape 1/2 — Importe un fichier ou colle un lien image, puis continue.</p>
           </div>
 
-          <!-- ÉTAPE 1 : IMAGE -->
           <form id="gal-step-1-form" class="gal-stage">
             <div class="gal-source-switch" role="tablist">
               <button type="button" class="gal-source-btn active" id="src-file-btn">Fichier image</button>
@@ -570,7 +569,6 @@
             <button type="submit" id="gal-next-btn" class="btn" style="width: 100%;">Continuer →</button>
           </form>
 
-          <!-- ÉTAPE 2 : TITRE, CATÉGORIE & LÉGENDE -->
           <form id="gal-step-2-form" class="gal-stage" style="display: none;">
             <div class="gal-picked-pill">
               <div class="gal-picked-left">
@@ -606,7 +604,6 @@
         </div>
       </div>
 
-      <!-- FILTRES & RECHERCHE -->
       <div class="gal-controls-bar">
         <div class="gal-filters" role="group" aria-label="Filtrer la galerie">
           <button type="button" class="gal-filter-btn active" data-cat="all">Tout</button>
@@ -696,6 +693,7 @@
 
     const totalPhotosEl = document.getElementById('gal-total-photos');
     const totalLikesEl = document.getElementById('gal-total-likes');
+    const purgeAllBtn = document.getElementById('gal-purge-all-btn');
     const filterButtons = Array.from(document.querySelectorAll('.gal-filter-btn'));
     const searchInput = document.getElementById('gal-search');
 
@@ -717,7 +715,6 @@
     const urlInput = document.getElementById('gal-url');
     const step1PreviewBox = document.getElementById('gal-step1-preview-box');
     const step1PreviewImg = document.getElementById('gal-step1-preview-img');
-    const nextBtn = document.getElementById('gal-next-btn');
 
     const step2Form = document.getElementById('gal-step-2-form');
     const pickedThumb = document.getElementById('gal-picked-thumb');
@@ -755,14 +752,10 @@
       alertEl.textContent = '';
     }
 
-    function cleanDisplayName(raw) {
-      return String(raw || 'Membre')
-        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
-        .trim() || 'Membre';
-    }
-
     function getInitials(label) {
-      const clean = cleanDisplayName(label);
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
@@ -919,12 +912,38 @@
       goToStep(1, 'backward');
     });
 
+    purgeAllBtn.addEventListener('click', async () => {
+      hideAlert();
+      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
+      if (!currentUser || !isUserAdmin) {
+        showAlert('Action réservée aux administrateurs.');
+        return;
+      }
+      if (allItems.length === 0) {
+        showAlert('La galerie est déjà vide.', true);
+        return;
+      }
+      purgeAllBtn.disabled = true;
+      purgeAllBtn.textContent = 'Suppression...';
+      try {
+        for (const item of allItems) {
+          await deleteDoc(doc(db, "galerie", item.id));
+        }
+        showAlert('Toutes les photos ont été supprimées.', true);
+      } catch (err) {
+        showAlert('Suppression complète impossible : ' + (err.code || err.message));
+      } finally {
+        purgeAllBtn.disabled = false;
+        purgeAllBtn.textContent = 'Tout supprimer';
+      }
+    });
+
     function openLightbox(item) {
       const src = item.imageDataUrl || item.imageUrl || '';
       if (!src) return;
       lbImg.src = src;
       lbTitle.textContent = item.title || 'Photo Vos JSP';
-      lbMeta.textContent = `Par ${cleanDisplayName(item.authorPseudo || 'Membre')} • ${item.category || 'Autre'}`;
+      lbMeta.textContent = `Par ${item.authorPseudo || 'Membre'} • ${item.category || 'Autre'}`;
       lightbox.classList.add('open');
       lightbox.setAttribute('aria-hidden', 'false');
     }
@@ -961,6 +980,9 @@
       totalPhotosEl.textContent = String(allItems.length);
       totalLikesEl.textContent = String(totalLikes);
 
+      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
+      purgeAllBtn.style.display = (currentUser && isUserAdmin && allItems.length > 0) ? 'inline-flex' : 'none';
+
       const filtered = allItems.filter((it) => {
         const matchCat = activeCat === 'all' || String(it.category || 'Autre') === activeCat;
         if (!matchCat) return false;
@@ -970,11 +992,10 @@
       });
 
       if (filtered.length === 0) {
-        gridEl.innerHTML = '<div class="gal-empty">Aucune photo trouvée.</div>';
+        gridEl.innerHTML = '<div class="gal-empty">Aucune photo dans la galerie pour le moment.</div>';
         return;
       }
 
-      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
       gridEl.innerHTML = '';
 
       filtered.forEach((item) => {
@@ -1017,7 +1038,7 @@
 
         const authorRow = document.createElement('div');
         authorRow.className = 'gal-card-author';
-        authorRow.textContent = `Par ${cleanDisplayName(item.authorPseudo || 'Membre')}`;
+        authorRow.textContent = `Par ${item.authorPseudo || 'Membre'}`;
         body.appendChild(authorRow);
 
         const actions = document.createElement('div');
@@ -1188,6 +1209,7 @@
 
       if (!user) {
         composerBox.style.display = 'none';
+        purgeAllBtn.style.display = 'none';
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
@@ -1214,7 +1236,7 @@
 
         profileBox.style.display = 'flex';
         profileAvatar.textContent = getInitials(pseudo);
-        profileName.textContent = cleanDisplayName(pseudo);
+        profileName.textContent = pseudo;
         profileRole.textContent = role;
         profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
         drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';

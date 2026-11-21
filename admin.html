@@ -64,7 +64,8 @@
       margin-bottom: 1.35rem;
     }
 
-    .actu-row {
+    .actu-row,
+    .user-row {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
@@ -75,7 +76,8 @@
       margin-bottom: 0.65rem;
     }
 
-    .actu-row-top {
+    .actu-row-top,
+    .user-row-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -249,10 +251,10 @@
           </div>
         </details>
 
-        <details class="panel-box">
+        <details class="panel-box" open>
           <summary>Gestion des comptes, rôles &amp; bannissements</summary>
           <div class="panel-content">
-            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong>. Promouvoir un membre le renomme automatiquement avec <strong>[ ADMIN ] Prénom</strong>. Les comptes bannis sont bloqués dès leur connexion.</p>
+            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong>. Promouvoir un membre le renomme automatiquement avec <strong>[ ADMIN ] Prénom</strong>. Tu peux aussi retirer un compte de la base Firestore (après suppression dans Firebase Auth).</p>
             <div id="users-list">
               <p>Chargement des utilisateurs...</p>
             </div>
@@ -804,9 +806,13 @@
           const targetIsPrivileged = role === 'admin' || role === 'superadmin';
           const canManageRole = !isSelf && (currentRole === 'superadmin' || !targetIsPrivileged);
           const canBan = !isSelf && (currentRole === 'superadmin' || !targetIsPrivileged);
+          const canDeleteFromDb = !isSelf && (currentRole === 'superadmin' || role !== 'superadmin');
 
           const row = document.createElement('div');
-          row.className = 'list-item';
+          row.className = 'user-row';
+
+          const top = document.createElement('div');
+          top.className = 'user-row-top';
 
           const info = document.createElement('div');
           const nameLine = document.createElement('strong');
@@ -890,8 +896,98 @@
             actions.appendChild(banBtn);
           }
 
-          row.appendChild(info);
-          row.appendChild(actions);
+          if (canDeleteFromDb) {
+            const delDbBtn = document.createElement('button');
+            delDbBtn.type = 'button';
+            delDbBtn.className = 'btn btn-secondary btn-small';
+            delDbBtn.textContent = 'Supprimer de la base';
+
+            const confirmBox = document.createElement('div');
+            confirmBox.className = 'confirm-delete-box';
+            confirmBox.style.display = 'none';
+
+            const promptLbl = document.createElement('label');
+            promptLbl.textContent = 'Entre ton mot de passe de compte pour supprimer ce profil de Firestore :';
+            promptLbl.style.marginBottom = '0';
+
+            const pwdInput = document.createElement('input');
+            pwdInput.type = 'password';
+            pwdInput.placeholder = 'Mot de passe de ton compte';
+            pwdInput.autocomplete = 'current-password';
+
+            const actionsRow = document.createElement('div');
+            actionsRow.className = 'confirm-delete-actions';
+
+            const confirmBtn = document.createElement('button');
+            confirmBtn.type = 'button';
+            confirmBtn.className = 'btn btn-small';
+            confirmBtn.textContent = 'Confirmer la suppression';
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'btn btn-secondary btn-small';
+            cancelBtn.textContent = 'Annuler';
+
+            delDbBtn.addEventListener('click', () => {
+              const isOpen = confirmBox.style.display !== 'none';
+              confirmBox.style.display = isOpen ? 'none' : 'flex';
+              if (!isOpen) pwdInput.focus();
+            });
+
+            cancelBtn.addEventListener('click', () => {
+              pwdInput.value = '';
+              confirmBox.style.display = 'none';
+            });
+
+            confirmBtn.addEventListener('click', async () => {
+              const pwd = pwdInput.value;
+              if (!pwd) {
+                showAlert('Entre ton mot de passe pour confirmer la suppression du compte.');
+                pwdInput.focus();
+                return;
+              }
+
+              confirmBtn.disabled = true;
+              cancelBtn.disabled = true;
+              confirmBtn.textContent = 'Vérification...';
+
+              try {
+                await verifyCurrentUserPassword(pwd);
+                await deleteDoc(doc(db, "users", uid));
+                try {
+                  await deleteDoc(doc(db, "public_admins", uid));
+                } catch (_) {}
+                showAlert('Profil ' + display + ' supprimé de la base Firestore.', true);
+                await loadUsers();
+              } catch (err) {
+                confirmBtn.disabled = false;
+                cancelBtn.disabled = false;
+                confirmBtn.textContent = 'Confirmer la suppression';
+                if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                  showAlert('Mot de passe incorrect : suppression annulée.');
+                } else {
+                  showAlert('Suppression impossible : ' + (err.code || err.message));
+                }
+              }
+            });
+
+            actionsRow.appendChild(confirmBtn);
+            actionsRow.appendChild(cancelBtn);
+            confirmBox.appendChild(promptLbl);
+            confirmBox.appendChild(pwdInput);
+            confirmBox.appendChild(actionsRow);
+
+            actions.appendChild(delDbBtn);
+            top.appendChild(info);
+            top.appendChild(actions);
+            row.appendChild(top);
+            row.appendChild(confirmBox);
+          } else {
+            top.appendChild(info);
+            top.appendChild(actions);
+            row.appendChild(top);
+          }
+
           usersListEl.appendChild(row);
         });
       } catch (err) {

@@ -56,6 +56,49 @@
       flex-direction: column;
       gap: 0.9rem;
     }
+
+    .quick-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .actu-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 0.65rem;
+    }
+
+    .actu-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .confirm-delete-box {
+      padding: 0.85rem;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid rgba(225, 29, 42, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .confirm-delete-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
@@ -93,7 +136,7 @@
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
       <a href="contester.html">Contester</a>
-       <a href="forum.html">Forum</a>
+      <a href="forum.html">Forum</a>
       <a href="admin.html" id="drawer-admin-link" class="active" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -121,11 +164,18 @@
     </div>
 
     <div id="admin-panel" style="display: none;">
-      <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
+      <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.25rem;">
         <span class="badge">Administration • Accès restreint</span>
         <h1>Poste de commandement Vos JSP</h1>
-        <p class="subtitle" style="margin-bottom: 0;">Clique sur une section pour la déployer ou la replier : contestations de ban, propositions, publication, actualités, messages de contact et membres.</p>
+        <p class="subtitle" style="margin-bottom: 0;">Déploie une section pour gérer les contestations, propositions, actualités, messages et membres.</p>
       </section>
+
+      <div class="quick-bar">
+        <a href="actus.html" class="btn btn-secondary btn-small">Fil actualités</a>
+        <a href="galerie.html" class="btn btn-secondary btn-small">Galerie</a>
+        <a href="forum.html" class="btn btn-secondary btn-small">Forum</a>
+        <a href="a-propos.html" class="btn btn-secondary btn-small">Page À propos</a>
+      </div>
 
       <div id="admin-alert" class="alert"></div>
 
@@ -162,7 +212,7 @@
               <div class="form-group">
                 <label for="actu-category">Catégorie</label>
                 <select id="actu-category" required>
-                  <option value="Blocus & Violences">Blocus &amp; Violences</option>
+                  <option value="Blocus &amp; Violences">Blocus &amp; Violences</option>
                   <option value="Sécurité Civile">Sécurité Civile</option>
                   <option value="Cursus JSP">Cursus JSP</option>
                   <option value="Secourisme">Secourisme</option>
@@ -189,10 +239,13 @@
           </div>
         </details>
 
-        <details class="panel-box">
+        <details class="panel-box" open>
           <summary>Actualités publiées (Firestore)</summary>
-          <div class="panel-content" id="published-actus-list">
-            <p>Chargement des actualités...</p>
+          <div class="panel-content">
+            <p style="font-size: 0.85rem; color: var(--muted);">La suppression d'une actualité nécessite de cliquer sur <strong>Confirmer la suppression</strong> et d'entrer ton mot de passe de compte.</p>
+            <div id="published-actus-list">
+              <p>Chargement des actualités...</p>
+            </div>
           </div>
         </details>
 
@@ -239,7 +292,12 @@
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      onAuthStateChanged,
+      signOut,
+      EmailAuthProvider,
+      reauthenticateWithCredential
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
       collection,
       query,
@@ -280,6 +338,7 @@
     let currentUser = null;
     let currentRole = 'membre';
     let currentPseudo = 'Membre';
+    let panelLoaded = false;
 
     function getInitials(label) {
       const clean = (label || 'JS').trim();
@@ -310,6 +369,14 @@
       if (!clean) return fallback ? [fallback] : [];
       const parts = clean.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
       return parts.length > 0 ? parts : [clean];
+    }
+
+    async function verifyCurrentUserPassword(password) {
+      if (!currentUser || !currentUser.email) {
+        throw new Error('Aucun compte connecté avec e-mail.');
+      }
+      const cred = EmailAuthProvider.credential(currentUser.email, password);
+      await reauthenticateWithCredential(currentUser, cred);
     }
 
     async function loadAppeals() {
@@ -347,7 +414,7 @@
           titleEl.textContent = (item.pseudo || 'Membre') + ' (' + (item.email || 'sans e-mail') + ')';
           const reasonEl = document.createElement('p');
           reasonEl.style.cssText = 'font-size: 0.9rem; color: var(--text); margin-top: 0.35rem; white-space: pre-line;';
-          reasonEl.textContent = item.reason || '';
+          reasonEl.textContent = item.reason || item.message || '';
 
           info.appendChild(titleEl);
           info.appendChild(reasonEl);
@@ -603,7 +670,10 @@
         snap.forEach(d => {
           const item = d.data();
           const row = document.createElement('div');
-          row.className = 'list-item';
+          row.className = 'actu-row';
+
+          const top = document.createElement('div');
+          top.className = 'actu-row-top';
 
           const left = document.createElement('div');
           const strong = document.createElement('strong');
@@ -618,20 +688,83 @@
           delBtn.type = 'button';
           delBtn.className = 'btn btn-secondary btn-small';
           delBtn.textContent = 'Supprimer';
-          delBtn.addEventListener('click', async () => {
-            delBtn.disabled = true;
+
+          const confirmBox = document.createElement('div');
+          confirmBox.className = 'confirm-delete-box';
+          confirmBox.style.display = 'none';
+
+          const promptLbl = document.createElement('label');
+          promptLbl.textContent = 'Entre ton mot de passe de compte pour valider la suppression de cette actualité :';
+          promptLbl.style.marginBottom = '0';
+
+          const pwdInput = document.createElement('input');
+          pwdInput.type = 'password';
+          pwdInput.placeholder = 'Mot de passe de ton compte';
+          pwdInput.autocomplete = 'current-password';
+
+          const actionsRow = document.createElement('div');
+          actionsRow.className = 'confirm-delete-actions';
+
+          const confirmBtn = document.createElement('button');
+          confirmBtn.type = 'button';
+          confirmBtn.className = 'btn btn-small';
+          confirmBtn.textContent = 'Confirmer la suppression';
+
+          const cancelBtn = document.createElement('button');
+          cancelBtn.type = 'button';
+          cancelBtn.className = 'btn btn-secondary btn-small';
+          cancelBtn.textContent = 'Annuler';
+
+          delBtn.addEventListener('click', () => {
+            const isOpen = confirmBox.style.display !== 'none';
+            confirmBox.style.display = isOpen ? 'none' : 'flex';
+            if (!isOpen) pwdInput.focus();
+          });
+
+          cancelBtn.addEventListener('click', () => {
+            pwdInput.value = '';
+            confirmBox.style.display = 'none';
+          });
+
+          confirmBtn.addEventListener('click', async () => {
+            const pwd = pwdInput.value;
+            if (!pwd) {
+              showAlert('Entre ton mot de passe pour confirmer la suppression.');
+              pwdInput.focus();
+              return;
+            }
+
+            confirmBtn.disabled = true;
+            cancelBtn.disabled = true;
+            confirmBtn.textContent = 'Vérification...';
+
             try {
+              await verifyCurrentUserPassword(pwd);
               await deleteDoc(doc(db, "actus", d.id));
-              showAlert('Actualité supprimée.', true);
+              showAlert('Actualité supprimée définitivement.', true);
               await loadPublishedActus();
             } catch (err) {
-              delBtn.disabled = false;
-              showAlert('Suppression impossible : ' + (err.code || err.message));
+              confirmBtn.disabled = false;
+              cancelBtn.disabled = false;
+              confirmBtn.textContent = 'Confirmer la suppression';
+              if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                showAlert('Mot de passe incorrect : suppression annulée.');
+              } else {
+                showAlert('Suppression impossible : ' + (err.code || err.message));
+              }
             }
           });
 
-          row.appendChild(left);
-          row.appendChild(delBtn);
+          actionsRow.appendChild(confirmBtn);
+          actionsRow.appendChild(cancelBtn);
+          confirmBox.appendChild(promptLbl);
+          confirmBox.appendChild(pwdInput);
+          confirmBox.appendChild(actionsRow);
+
+          top.appendChild(left);
+          top.appendChild(delBtn);
+          row.appendChild(top);
+          row.appendChild(confirmBox);
           pubListEl.appendChild(row);
         });
       } catch (err) {
@@ -776,6 +909,11 @@
       }
     });
 
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('login.html');
+    });
+
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       if (!user) {
@@ -808,53 +946,54 @@
           if (Object.keys(patch).length > 0) {
             await setDoc(userRef, patch, { merge: true });
           }
-        } else {
-          await setDoc(userRef, {
-            email: user.email || '',
-            pseudo,
-            role: 'membre',
-            banned: false
-          }, { merge: true });
         }
       } catch (err) {
-        denyAccess('Erreur de vérification', 'Impossible de vérifier ton profil dans Firestore.');
-        return;
+        console.error(err);
       }
 
-      currentPseudo = pseudo;
       currentRole = role;
-
-      profileName.textContent = pseudo;
-      profileAvatar.textContent = getInitials(pseudo);
-      profileRole.textContent = banned ? 'banni' : role;
-      const isAdmin = !banned && (role === 'admin' || role === 'superadmin');
-      profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-      adminLink.style.display = isAdmin ? 'flex' : 'none';
+      currentPseudo = pseudo;
 
       profileBox.style.display = 'flex';
+      profileAvatar.textContent = getInitials(pseudo);
+      profileName.textContent = pseudo;
+      profileRole.textContent = role;
+      profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
+
       authBtn.style.display = 'none';
       logoutBtn.style.display = 'inline-flex';
 
       if (banned) {
-        await signOut(auth);
-        denyAccess('Compte suspendu', 'Ce compte a été banni de la plateforme.');
+        adminLink.style.display = 'none';
+        denyAccess('Compte suspendu', 'Ton compte a été banni. Tu peux contacter l\'administration ou contester depuis la page dédiée.');
         return;
       }
 
-      if (!isAdmin) {
-        denyAccess('Accès réservé', 'Ton compte (' + role + ') n\'a pas les droits d\'administration.');
+      if (role !== 'admin' && role !== 'superadmin') {
+        adminLink.style.display = 'none';
+        denyAccess('Accès réservé aux administrateurs', 'Ton compte (' + pseudo + ') a le rôle "' + role + '". Seuls les admins et superadmins peuvent ouvrir ce panel.');
         return;
       }
 
-      document.getElementById('actu-author').value = pseudo;
+      adminLink.style.display = 'block';
       gateEl.style.display = 'none';
       panelEl.style.display = 'block';
-      await Promise.all([loadAppeals(), loadPropositions(), loadContacts(), loadPublishedActus(), loadUsers()]);
-    });
 
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.replace('index.html');
+      const authorField = document.getElementById('actu-author');
+      if (authorField && !authorField.value) {
+        authorField.value = pseudo;
+      }
+
+      if (!panelLoaded) {
+        panelLoaded = true;
+        await Promise.all([
+          loadAppeals(),
+          loadPropositions(),
+          loadContacts(),
+          loadPublishedActus(),
+          loadUsers()
+        ]);
+      }
     });
   </script>
 </body>

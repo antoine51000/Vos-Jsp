@@ -339,7 +339,7 @@
         <details class="panel-box" open>
           <summary>Gestion des comptes, rôles &amp; bannissements</summary>
           <div class="panel-content">
-            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong> ou retirer un compte de la base Firestore. Promouvoir un membre le renomme automatiquement avec <strong>[ ADMIN ] Prénom</strong>.</p>
+            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong> ou retirer un compte de la base Firestore. Promouvoir un membre le renomme automatiquement avec <strong>[ ADMIN ] Prénom</strong>. Bannir un compte exige une <strong>raison</strong> et génère un message avec formules de politesse visible par le membre.</p>
             <div id="users-list">
               <p>Chargement des utilisateurs...</p>
             </div>
@@ -446,6 +446,23 @@
       return `[ ADMIN ] ${firstName}`;
     }
 
+    function buildBanPoliteMessage(memberName, reason, adminPseudo) {
+      const cleanMember = (memberName || 'Membre').trim();
+      const cleanReason = (reason || '').trim();
+      const cleanAdmin = (adminPseudo || "L'équipe d'administration").trim();
+
+      return [
+        `Bonjour ${cleanMember},`,
+        ``,
+        `Nous vous informons que votre compte sur la plateforme Vos JSP a fait l'objet d'une mesure de suspension pour le motif suivant : ${cleanReason}.`,
+        ``,
+        `Si vous souhaitez apporter des précisions ou demander un réexamen de cette décision, vous pouvez soumettre une contestation depuis la page dédiée.`,
+        ``,
+        `Nous vous prions d'agréer, ${cleanMember}, l'expression de nos salutations distinguées.`,
+        `${cleanAdmin} — Vos JSP`
+      ].join('\n');
+    }
+
     function updateFirebaseResourceAccess() {
       const fbBtn = document.getElementById('firebase-console-btn');
       const fbDesc = document.getElementById('firebase-resource-desc');
@@ -546,7 +563,11 @@
             unbanBtn.disabled = true;
             try {
               if (item.uid) {
-                await setDoc(doc(db, "users", item.uid), { banned: false }, { merge: true });
+                await setDoc(doc(db, "users", item.uid), {
+                  banned: false,
+                  banReason: '',
+                  banMessage: ''
+                }, { merge: true });
               }
               await updateDoc(doc(db, "contestations", item.id), {
                 status: 'acceptee',
@@ -936,8 +957,17 @@
           info.appendChild(statusTag);
           info.appendChild(mailLine);
 
+          if (banned && u.banReason) {
+            const reasonPreview = document.createElement('div');
+            reasonPreview.style.cssText = 'font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;';
+            reasonPreview.textContent = 'Motif de suspension : ' + u.banReason;
+            info.appendChild(reasonPreview);
+          }
+
           const actions = document.createElement('div');
           actions.style.cssText = 'display: flex; gap: 0.45rem; flex-wrap: wrap;';
+
+          let banBox = null;
 
           if (role !== 'superadmin' && canManageRole) {
             const roleBtn = document.createElement('button');
@@ -986,29 +1016,145 @@
             banBtn.type = 'button';
             banBtn.className = banned ? 'btn btn-secondary btn-small' : 'btn btn-small';
             banBtn.textContent = banned ? 'Débannir' : 'Bannir';
-            banBtn.addEventListener('click', async () => {
-              banBtn.disabled = true;
-              try {
-                await setDoc(doc(db, "users", uid), { banned: !banned }, { merge: true });
-                showAlert((!banned ? 'Compte banni : ' : 'Compte débanni : ') + display, true);
-                await loadUsers();
-              } catch (err) {
-                banBtn.disabled = false;
-                showAlert('Action refusée : ' + (err.code || err.message));
-              }
-            });
+
+            if (banned) {
+              banBtn.addEventListener('click', async () => {
+                banBtn.disabled = true;
+                try {
+                  await setDoc(doc(db, "users", uid), {
+                    banned: false,
+                    banReason: '',
+                    banMessage: ''
+                  }, { merge: true });
+                  showAlert('Compte débanni : ' + display, true);
+                  await loadUsers();
+                } catch (err) {
+                  banBtn.disabled = false;
+                  showAlert('Action refusée : ' + (err.code || err.message));
+                }
+              });
+            } else {
+              banBox = document.createElement('div');
+              banBox.className = 'confirm-delete-box';
+              banBox.style.display = 'none';
+
+              const reasonLbl = document.createElement('label');
+              reasonLbl.textContent = 'Raison du bannissement (obligatoire) :';
+              reasonLbl.style.marginBottom = '0';
+
+              const reasonInput = document.createElement('input');
+              reasonInput.type = 'text';
+              reasonInput.placeholder = 'Ex. : comportement inapproprié ou non-respect des règles';
+
+              const genBtn = document.createElement('button');
+              genBtn.type = 'button';
+              genBtn.className = 'btn btn-secondary btn-small';
+              genBtn.textContent = 'Générer le message poli';
+
+              const msgLbl = document.createElement('label');
+              msgLbl.textContent = 'Message officiel généré avec formules de politesse (modifiable) :';
+              msgLbl.style.marginBottom = '0';
+
+              const msgArea = document.createElement('textarea');
+              msgArea.rows = 7;
+              msgArea.placeholder = 'Saisis la raison puis clique sur "Générer le message poli"...';
+
+              reasonInput.addEventListener('input', () => {
+                if (reasonInput.value.trim()) {
+                  msgArea.value = buildBanPoliteMessage(display, reasonInput.value, currentPseudo);
+                }
+              });
+
+              genBtn.addEventListener('click', () => {
+                const r = reasonInput.value.trim();
+                if (!r) {
+                  showAlert('Saisis d’abord la raison du bannissement.');
+                  reasonInput.focus();
+                  return;
+                }
+                msgArea.value = buildBanPoliteMessage(display, r, currentPseudo);
+              });
+
+              const banActionsRow = document.createElement('div');
+              banActionsRow.className = 'confirm-delete-actions';
+
+              const confirmBanBtn = document.createElement('button');
+              confirmBanBtn.type = 'button';
+              confirmBanBtn.className = 'btn btn-small';
+              confirmBanBtn.textContent = 'Confirmer le bannissement';
+
+              const cancelBanBtn = document.createElement('button');
+              cancelBanBtn.type = 'button';
+              cancelBanBtn.className = 'btn btn-secondary btn-small';
+              cancelBanBtn.textContent = 'Annuler';
+
+              banBtn.addEventListener('click', () => {
+                const isOpen = banBox.style.display !== 'none';
+                banBox.style.display = isOpen ? 'none' : 'flex';
+                if (!isOpen) reasonInput.focus();
+              });
+
+              cancelBanBtn.addEventListener('click', () => {
+                reasonInput.value = '';
+                msgArea.value = '';
+                banBox.style.display = 'none';
+              });
+
+              confirmBanBtn.addEventListener('click', async () => {
+                const reason = reasonInput.value.trim();
+                if (!reason) {
+                  showAlert('La raison du bannissement est obligatoire.');
+                  reasonInput.focus();
+                  return;
+                }
+
+                const finalMessage = msgArea.value.trim() || buildBanPoliteMessage(display, reason, currentPseudo);
+                msgArea.value = finalMessage;
+
+                confirmBanBtn.disabled = true;
+                cancelBanBtn.disabled = true;
+                try {
+                  await setDoc(doc(db, "users", uid), {
+                    banned: true,
+                    banReason: reason,
+                    banMessage: finalMessage,
+                    bannedBy: currentUser.uid,
+                    bannedByPseudo: currentPseudo,
+                    bannedAt: serverTimestamp()
+                  }, { merge: true });
+                  showAlert('Compte banni avec message officiel : ' + display, true);
+                  await loadUsers();
+                } catch (err) {
+                  confirmBanBtn.disabled = false;
+                  cancelBanBtn.disabled = false;
+                  showAlert('Action refusée : ' + (err.code || err.message));
+                }
+              });
+
+              banActionsRow.appendChild(genBtn);
+              banActionsRow.appendChild(confirmBanBtn);
+              banActionsRow.appendChild(cancelBanBtn);
+
+              banBox.appendChild(reasonLbl);
+              banBox.appendChild(reasonInput);
+              banBox.appendChild(msgLbl);
+              banBox.appendChild(msgArea);
+              banBox.appendChild(banActionsRow);
+            }
+
             actions.appendChild(banBtn);
           }
 
+          let delConfirmBox = null;
           if (canDeleteFromDb) {
             const delDbBtn = document.createElement('button');
             delDbBtn.type = 'button';
             delDbBtn.className = 'btn btn-secondary btn-small';
             delDbBtn.textContent = 'Supprimer de la base';
 
-            const confirmBox = document.createElement('div');
-            confirmBox.className = 'confirm-delete-box';
-            confirmBox.style.display = 'none';
+            delConfirmBox = document.createElement('div');
+            delConfirmBox.className = 'confirm-delete-box';
+            delConfirmBox.style.display = 'none';
 
             const promptLbl = document.createElement('label');
             promptLbl.textContent = 'Entre ton mot de passe de compte pour supprimer ce profil de Firestore :';
@@ -1033,14 +1179,14 @@
             cancelBtn.textContent = 'Annuler';
 
             delDbBtn.addEventListener('click', () => {
-              const isOpen = confirmBox.style.display !== 'none';
-              confirmBox.style.display = isOpen ? 'none' : 'flex';
+              const isOpen = delConfirmBox.style.display !== 'none';
+              delConfirmBox.style.display = isOpen ? 'none' : 'flex';
               if (!isOpen) pwdInput.focus();
             });
 
             cancelBtn.addEventListener('click', () => {
               pwdInput.value = '';
-              confirmBox.style.display = 'none';
+              delConfirmBox.style.display = 'none';
             });
 
             confirmBtn.addEventListener('click', async () => {
@@ -1077,21 +1223,18 @@
 
             actionsRow.appendChild(confirmBtn);
             actionsRow.appendChild(cancelBtn);
-            confirmBox.appendChild(promptLbl);
-            confirmBox.appendChild(pwdInput);
-            confirmBox.appendChild(actionsRow);
+            delConfirmBox.appendChild(promptLbl);
+            delConfirmBox.appendChild(pwdInput);
+            delConfirmBox.appendChild(actionsRow);
 
             actions.appendChild(delDbBtn);
-            top.appendChild(info);
-            top.appendChild(actions);
-            row.appendChild(top);
-            row.appendChild(confirmBox);
-          } else {
-            top.appendChild(info);
-            top.appendChild(actions);
-            row.appendChild(top);
           }
 
+          top.appendChild(info);
+          top.appendChild(actions);
+          row.appendChild(top);
+          if (banBox) row.appendChild(banBox);
+          if (delConfirmBox) row.appendChild(delConfirmBox);
           usersListEl.appendChild(row);
         });
       } catch (err) {
@@ -1234,4 +1377,4 @@
     });
   </script>
 </body>
-</html>
+</html>s

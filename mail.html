@@ -31,7 +31,7 @@
       padding: 1rem;
       white-space: pre-line;
       font-size: 0.9rem;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     .mail-card {
@@ -43,6 +43,17 @@
       display: flex;
       flex-direction: column;
       gap: 0.45rem;
+    }
+
+    .superadmin-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.4rem 1.5rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
     }
   </style>
 </head>
@@ -109,22 +120,43 @@
       <div id="missing-mail-box" class="auto-box" style="display: none; margin-bottom: 1.25rem;">
         <div>
           <span class="badge">Adresse mail manquante</span>
-          <h2 style="font-size: 1.25rem; margin: 0.4rem 0 0.25rem;">Votre adresse mail n'a pas encore été créée.</h2>
-          <p id="auto-send-status" style="margin: 0; color: var(--muted); font-size: 0.9rem;">Préparation de la demande automatique au superadmin...</p>
+          <h2 style="font-size: 1.25rem; margin: 0.4rem 0 0.25rem;">Vous n'avez pas d'adresse mail Vos JSP.</h2>
+          <p id="auto-send-status" style="margin: 0; color: var(--muted); font-size: 0.9rem;">
+            Rédaction et envoi automatique vers <strong>creation.mail@vos-jsp.com</strong> en cours...
+          </p>
         </div>
 
         <div>
-          <strong>Message rédigé automatiquement (2 questions) :</strong>
+          <strong>Mail rédigé automatiquement à destination de <code>creation.mail@vos-jsp.com</code> :</strong>
           <div id="auto-draft-preview" class="auto-draft" style="margin-top: 0.5rem;"></div>
         </div>
 
         <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
-          <button type="button" id="resend-auto-mail-btn" class="btn btn-small">Renvoyer la demande au superadmin</button>
+          <button type="button" id="resend-auto-mail-btn" class="btn btn-small">Renvoyer à creation.mail@vos-jsp.com</button>
           <a href="admin.html" class="btn btn-secondary btn-small">Retour au Panel Admin</a>
         </div>
       </div>
 
-      <div class="mail-layout">
+      <div id="superadmin-create-box" class="superadmin-box" style="display: none; margin-bottom: 1.25rem;">
+        <div>
+          <span class="badge">Superadmin • Création d'adresse</span>
+          <h2 style="font-size: 1.2rem; margin: 0.4rem 0 0.2rem;">Créer une adresse mail interne pour un admin</h2>
+          <p style="margin: 0; color: var(--muted); font-size: 0.88rem;">Après réception de la demande (Nom &amp; Prénom), attribue l'adresse <code>prenom.nom@vos-jsp.com</code>.</p>
+        </div>
+        <form id="create-mailbox-form" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div class="form-group" style="margin: 0;">
+            <label for="target-admin-uid">UID du compte admin</label>
+            <input type="text" id="target-admin-uid" placeholder="Ex: gxpTsKv19q..." required>
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label for="target-admin-email">Adresse mail interne à créer</label>
+            <input type="email" id="target-admin-email" placeholder="prenom.nom@vos-jsp.com" required>
+          </div>
+          <button type="submit" class="btn btn-small" style="align-self: flex-start;">Enregistrer l'adresse mail</button>
+        </form>
+      </div>
+
+      <div id="inbox-section" class="mail-layout" style="display: none;">
         <div class="card">
           <h2 style="font-size: 1.2rem; margin-top: 0;">Messages reçus</h2>
           <div id="inbox-list"><p>Chargement...</p></div>
@@ -158,9 +190,12 @@
       getDocs,
       doc,
       getDoc,
+      setDoc,
       addDoc,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const CREATION_MAIL_ADDRESS = 'creation.mail@vos-jsp.com';
 
     const gateEl = document.getElementById('mail-gate');
     const gateTitle = document.getElementById('gate-title');
@@ -173,6 +208,9 @@
     const autoSendStatusEl = document.getElementById('auto-send-status');
     const autoDraftPreviewEl = document.getElementById('auto-draft-preview');
     const resendBtn = document.getElementById('resend-auto-mail-btn');
+    const superadminCreateBox = document.getElementById('superadmin-create-box');
+    const createMailboxForm = document.getElementById('create-mailbox-form');
+    const inboxSectionEl = document.getElementById('inbox-section');
     const inboxListEl = document.getElementById('inbox-list');
 
     let currentUser = null;
@@ -185,109 +223,146 @@
       alertEl.textContent = msg;
     }
 
-    function buildAutoMailBody(pseudo, email) {
+    function buildAutoCreationMail(pseudo, uid, email) {
       return [
-        `Bonjour Superadmin,`,
+        `À : ${CREATION_MAIL_ADDRESS}`,
+        `Compte demandeur : ${pseudo} (UID : ${uid} • ${email || 'sans e-mail'})`,
         ``,
-        `Je me connecte à la messagerie admin Vos JSP avec le compte "${pseudo}" (${email || 'sans e-mail'}), mais mon adresse mail interne n'a pas encore été créée.`,
+        `Bonjour,`,
+        `Mon adresse mail interne Vos JSP n'a pas encore été créée. Merci de créer mon adresse à partir des 2 informations suivantes :`,
         ``,
-        `Merci de me préciser :`,
-        `1. Quel format d'adresse interne (ex: prenom.nom@vos-jsp.com) souhaitez-vous attribuer à mon compte ?`,
-        `2. Quelles informations ou vérifications dois-je vous transmettre pour finaliser la création de ma boîte mail ?`
+        `1. Quel est votre nom ?`,
+        `2. Quel est votre prénom ?`
       ].join('\n');
     }
 
     async function findSuperAdmins() {
       const snap = await getDocs(collection(db, "users"));
-      const superAdmins = [];
+      const list = [];
       snap.forEach(d => {
         const data = d.data();
         const r = String(data.role || '').toLowerCase();
         const g = String(data.grade || '').toLowerCase();
         if (r === 'superadmin' || g === 'superadmin') {
-          superAdmins.push({ uid: d.id, ...data });
+          list.push({ uid: d.id, ...data });
         }
       });
-      return superAdmins;
+      return list;
     }
 
-    async function sendAutomaticRequestToSuperAdmin(forceResend = false) {
-      const autoKey = `mailbox_missing_${currentUser.uid}`;
-      const body = buildAutoMailBody(currentPseudo, currentUser.email);
+    async function autoSendCreationRequest(forceResend = false) {
+      const body = buildAutoCreationMail(currentPseudo, currentUser.uid, currentUser.email);
       autoDraftPreviewEl.textContent = body;
 
-      const superAdmins = await findSuperAdmins();
-      if (superAdmins.length === 0) {
-        autoSendStatusEl.textContent = "Aucun compte superadmin trouvé pour recevoir la demande automatique.";
-        return;
-      }
-
+      const autoKey = `auto_creation_mail_${currentUser.uid}`;
       if (!forceResend) {
-        const existingSnap = await getDocs(
+        const alreadySent = await getDocs(
           query(collection(db, "admin_mails"), where("autoRequestKey", "==", autoKey))
         );
-        if (!existingSnap.empty) {
-          autoSendStatusEl.textContent = "Votre adresse mail n'a pas encore été créée. La demande automatique avec les 2 questions a déjà été envoyée au superadmin.";
+        if (!alreadySent.empty) {
+          autoSendStatusEl.innerHTML =
+            `Vous n'avez pas d'adresse mail. La demande automatique (avec les 2 questions : <strong>Nom</strong> et <strong>Prénom</strong>) a déjà été envoyée à <strong>${CREATION_MAIL_ADDRESS}</strong>.`;
           return;
         }
       }
 
-      for (const sa of superAdmins) {
+      const superAdmins = await findSuperAdmins();
+      const targets = superAdmins.length > 0 ? superAdmins.map(sa => sa.uid) : [currentUser.uid];
+
+      for (const targetUid of targets) {
         await addDoc(collection(db, "admin_mails"), {
           fromUid: currentUser.uid,
           fromPseudo: currentPseudo,
           fromEmail: currentUser.email || '',
-          toUid: sa.uid,
-          toPseudo: sa.pseudo || 'Superadmin',
-          subject: `Demande de création d'adresse mail — ${currentPseudo}`,
+          toUid: targetUid,
+          toEmail: CREATION_MAIL_ADDRESS,
+          subject: `Création adresse mail admin — ${currentPseudo}`,
           body,
           autoRequestKey: autoKey,
-          isAutoMailboxRequest: true,
+          questions: ['Quel est votre nom ?', 'Quel est votre prénom ?'],
           read: false,
           createdAt: serverTimestamp()
         });
       }
 
-      autoSendStatusEl.textContent = "Votre adresse mail n'a pas encore été créée. Le mail automatique contenant les 2 questions a bien été envoyé au superadmin.";
-      showAlert("Demande automatique envoyée au superadmin.", true);
+      autoSendStatusEl.innerHTML =
+        `Vous n'avez pas d'adresse mail. Le mail automatique avec les 2 questions (<strong>Nom</strong> et <strong>Prénom</strong>) vient d'être envoyé à <strong>${CREATION_MAIL_ADDRESS}</strong>.`;
+      showAlert(`Demande automatique envoyée à ${CREATION_MAIL_ADDRESS}.`, true);
     }
 
-    async function loadInbox() {
+    async function loadInbox(targetEmails = []) {
       inboxListEl.textContent = 'Chargement...';
       try {
         const snap = await getDocs(
           query(collection(db, "admin_mails"), where("toUid", "==", currentUser.uid))
         );
+        const docsMap = new Map();
+        snap.forEach(d => docsMap.set(d.id, d.data()));
+
+        for (const addr of targetEmails) {
+          if (!addr) continue;
+          const byAddr = await getDocs(
+            query(collection(db, "admin_mails"), where("toEmail", "==", addr))
+          );
+          byAddr.forEach(d => docsMap.set(d.id, d.data()));
+        }
+
         inboxListEl.textContent = '';
-        if (snap.empty) {
-          inboxListEl.innerHTML = '<p>Aucun message reçu pour le moment.</p>';
+        if (docsMap.size === 0) {
+          inboxListEl.innerHTML = '<p>Aucun message dans la boîte de réception.</p>';
           return;
         }
-        snap.forEach(d => {
-          const m = d.data();
+
+        docsMap.forEach((m) => {
           const card = document.createElement('div');
           card.className = 'mail-card';
           card.style.marginBottom = '0.65rem';
           card.innerHTML = `
             <strong>${m.subject || 'Sans objet'}</strong>
-            <div style="font-size:0.8rem;color:var(--muted);">De : ${m.fromPseudo || m.fromName || 'Système'} (${m.fromEmail || ''})</div>
+            <div style="font-size:0.8rem;color:var(--muted);">De : ${m.fromPseudo || m.fromName || 'Admin'} (${m.fromEmail || ''}) • Pour : ${m.toEmail || ''}</div>
             <p style="margin:0.35rem 0 0;white-space:pre-line;">${m.body || ''}</p>
           `;
           inboxListEl.appendChild(card);
         });
       } catch (err) {
-        inboxListEl.textContent = 'Erreur de chargement des messages (' + (err.code || err.message) + ').';
+        inboxListEl.textContent = 'Erreur de chargement (' + (err.code || err.message) + ').';
       }
     }
 
     resendBtn.addEventListener('click', async () => {
       resendBtn.disabled = true;
       try {
-        await sendAutomaticRequestToSuperAdmin(true);
+        await autoSendCreationRequest(true);
       } catch (err) {
         showAlert("Envoi impossible : " + (err.code || err.message));
       } finally {
         resendBtn.disabled = false;
+      }
+    });
+
+    createMailboxForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (currentRole !== 'superadmin') {
+        showAlert("Seul le superadmin peut créer une adresse mail interne.");
+        return;
+      }
+
+      const uid = document.getElementById('target-admin-uid').value.trim();
+      const mailAddr = document.getElementById('target-admin-email').value.trim().toLowerCase();
+      if (!uid || !mailAddr) return;
+
+      try {
+        await setDoc(doc(db, "admin_mailboxes", uid), {
+          email: mailAddr,
+          address: mailAddr,
+          createdBy: currentUser.uid,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        showAlert(`Adresse ${mailAddr} créée pour l'UID ${uid}.`, true);
+        createMailboxForm.reset();
+      } catch (err) {
+        showAlert("Création impossible : " + (err.code || err.message));
       }
     });
 
@@ -307,7 +382,7 @@
 
       if (userData.banned === true || (currentRole !== 'admin' && currentRole !== 'superadmin')) {
         gateTitle.textContent = 'Accès réservé aux admins';
-        gateDesc.textContent = 'Ton compte n’a pas les droits d’accès à cette messagerie.';
+        gateDesc.textContent = 'Ton compte n’a pas les droits pour accéder à cette page.';
         gateActions.style.display = 'flex';
         return;
       }
@@ -315,32 +390,44 @@
       gateEl.style.display = 'none';
       workspaceEl.style.display = 'block';
 
-      let hasMailbox = false;
       let mailboxAddress = '';
       try {
         const mbSnap = await getDoc(doc(db, "admin_mailboxes", user.uid));
         if (mbSnap.exists()) {
           const mb = mbSnap.data();
           mailboxAddress = mb.email || mb.address || mb.mail || '';
-          hasMailbox = Boolean(mailboxAddress);
         }
       } catch (_) {}
 
-      if (!hasMailbox && userData.adminMail) {
+      if (!mailboxAddress && userData.adminMail) {
         mailboxAddress = userData.adminMail;
-        hasMailbox = true;
       }
 
-      if (!hasMailbox) {
-        statusEl.textContent = "Votre adresse mail n'a pas encore été créée.";
-        missingBoxEl.style.display = 'flex';
-        await sendAutomaticRequestToSuperAdmin(false);
-      } else {
-        statusEl.textContent = `Boîte active : ${mailboxAddress}`;
+      if (currentRole === 'superadmin') {
+        superadminCreateBox.style.display = 'flex';
+        inboxSectionEl.style.display = 'block';
+        statusEl.textContent = mailboxAddress
+          ? `Boîte superadmin active : ${mailboxAddress} (${CREATION_MAIL_ADDRESS})`
+          : `Mode Superadmin • Gestion des demandes sur ${CREATION_MAIL_ADDRESS}`;
         missingBoxEl.style.display = 'none';
+        await loadInbox([mailboxAddress, CREATION_MAIL_ADDRESS]);
+        return;
       }
 
-      await loadInbox();
+      // Compte simple "admin" : pas de création ni suppression, et envoi auto si pas de mail
+      inboxSectionEl.style.display = 'none';
+      superadminCreateBox.style.display = 'none';
+
+      if (!mailboxAddress) {
+        statusEl.textContent = "Vous n'avez pas d'adresse mail.";
+        missingBoxEl.style.display = 'flex';
+        await autoSendCreationRequest(false);
+      } else {
+        statusEl.textContent = `Votre adresse mail active : ${mailboxAddress} (lecture seule)`;
+        missingBoxEl.style.display = 'none';
+        inboxSectionEl.style.display = 'block';
+        await loadInbox([mailboxAddress]);
+      }
     });
   </script>
 </body>

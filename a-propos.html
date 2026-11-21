@@ -55,7 +55,11 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html" class="active">À propos</a>
+      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="recrutement.html">Recrutement</a>
+      <a href="profil.html">Profil</a>
+      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
       <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -75,28 +79,28 @@
     <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
       <span class="badge">À propos de Vos JSP</span>
       <h1>La communauté dédiée aux Jeunes Sapeurs-Pompiers</h1>
-      <p class="subtitle" style="margin-bottom: 0;">Présentation du projet, de l'équipe d'administration et formulaire de contact direct[cite: 4].</p>
+      <p class="subtitle" style="margin-bottom: 0;">Présentation du projet, de l'équipe d'administration et formulaire de contact direct.</p>
     </section>
 
     <div class="card" style="margin-bottom: 1.5rem;">
       <h2 style="font-size: 1.25rem; margin-top: 0;">1. Qu'est-ce que Vos JSP ?</h2>
-      <p>Vos JSP est une plateforme communautaire indépendante dédiée à l'univers des Jeunes Sapeurs-Pompiers (JSP)[cite: 4]. Elle permet de suivre des actualités, de partager des photos dans la galerie, de proposer des contenus et d'échanger dans un cadre clair et respectueux[cite: 4]. Elle ne représente pas un site officiel d'un SDIS ni d'une administration[cite: 4].</p>
+      <p>Vos JSP est une plateforme communautaire indépendante dédiée à l'univers des Jeunes Sapeurs-Pompiers (JSP). Elle permet de suivre des actualités, de partager des photos dans la galerie, de proposer des contenus et d'échanger dans un cadre clair et respectueux. Elle ne représente pas un site officiel d'un SDIS ni d'une administration.</p>
 
       <h2 style="font-size: 1.25rem; margin-top: 1.4rem;">2. Qui sont vos admins ?</h2>
-      <p>La gestion et la modération de la plateforme sont assurées par l'équipe d'administration active[cite: 4] :</p>
+      <p>La gestion et la modération de la plateforme sont assurées par l'équipe d'administration active :</p>
       <div id="admins-badges-list" class="admins-badges">
         <span class="card-meta">Chargement des administrateurs...</span>
       </div>
 
       <h2 style="font-size: 1.25rem; margin-top: 1.4rem;">3. Fonctionnement de la communauté</h2>
       <ul>
-        <li><strong>Actualités &amp; propositions :</strong> les membres peuvent proposer des sujets relus avant publication par l'administration[cite: 4].</li>
-        <li><strong>Galerie photo :</strong> les comptes connectés peuvent publier des photos liées à la vie JSP, aux manœuvres ou au matériel[cite: 4].</li>
-        <li><strong>Modération &amp; contestation :</strong> tout manquement peut entraîner une sanction, avec la possibilité de contester un bannissement si le compte est concerné[cite: 4].</li>
+        <li><strong>Actualités &amp; propositions :</strong> les membres peuvent proposer des sujets relus avant publication par l'administration.</li>
+        <li><strong>Galerie photo :</strong> les comptes connectés peuvent publier des photos liées à la vie JSP, aux manœuvres ou au matériel.</li>
+        <li><strong>Modération &amp; contestation :</strong> tout manquement peut entraîner une sanction, avec la possibilité de contester un bannissement si le compte est concerné.</li>
       </ul>
 
       <h2 style="font-size: 1.25rem; margin-top: 1.4rem;">4. Contact &amp; demandes pertinentes</h2>
-      <p>Utilise le formulaire ci-dessous pour envoyer ta demande directement dans le panel admin[cite: 4]. Si ta demande est pertinente (y compris pour connaître l'éditeur du site, non divulgué publiquement pour des raisons de sécurité), nous te répondrons[cite: 4].</p>
+      <p>Utilise le formulaire ci-dessous pour envoyer ta demande directement dans le panel admin. Si ta demande est pertinente (y compris pour connaître l'éditeur du site, non divulgué publiquement pour des raisons de sécurité), nous te répondrons.</p>
 
       <div class="cta-row">
         <a href="#contact-form-section" class="btn btn-small">Aller au formulaire</a>
@@ -109,7 +113,7 @@
     <div id="contact-form-section" class="card">
       <span class="card-meta">Formulaire de contact</span>
       <h2 style="font-size: 1.35rem; margin: 0.35rem 0 0.25rem;">Envoyer un message à l'administration</h2>
-      <p style="color: var(--muted); font-size: 0.9rem; margin-top: 0;">Remplis les champs ci-dessous : ton message arrive directement dans le panel admin[cite: 4].</p>
+      <p style="color: var(--muted); font-size: 0.9rem; margin-top: 0;">Remplis les champs ci-dessous : ton message arrive directement dans le panel admin.</p>
 
       <div id="contact-alert" class="alert"></div>
 
@@ -172,6 +176,9 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('nav a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
   </script>
 
   <script type="module">
@@ -182,9 +189,9 @@
       getDocs,
       doc,
       getDoc,
-      setDoc,
       addDoc,
       deleteDoc,
+      onSnapshot,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
@@ -195,6 +202,7 @@
     const authBtn = document.getElementById('drawer-auth-btn');
     const logoutBtn = document.getElementById('drawer-logout-btn');
     const adminLink = document.getElementById('drawer-admin-link');
+    const mailLink = document.getElementById('drawer-mail-link');
 
     const adminsBadgesEl = document.getElementById('admins-badges-list');
     const targetSelect = document.getElementById('contact-target');
@@ -202,15 +210,24 @@
     const contactSubmitBtn = document.getElementById('contact-submit-btn');
     const contactAlertEl = document.getElementById('contact-alert');
 
-    let currentUser = null;
+    let unsubscribeUser = null;
 
     function getInitials(label) {
-      const clean = (label || 'JS').trim();
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) {
         return (parts[0][0] + parts[1][0]).toUpperCase();
       }
       return clean.slice(0, 2).toUpperCase();
+    }
+
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
     }
 
     function showContactAlert(msg, isSuccess = false) {
@@ -249,13 +266,14 @@
               pseudo: userData.pseudo || pubData.pseudo || 'Admin'
             });
           } else {
-            // Si le compte a été supprimé de users, on nettoie l'entrée fantôme dans public_admins
             try { await deleteDoc(doc(db, "public_admins", uid)); } catch (_) {}
           }
         }
       } catch (_) {}
 
       adminsBadgesEl.textContent = '';
+      targetSelect.innerHTML = '<option value="">Administration générale (Panel Admin)</option>';
+
       if (activeAdmins.length === 0) {
         const span = document.createElement('span');
         span.className = 'card-meta';
@@ -312,7 +330,7 @@
         }
 
         contactForm.reset();
-        showContactAlert('Ton message a bien été envoyé à l\'administration.', true);
+        showContactAlert("Ton message a bien été envoyé à l'administration.", true);
       } catch (err) {
         showContactAlert('Envoi impossible : ' + (err.code || err.message));
       } finally {
@@ -326,37 +344,56 @@
       window.location.reload();
     });
 
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
+    onAuthStateChanged(auth, (user) => {
+      if (unsubscribeUser) {
+        unsubscribeUser();
+        unsubscribeUser = null;
+      }
+
       if (!user) {
         profileBox.style.display = 'none';
         logoutBtn.style.display = 'none';
         adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
         authBtn.style.display = 'inline-flex';
         return;
       }
 
-      let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-      let role = 'membre';
-
-      try {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if (snap.exists()) {
-          const d = snap.data();
-          if (d.pseudo) pseudo = d.pseudo;
-          if (d.role) role = d.role;
-        }
-      } catch (_) {}
-
-      profileBox.style.display = 'flex';
-      profileAvatar.textContent = getInitials(pseudo);
-      profileName.textContent = pseudo;
-      profileRole.textContent = role;
-      profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
-
       authBtn.style.display = 'none';
       logoutBtn.style.display = 'inline-flex';
-      adminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
+
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+
+      unsubscribeUser = onSnapshot(doc(db, "users", user.uid), (snap) => {
+        const d = snap.exists() ? (snap.data() || {}) : {};
+        if (d.banned === true) {
+          window.location.replace('ban.html');
+          return;
+        }
+
+        const rawRole = String(d.role || d.grade || 'membre').toLowerCase();
+        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
+        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        const pseudo = isAdmin
+          ? formatAdminPseudo(d, fallbackName)
+          : (d.pseudo || fallbackName);
+
+        profileBox.style.display = 'flex';
+        profileAvatar.textContent = getInitials(pseudo);
+        profileName.textContent = pseudo;
+        profileRole.textContent = roleLabel;
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+        adminLink.style.display = isAdmin ? 'block' : 'none';
+        mailLink.style.display = isAdmin ? 'block' : 'none';
+      }, () => {
+        profileBox.style.display = 'flex';
+        profileAvatar.textContent = getInitials(fallbackName);
+        profileName.textContent = fallbackName;
+        profileRole.textContent = 'membre';
+        profileRole.className = 'profile-tag';
+        adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
+      });
     });
 
     loadActiveAdmins();

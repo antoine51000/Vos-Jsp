@@ -40,7 +40,11 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html" class="active">Proposer</a>
       <a href="a-propos.html">À propos</a>
+      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="recrutement.html">Recrutement</a>
+      <a href="profil.html">Profil</a>
+      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
       <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -137,12 +141,15 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('nav a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
   </script>
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { collection, addDoc, serverTimestamp, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
@@ -151,6 +158,7 @@
     const authBtn = document.getElementById('drawer-auth-btn');
     const logoutBtn = document.getElementById('drawer-logout-btn');
     const adminLink = document.getElementById('drawer-admin-link');
+    const mailLink = document.getElementById('drawer-mail-link');
 
     const form = document.getElementById('propose-form');
     const authorInput = document.getElementById('prop-author');
@@ -158,14 +166,25 @@
     const alertBox = document.getElementById('propose-alert');
 
     let currentUser = null;
+    let unsubscribeUser = null;
+    let lastAutoAuthor = '';
 
     function getInitials(label) {
-      const clean = (label || 'JS').trim();
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) {
         return (parts[0][0] + parts[1][0]).toUpperCase();
       }
       return clean.slice(0, 2).toUpperCase();
+    }
+
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
     }
 
     function showAlert(msg, isSuccess = false) {
@@ -175,53 +194,70 @@
       alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      if (user) {
-        let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-        let role = 'membre';
+    onAuthStateChanged(auth, (user) => {
+      if (unsubscribeUser) {
+        unsubscribeUser();
+        unsubscribeUser = null;
+      }
 
-        profileName.textContent = pseudo;
-        profileAvatar.textContent = getInitials(pseudo);
-        profileRole.textContent = role;
-        profileRole.className = 'profile-tag';
-        if (!authorInput.value.trim()) {
-          authorInput.value = pseudo;
-        }
+      currentUser = user || null;
 
-        profileBox.style.display = 'flex';
-        authBtn.style.display = 'none';
-        logoutBtn.style.display = 'inline-flex';
-
-        try {
-          const snap = await getDoc(doc(db, "users", user.uid));
-          if (snap.exists()) {
-            const data = snap.data();
-            if (data.pseudo) {
-              pseudo = data.pseudo;
-              profileName.textContent = pseudo;
-              profileAvatar.textContent = getInitials(pseudo);
-              if (!authorInput.value.trim() || authorInput.value === (user.displayName || user.email.split('@')[0])) {
-                authorInput.value = pseudo;
-              }
-            }
-            if (data.role) {
-              role = data.role;
-              profileRole.textContent = role;
-              const isAdmin = role === 'admin' || role === 'superadmin';
-              profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-              adminLink.style.display = isAdmin ? 'flex' : 'none';
-            }
-          }
-        } catch (e) {}
-      } else {
+      if (!user) {
+        lastAutoAuthor = '';
         profileBox.style.display = 'none';
         logoutBtn.style.display = 'none';
         adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
         authBtn.style.display = 'inline-flex';
         authBtn.textContent = 'Connexion';
         authBtn.href = 'login.html';
+        return;
       }
+
+      authBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-flex';
+
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      profileName.textContent = fallbackName;
+      profileAvatar.textContent = getInitials(fallbackName);
+      profileRole.textContent = 'membre';
+      profileRole.className = 'profile-tag';
+      profileBox.style.display = 'flex';
+
+      if (!authorInput.value.trim()) {
+        authorInput.value = fallbackName;
+        lastAutoAuthor = fallbackName;
+      }
+
+      unsubscribeUser = onSnapshot(doc(db, "users", user.uid), (snap) => {
+        const data = snap.exists() ? (snap.data() || {}) : {};
+        if (data.banned === true) {
+          window.location.replace('ban.html');
+          return;
+        }
+
+        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
+        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        const pseudo = isAdmin
+          ? formatAdminPseudo(data, fallbackName)
+          : (data.pseudo || fallbackName);
+
+        profileName.textContent = pseudo;
+        profileAvatar.textContent = getInitials(pseudo);
+        profileRole.textContent = roleLabel;
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+        adminLink.style.display = isAdmin ? 'block' : 'none';
+        mailLink.style.display = isAdmin ? 'block' : 'none';
+
+        if (!authorInput.value.trim() || authorInput.value === lastAutoAuthor) {
+          authorInput.value = pseudo;
+          lastAutoAuthor = pseudo;
+        }
+      }, () => {
+        adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
+      });
     });
 
     logoutBtn.addEventListener('click', async () => {
@@ -269,8 +305,10 @@
 
         showAlert('Proposition envoyée ! Elle est maintenant en attente de validation dans le Panel Admin.', true);
         form.reset();
+        lastAutoAuthor = '';
         if (currentUser) {
           authorInput.value = profileName.textContent || '';
+          lastAutoAuthor = authorInput.value;
         }
       } catch (err) {
         showAlert('Impossible d\'envoyer la proposition (' + (err.code || err.message) + ').');

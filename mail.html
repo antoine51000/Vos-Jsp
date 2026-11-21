@@ -240,10 +240,24 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
+      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
-      <a href="mail.html" class="active">Messagerie Admin</a>
-      <a href="admin.html">Panel Admin</a>
+      <a href="recrutement.html">Recrutement</a>
+      <a href="profil.html">Profil</a>
+      <a href="mail.html" id="drawer-mail-link" class="active">Messagerie Admin</a>
+      <a href="admin.html" id="drawer-admin-link">Panel Admin</a>
     </nav>
+
+    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
+      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
+      <div class="profile-meta">
+        <strong class="profile-name" id="drawer-profile-name"></strong>
+        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      </div>
+    </div>
+
+    <a href="login.html" id="drawer-auth-btn" class="btn" style="display: none;">Connexion</a>
+    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
   </aside>
 
   <main>
@@ -392,6 +406,19 @@
     </div>
   </main>
 
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="a-propos.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
   <script>
     const drawer = document.getElementById('drawer');
     const backdrop = document.getElementById('nav-backdrop');
@@ -405,11 +432,14 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('nav a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
   </script>
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
       collection,
       query,
@@ -421,10 +451,20 @@
       addDoc,
       updateDoc,
       deleteDoc,
+      onSnapshot,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const CREATION_MAIL_ADDRESS = 'creation.mail@vos-jsp.com';
+
+    const profileBox = document.getElementById('drawer-profile-box');
+    const profileAvatar = document.getElementById('drawer-profile-avatar');
+    const profileName = document.getElementById('drawer-profile-name');
+    const profileRole = document.getElementById('drawer-profile-role');
+    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
+    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
+    const drawerAdminLink = document.getElementById('drawer-admin-link');
+    const drawerMailLink = document.getElementById('drawer-mail-link');
 
     const gateEl = document.getElementById('mail-gate');
     const gateTitle = document.getElementById('gate-title');
@@ -470,11 +510,28 @@
     let activeFolder = 'inbox';
     let activeLabel = '';
     let editingDraftId = null;
+    let userUnsubscribe = null;
 
     function showAlert(msg, isSuccess = false) {
       alertEl.style.display = 'block';
       alertEl.className = isSuccess ? 'alert success' : 'alert';
       alertEl.textContent = msg;
+    }
+
+    function getInitials(label) {
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
+      const parts = clean.split(/[\s._-]+/).filter(Boolean);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return clean.slice(0, 2).toUpperCase();
+    }
+
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
     }
 
     function configureComposerState() {
@@ -486,7 +543,7 @@
         toInput.readOnly = true;
         subjectInput.value = `Demande de création d'adresse mail — ${currentPseudo}`;
         labelSelect.value = 'Demandes mail';
-        bodyInput.value = `Bonjour,\nMon adresse mail interne Vos JSP n'a pas encore été créée. Merci de créer mon adresse mail.`;
+        bodyInput.value = "Bonjour,\nMon adresse mail interne Vos JSP n'a pas encore été créée. Merci de créer mon adresse mail.";
         questionsBox.style.display = 'grid';
       } else {
         composerBadge.textContent = 'Création de mail';
@@ -712,6 +769,7 @@
     }
 
     async function renderCurrentView() {
+      if (!currentUser) return;
       const allMails = await fetchAllUserMails();
 
       const inboxCount = allMails.filter(m => !m.trashed && !m.isDraft && (
@@ -791,7 +849,7 @@
       if (questionsBox.style.display !== 'none') {
         return [
           baseText,
-          ``,
+          '',
           `1. Quel est votre nom ? ${nom || '(non renseigné)'}`,
           `2. Quel est votre prénom ? ${prenom || '(non renseigné)'}`
         ].join('\n').trim();
@@ -824,7 +882,7 @@
       const payload = {
         fromUid: currentUser.uid,
         fromPseudo: currentPseudo,
-        fromEmail: currentUser.email || currentMailboxAddress || '',
+        fromEmail: currentMailboxAddress || currentUser.email || '',
         toUid: targetUid,
         toEmail: toAddr,
         subject,
@@ -906,74 +964,138 @@
       }
       const uid = document.getElementById('target-admin-uid').value.trim();
       const mailAddr = document.getElementById('target-admin-email').value.trim().toLowerCase();
+      if (!uid || !mailAddr) {
+        showAlert('Renseigne l’UID et l’adresse mail.');
+        return;
+      }
       try {
         await setDoc(doc(db, "admin_mailboxes", uid), {
+          uid,
           email: mailAddr,
-          address: mailAddr,
           createdBy: currentUser.uid,
           updatedAt: serverTimestamp()
         }, { merge: true });
-        showAlert(`Adresse ${mailAddr} créée pour ${uid}.`, true);
+        await setDoc(doc(db, "users", uid), {
+          adminEmail: mailAddr
+        }, { merge: true });
         createMailboxForm.reset();
+        showAlert(`Adresse ${mailAddr} enregistrée pour l’UID ${uid}.`, true);
       } catch (err) {
         showAlert('Création impossible : ' + (err.code || err.message));
       }
     });
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        gateTitle.textContent = 'Connexion requise';
-        gateDesc.textContent = 'Connecte-toi avec un compte admin pour accéder à la messagerie.';
+    async function loadMailboxAndWorkspace(user, data, isAdmin) {
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+      currentRole = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+      currentPseudo = isAdmin ? formatAdminPseudo(data, fallbackName) : (data.pseudo || fallbackName);
+
+      if (!isAdmin) {
+        workspaceEl.style.display = 'none';
+        gateEl.style.display = 'block';
+        gateTitle.textContent = 'Accès réservé aux administrateurs';
+        gateDesc.textContent = 'Cette messagerie est réservée au staff administratif.';
         gateActions.style.display = 'flex';
         return;
       }
 
-      currentUser = user;
-      const userSnap = await getDoc(doc(db, "users", user.uid));
-      const userData = userSnap.exists() ? userSnap.data() : {};
-      currentPseudo = userData.pseudo || user.displayName || user.email || 'Admin';
-      currentRole = String(userData.role || userData.grade || 'membre').toLowerCase();
-
-      if (userData.banned === true || (currentRole !== 'admin' && currentRole !== 'superadmin')) {
-        gateTitle.textContent = 'Accès réservé aux admins';
-        gateDesc.textContent = 'Ton compte n’a pas les droits pour accéder à cette page.';
-        gateActions.style.display = 'flex';
-        return;
+      let mailboxAddr = data.adminEmail || '';
+      if (!mailboxAddr) {
+        const boxSnap = await getDoc(doc(db, "admin_mailboxes", user.uid));
+        if (boxSnap.exists() && boxSnap.data().email) {
+          mailboxAddr = boxSnap.data().email;
+        }
       }
+
+      currentMailboxAddress = mailboxAddr;
+      hasMailbox = Boolean(mailboxAddr);
+      superadminCreateBox.style.display = currentRole === 'superadmin' ? 'block' : 'none';
 
       gateEl.style.display = 'none';
       workspaceEl.style.display = 'block';
 
-      let mailboxAddress = '';
-      try {
-        const mbSnap = await getDoc(doc(db, "admin_mailboxes", user.uid));
-        if (mbSnap.exists()) {
-          const mb = mbSnap.data();
-          mailboxAddress = mb.email || mb.address || mb.mail || '';
-        }
-      } catch (_) {}
-
-      if (!mailboxAddress && userData.adminMail) {
-        mailboxAddress = userData.adminMail;
-      }
-
-      currentMailboxAddress = mailboxAddress;
-      hasMailbox = Boolean(mailboxAddress);
-
-      if (currentRole === 'superadmin') {
-        superadminCreateBox.style.display = 'block';
-        statusEl.textContent = hasMailbox
-          ? `Boîte superadmin : ${mailboxAddress} (${CREATION_MAIL_ADDRESS})`
-          : `Mode Superadmin • Réception sur ${CREATION_MAIL_ADDRESS}`;
+      if (hasMailbox) {
+        statusEl.textContent = `Connecté en tant que ${currentPseudo} — Boîte : ${currentMailboxAddress}`;
+        openFolderView('inbox');
+      } else if (currentRole === 'superadmin') {
+        statusEl.textContent = `Connecté en tant que ${currentPseudo} — Boîte : ${CREATION_MAIL_ADDRESS}`;
+        openFolderView('inbox');
       } else {
-        superadminCreateBox.style.display = 'none';
-        statusEl.textContent = hasMailbox
-          ? `Votre adresse mail : ${mailboxAddress}`
-          : "Votre adresse mail n'a pas encore été créée.";
+        statusEl.textContent = `Connecté en tant que ${currentPseudo} — Aucune adresse mail interne créée`;
+        openComposeView();
+      }
+    }
+
+    drawerLogoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('login.html');
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (userUnsubscribe) {
+        userUnsubscribe();
+        userUnsubscribe = null;
       }
 
-      configureComposerState();
-      openFolderView('inbox');
+      currentUser = user || null;
+
+      if (!user) {
+        profileBox.style.display = 'none';
+        drawerLogoutBtn.style.display = 'none';
+        drawerAdminLink.style.display = 'none';
+        drawerMailLink.style.display = 'none';
+        drawerAuthBtn.style.display = 'inline-flex';
+        workspaceEl.style.display = 'none';
+        gateEl.style.display = 'block';
+        gateTitle.textContent = 'Connexion requise';
+        gateDesc.textContent = 'Connecte-toi avec un compte administrateur pour accéder à la messagerie.';
+        gateActions.style.display = 'flex';
+        return;
+      }
+
+      drawerAuthBtn.style.display = 'none';
+      drawerLogoutBtn.style.display = 'inline-flex';
+
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+
+      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), async (snap) => {
+        const data = snap.exists() ? (snap.data() || {}) : {};
+        if (data.banned === true) {
+          window.location.replace('ban.html');
+          return;
+        }
+
+        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
+        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        const pseudo = isAdmin
+          ? formatAdminPseudo(data, fallbackName)
+          : (data.pseudo || fallbackName);
+
+        profileBox.style.display = 'flex';
+        profileName.textContent = pseudo;
+        profileAvatar.textContent = getInitials(pseudo);
+        profileRole.textContent = roleLabel;
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+        drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
+        drawerMailLink.style.display = isAdmin ? 'block' : 'none';
+
+        await loadMailboxAndWorkspace(user, data, isAdmin);
+      }, () => {
+        profileBox.style.display = 'flex';
+        profileName.textContent = fallbackName;
+        profileAvatar.textContent = getInitials(fallbackName);
+        profileRole.textContent = 'membre';
+        profileRole.className = 'profile-tag';
+        drawerAdminLink.style.display = 'none';
+        drawerMailLink.style.display = 'none';
+        workspaceEl.style.display = 'none';
+        gateEl.style.display = 'block';
+        gateTitle.textContent = 'Accès réservé aux administrateurs';
+        gateDesc.textContent = 'Impossible de vérifier les droits administrateur.';
+        gateActions.style.display = 'flex';
+      });
     });
   </script>
 </body>

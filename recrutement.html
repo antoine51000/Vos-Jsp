@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos JSP — Recrutement</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .rec-page {
+      max-width: 1120px;
+      margin: 2rem auto 3.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.45rem;
+    }
+
+    .rec-hero {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 1.85rem 2rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .rec-hero h1 {
+      margin: 0.55rem 0 0.35rem;
+      font-size: 1.9rem;
+      letter-spacing: -0.02em;
+      line-height: 1.12;
+    }
+
+    .rec-hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      max-width: 600px;
+      line-height: 1.52;
+    }
+
+    .rec-stats {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .rec-stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.65rem 0.95rem;
+      min-width: 112px;
+    }
+
+    .rec-stat-box small {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .rec-stat-box strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-top: 0.12rem;
+      color: var(--primary);
+    }
+
+    .rec-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.95fr;
+      gap: 1.35rem;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .rec-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .rec-section-title {
+      margin: 0 0 0.9rem;
+      font-size: 1.2rem;
+    }
+
+    .rec-roles-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .rec-role-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.15rem 1.25rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      transition: border-color 0.16s ease, transform 0.16s ease;
+    }
+
+    .rec-role-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 10px 24px rgba(225, 29, 42, 0.09);
+    }
+
+    .rec-role-card.closed {
+      opacity: 0.72;
+    }
+
+    .rec-role-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .rec-role-title {
+      margin: 0;
+      font-size: 1.06rem;
+      font-weight: 800;
+    }
+
+    .rec-status-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.22rem 0.62rem;
+      border-radius: 999px;
+    }
+
+    .rec-status-pill.open {
+      background: rgba(22, 163, 74, 0.12);
+      color: #15803d;
+    }
+
+    .rec-status-pill.closed {
+      background: rgba(225, 29, 42, 0.12);
+      color: var(--primary);
+    }
+
+    .rec-role-desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.48;
+      white-space: pre-wrap;
+    }
+
+    .rec-role-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 0.25rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    .rec-form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.55rem 1.6rem;
+      box-shadow: var(--shadow);
+    }
+
+    .rec-form-card textarea {
+      width: 100%;
+      min-height: 96px;
+      resize: vertical;
+      border-radius: 14px;
+      padding: 0.78rem 0.9rem;
+      font-family: inherit;
+    }
+
+    .rec-my-apps {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.55rem 1.6rem;
+      box-shadow: var(--shadow);
+    }
+
+    .rec-app-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .rec-app-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.9rem 1.05rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .rec-app-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.24rem 0.65rem;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .rec-app-badge.accepted {
+      color: #15803d;
+      border-color: rgba(22, 163, 74, 0.35);
+      background: rgba(22, 163, 74, 0.08);
+    }
+
+    .rec-app-badge.rejected {
+      color: var(--primary);
+      border-color: rgba(225, 29, 42, 0.35);
+      background: rgba(225, 29, 42, 0.08);
+    }
+
+    .rec-empty {
+      text-align: center;
+      padding: 1.6rem 1rem;
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="brand">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+    </div>
+    <a href="index.html" class="btn btn-secondary btn-small">Accueil</a>
+  </div>
+
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
+    </div>
+
+    <div class="drawer-label">Navigation</div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="actus.html">Actualités</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="proposer.html">Proposer</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="forum.html">Forum</a>
+      <a href="recrutement.html" class="active">Recrutement</a>
+      <a href="profil.html">Profil</a>
+      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
+    </nav>
+
+    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
+      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
+      <div class="profile-meta">
+        <strong class="profile-name" id="drawer-profile-name"></strong>
+        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      </div>
+    </div>
+
+    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
+    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
+  </aside>
+
+  <main>
+    <div class="rec-page">
+      <header class="rec-hero">
+        <div>
+          <span class="badge">Équipe &amp; Bénévolat • Vos JSP</span>
+          <h1>Rejoins l'équipe Vos JSP</h1>
+          <p>Consulte les postes ouverts, sélectionne un rôle et envoie ta candidature. L'état des recrutements est géré en direct depuis le Panel Admin.</p>
+        </div>
+        <div class="rec-stats">
+          <div class="rec-stat-box">
+            <small>Postes ouverts</small>
+            <strong id="rec-open-count">0</strong>
+          </div>
+          <div class="rec-stat-box">
+            <small>Total fiches</small>
+            <strong id="rec-total-count">0</strong>
+          </div>
+        </div>
+      </header>
+
+      <div id="rec-alert" class="alert"></div>
+
+      <div class="rec-layout">
+        <div>
+          <h2 class="rec-section-title">Postes disponibles</h2>
+          <div class="rec-roles-stack" id="rec-roles-list">
+            <div class="rec-empty">Chargement des postes...</div>
+          </div>
+        </div>
+
+        <div class="rec-form-card">
+          <span class="badge">Candidature</span>
+          <h2 style="margin: 0.5rem 0 0.25rem; font-size: 1.3rem;">Envoyer ta candidature</h2>
+          <p style="margin: 0 0 1.1rem; color: var(--muted); font-size: 0.86rem;">Réponds simplement et honnêtement, l'équipe étudie chaque demande.</p>
+
+          <form id="rec-apply-form">
+            <div class="form-group">
+              <label for="rec-role-select">Poste souhaité</label>
+              <select id="rec-role-select" required></select>
+            </div>
+
+            <div class="form-group">
+              <label for="rec-name-input">Ton pseudo ou prénom</label>
+              <input type="text" id="rec-name-input" maxlength="80" placeholder="Ex. : Léo" required>
+            </div>
+
+            <div class="form-group">
+              <label for="rec-contact-input">Contact (Discord, e-mail ou autre)</label>
+              <input type="text" id="rec-contact-input" maxlength="100" placeholder="Ex. : @pseudo_discord ou mail@exemple.fr" required>
+            </div>
+
+            <div class="form-group">
+              <label for="rec-avail-input">Disponibilités</label>
+              <input type="text" id="rec-avail-input" maxlength="120" placeholder="Ex. : Soirs de semaine et week-ends" required>
+            </div>
+
+            <div class="form-group">
+              <label for="rec-motivation-input">Motivation &amp; expérience</label>
+              <textarea id="rec-motivation-input" maxlength="800" placeholder="Pourquoi tu veux rejoindre l'équipe et ce que tu peux apporter..." required></textarea>
+            </div>
+
+            <button type="submit" id="rec-submit-btn" class="btn" style="width: 100%;">Envoyer ma candidature</button>
+          </form>
+        </div>
+      </div>
+
+      <section class="rec-my-apps" id="rec-my-apps-box" style="display: none;">
+        <h2 class="rec-section-title" style="margin-bottom: 0.35rem;">Mes candidatures</h2>
+        <p style="margin: 0 0 1rem; color: var(--muted); font-size: 0.86rem;">Suivi en direct de tes demandes envoyées sur ce compte.</p>
+        <div class="rec-app-list" id="rec-my-apps-list">
+          <div class="rec-empty">Aucune candidature envoyée pour le moment.</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="a-propos.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('nav-backdrop');
+    document.getElementById('menu-open').addEventListener('click', () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    });
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+    document.getElementById('menu-close').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+  </script>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      collection,
+      query,
+      where,
+      addDoc,
+      doc,
+      getDoc,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const profileBox = document.getElementById('drawer-profile-box');
+    const profileAvatar = document.getElementById('drawer-profile-avatar');
+    const profileName = document.getElementById('drawer-profile-name');
+    const profileRole = document.getElementById('drawer-profile-role');
+    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
+    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
+    const drawerAdminLink = document.getElementById('drawer-admin-link');
+
+    const alertEl = document.getElementById('rec-alert');
+    const openCountEl = document.getElementById('rec-open-count');
+    const totalCountEl = document.getElementById('rec-total-count');
+    const rolesListEl = document.getElementById('rec-roles-list');
+    const roleSelectEl = document.getElementById('rec-role-select');
+
+    const applyForm = document.getElementById('rec-apply-form');
+    const nameInput = document.getElementById('rec-name-input');
+    const contactInput = document.getElementById('rec-contact-input');
+    const availInput = document.getElementById('rec-avail-input');
+    const motivationInput = document.getElementById('rec-motivation-input');
+    const submitBtn = document.getElementById('rec-submit-btn');
+
+    const myAppsBox = document.getElementById('rec-my-apps-box');
+    const myAppsListEl = document.getElementById('rec-my-apps-list');
+
+    const DEFAULT_ROLES = [
+      {
+        id: 'default-modo',
+        title: 'Modérateur / Modératrice',
+        tag: 'Modération',
+        description: 'Veiller au respect des règles, accompagner les membres et garder les échanges propres sur le site et le futur Discord.',
+        open: true
+      },
+      {
+        id: 'default-redac',
+        title: 'Rédacteur / Rédactrice Actus',
+        tag: 'Contenu',
+        description: 'Publier des actualités claires, mettre en avant la vie de la communauté et relayer les infos utiles.',
+        open: true
+      },
+      {
+        id: 'default-discord',
+        title: 'Animateur / Staff Discord',
+        tag: 'Communauté',
+        description: 'Aider à structurer et animer le futur serveur Discord, accueillir les nouveaux et organiser les discussions.',
+        open: true
+      }
+    ];
+
+    let currentUser = null;
+    let currentProfile = { pseudo: '', role: 'membre' };
+    let userUnsubscribe = null;
+    let rolesUnsubscribe = null;
+    let myAppsUnsubscribe = null;
+    let rolesData = [...DEFAULT_ROLES];
+    let selectedRoleTitle = '';
+
+    function showAlert(msg, isSuccess = false) {
+      alertEl.style.display = 'block';
+      alertEl.className = isSuccess ? 'alert success' : 'alert';
+      alertEl.textContent = msg;
+    }
+
+    function hideAlert() {
+      alertEl.style.display = 'none';
+      alertEl.textContent = '';
+    }
+
+    function getInitials(label) {
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
+      const parts = clean.split(/[\s._-]+/).filter(Boolean);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return clean.slice(0, 2).toUpperCase();
+    }
+
+    function paintAvatar(container, imgSrc, pseudo) {
+      container.innerHTML = '';
+      if (imgSrc) {
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.alt = pseudo || 'Avatar';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = 'inherit';
+        img.style.display = 'block';
+        container.appendChild(img);
+      } else {
+        container.textContent = getInitials(pseudo);
+      }
+    }
+
+    function renderRolesAndSelect() {
+      const openRoles = rolesData.filter((r) => r.open !== false);
+      openCountEl.textContent = String(openRoles.length);
+      totalCountEl.textContent = String(rolesData.length);
+
+      roleSelectEl.innerHTML = '';
+      if (openRoles.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Aucun recrutement ouvert pour le moment';
+        roleSelectEl.appendChild(opt);
+        roleSelectEl.disabled = true;
+        submitBtn.disabled = true;
+      } else {
+        roleSelectEl.disabled = false;
+        submitBtn.disabled = false;
+        openRoles.forEach((r) => {
+          const opt = document.createElement('option');
+          opt.value = r.title;
+          opt.textContent = r.title;
+          roleSelectEl.appendChild(opt);
+        });
+        if (selectedRoleTitle && openRoles.some((r) => r.title === selectedRoleTitle)) {
+          roleSelectEl.value = selectedRoleTitle;
+        } else {
+          selectedRoleTitle = openRoles[0].title;
+          roleSelectEl.value = selectedRoleTitle;
+        }
+      }
+
+      rolesListEl.innerHTML = '';
+      if (rolesData.length === 0) {
+        rolesListEl.innerHTML = '<div class="rec-empty">Aucun poste configuré pour le moment.</div>';
+        return;
+      }
+
+      rolesData.forEach((roleItem) => {
+        const isOpen = roleItem.open !== false;
+        const isSelected = isOpen && roleSelectEl.value === roleItem.title;
+
+        const card = document.createElement('article');
+        card.className = `rec-role-card ${isOpen ? '' : 'closed'} ${isSelected ? 'selected' : ''}`;
+
+        const top = document.createElement('div');
+        top.className = 'rec-role-top';
+
+        const h3 = document.createElement('h3');
+        h3.className = 'rec-role-title';
+        h3.textContent = roleItem.title || 'Poste';
+
+        const pill = document.createElement('span');
+        pill.className = `rec-status-pill ${isOpen ? 'open' : 'closed'}`;
+        pill.textContent = isOpen ? 'Ouvert' : 'Clôturé';
+
+        top.appendChild(h3);
+        top.appendChild(pill);
+
+        const desc = document.createElement('p');
+        desc.className = 'rec-role-desc';
+        desc.textContent = roleItem.description || '';
+
+        const foot = document.createElement('div');
+        foot.className = 'rec-role-foot';
+
+        const tagSpan = document.createElement('span');
+        tagSpan.textContent = roleItem.tag ? `Pôle : ${roleItem.tag}` : 'Équipe Vos JSP';
+        foot.appendChild(tagSpan);
+
+        if (isOpen) {
+          const pickBtn = document.createElement('button');
+          pickBtn.type = 'button';
+          pickBtn.className = 'btn btn-secondary btn-small';
+          pickBtn.textContent = isSelected ? 'Sélectionné' : 'Choisir ce poste';
+          pickBtn.addEventListener('click', () => {
+            selectedRoleTitle = roleItem.title;
+            roleSelectEl.value = roleItem.title;
+            renderRolesAndSelect();
+            nameInput.focus();
+          });
+          foot.appendChild(pickBtn);
+        }
+
+        card.appendChild(top);
+        card.appendChild(desc);
+        card.appendChild(foot);
+        rolesListEl.appendChild(card);
+      });
+    }
+
+    roleSelectEl.addEventListener('change', () => {
+      selectedRoleTitle = roleSelectEl.value;
+      renderRolesAndSelect();
+    });
+
+    function startRolesListener() {
+      if (rolesUnsubscribe) {
+        rolesUnsubscribe();
+        rolesUnsubscribe = null;
+      }
+
+      rolesUnsubscribe = onSnapshot(collection(db, "recrutement_postes"), (snap) => {
+        if (snap.empty) {
+          rolesData = [...DEFAULT_ROLES];
+          renderRolesAndSelect();
+          return;
+        }
+        const list = [];
+        snap.forEach((d) => {
+          list.push({ id: d.id, ...(d.data() || {}) });
+        });
+        rolesData = list;
+        renderRolesAndSelect();
+      }, () => {
+        rolesData = [...DEFAULT_ROLES];
+        renderRolesAndSelect();
+      });
+    }
+
+    function stopMyAppsListener() {
+      if (myAppsUnsubscribe) {
+        myAppsUnsubscribe();
+        myAppsUnsubscribe = null;
+      }
+    }
+
+    function startMyAppsListener(uid) {
+      stopMyAppsListener();
+      myAppsUnsubscribe = onSnapshot(
+        query(collection(db, "candidatures"), where("applicantUid", "==", uid)),
+        (snap) => {
+          const apps = [];
+          snap.forEach((d) => apps.push({ id: d.id, ...(d.data() || {}) }));
+          myAppsListEl.innerHTML = '';
+
+          if (apps.length === 0) {
+            myAppsListEl.innerHTML = '<div class="rec-empty">Aucune candidature envoyée pour le moment.</div>';
+            return;
+          }
+
+          apps.forEach((app) => {
+            const row = document.createElement('div');
+            row.className = 'rec-app-item';
+
+            const left = document.createElement('div');
+            const titleEl = document.createElement('strong');
+            titleEl.style.display = 'block';
+            titleEl.style.fontSize = '0.94rem';
+            titleEl.textContent = app.roleTitle || 'Poste';
+
+            const subEl = document.createElement('span');
+            subEl.style.fontSize = '0.8rem';
+            subEl.style.color = 'var(--muted)';
+            subEl.textContent = `Dispo : ${app.availability || '—'}`;
+
+            left.appendChild(titleEl);
+            left.appendChild(subEl);
+
+            const st = String(app.status || 'en_attente').toLowerCase();
+            const badge = document.createElement('span');
+            badge.className = 'rec-app-badge';
+            if (st === 'acceptee' || st === 'acceptée' || st === 'retenu') {
+              badge.classList.add('accepted');
+              badge.textContent = 'Retenu';
+            } else if (st === 'refusee' || st === 'refusée' || st === 'refuse') {
+              badge.classList.add('rejected');
+              badge.textContent = 'Refusé';
+            } else {
+              badge.textContent = 'En attente';
+            }
+
+            row.appendChild(left);
+            row.appendChild(badge);
+            myAppsListEl.appendChild(row);
+          });
+        },
+        () => {}
+      );
+    }
+
+    applyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      const chosenRole = roleSelectEl.value.trim();
+      const applicantName = nameInput.value.trim();
+      const contactVal = contactInput.value.trim();
+      const availVal = availInput.value.trim();
+      const motivationVal = motivationInput.value.trim();
+
+      const roleObj = rolesData.find((r) => r.title === chosenRole);
+      if (!chosenRole || (roleObj && roleObj.open === false)) {
+        showAlert('Ce recrutement est clôturé ou indisponible.');
+        return;
+      }
+
+      if (!applicantName || !contactVal || !availVal || !motivationVal) {
+        showAlert('Remplis tous les champs de ta candidature.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Envoi...';
+
+      try {
+        await addDoc(collection(db, "candidatures"), {
+          applicantUid: currentUser ? currentUser.uid : null,
+          applicantPseudo: currentProfile.pseudo || applicantName,
+          applicantName: applicantName,
+          contact: contactVal,
+          roleTitle: chosenRole,
+          availability: availVal,
+          motivation: motivationVal,
+          status: 'en_attente',
+          createdAt: serverTimestamp()
+        });
+
+        contactInput.value = '';
+        availInput.value = '';
+        motivationInput.value = '';
+        showAlert('Candidature envoyée avec succès.', true);
+      } catch (err) {
+        showAlert('Envoi impossible : ' + (err.code || err.message));
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Envoyer ma candidature';
+      }
+    });
+
+    function sanitizeIpDocId(ip) {
+      return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    }
+
+    async function redirectIfIpBanned() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
+        if (!res.ok) return false;
+        const data = await res.json();
+        const ip = data && data.ip ? String(data.ip).trim() : '';
+        if (!ip) return false;
+        const snap = await getDoc(doc(db, "banned_ips", sanitizeIpDocId(ip)));
+        if (snap.exists()) {
+          window.location.replace('ban.html');
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
+
+    drawerLogoutBtn.addEventListener('click', async () => {
+      stopMyAppsListener();
+      await signOut(auth);
+      window.location.replace('login.html');
+    });
+
+    startRolesListener();
+
+    onAuthStateChanged(auth, async (user) => {
+      if (userUnsubscribe) {
+        userUnsubscribe();
+        userUnsubscribe = null;
+      }
+      stopMyAppsListener();
+
+      if (await redirectIfIpBanned()) return;
+
+      currentUser = user || null;
+
+      if (!user) {
+        currentProfile = { pseudo: '', role: 'membre' };
+        myAppsBox.style.display = 'none';
+        profileBox.style.display = 'none';
+        drawerLogoutBtn.style.display = 'none';
+        drawerAdminLink.style.display = 'none';
+        drawerAuthBtn.style.display = 'inline-flex';
+        return;
+      }
+
+      myAppsBox.style.display = 'block';
+      drawerAuthBtn.style.display = 'none';
+      drawerLogoutBtn.style.display = 'inline-flex';
+      startMyAppsListener(user.uid);
+
+      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
+        const data = snap.exists() ? (snap.data() || {}) : {};
+        if (data.banned === true) {
+          stopMyAppsListener();
+          window.location.replace('ban.html');
+          return;
+        }
+
+        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+        const role = data.role || 'membre';
+        const photoDataUrl = data.photoDataUrl || '';
+        currentProfile = { pseudo, role };
+
+        if (!nameInput.value.trim()) {
+          nameInput.value = pseudo;
+        }
+
+        profileBox.style.display = 'flex';
+        paintAvatar(profileAvatar, photoDataUrl, pseudo);
+        profileName.textContent = pseudo;
+        profileRole.textContent = role;
+        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
+        drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>

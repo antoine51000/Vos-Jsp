@@ -3,142 +3,273 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Forum</title>
+  <title>Vos JSP — Forum &amp; Hub Communautaire</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .forum-shell {
-      max-width: 820px;
-      margin: 2rem auto 3rem;
+    .hub-wrap {
+      max-width: 920px;
+      margin: 2rem auto 3.5rem;
       display: flex;
       flex-direction: column;
       gap: 1.35rem;
     }
 
-    .forum-hero {
+    .hub-banner {
       background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
       border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 1.5rem 1.6rem;
+      border-radius: 24px;
+      padding: 1.6rem 1.75rem;
       box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 1.4fr 0.9fr;
+      gap: 1.25rem;
       align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
     }
 
-    .forum-hero h1 {
-      margin: 0.45rem 0 0.25rem;
-      font-size: 1.7rem;
+    @media (max-width: 780px) {
+      .hub-banner {
+        grid-template-columns: 1fr;
+      }
     }
 
-    .forum-hero p {
+    .hub-banner h1 {
+      margin: 0.5rem 0 0.3rem;
+      font-size: 1.75rem;
+      line-height: 1.15;
+    }
+
+    .hub-banner p {
       margin: 0;
       color: var(--muted);
       font-size: 0.9rem;
+      line-height: 1.5;
     }
 
-    .forum-composer {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 1.4rem 1.5rem;
-      box-shadow: var(--shadow);
-    }
-
-    .forum-composer textarea {
-      width: 100%;
-      min-height: 92px;
-      resize: vertical;
-      border-radius: 14px;
-      padding: 0.8rem 0.95rem;
-      font-family: inherit;
-    }
-
-    .composer-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .char-counter {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .forum-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
-
-    .forum-post {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.15rem 1.3rem;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-      transition: transform 0.15s ease, border-color 0.15s ease;
-    }
-
-    .forum-post:hover {
-      border-color: rgba(225, 29, 42, 0.35);
-    }
-
-    .post-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.6rem;
-      flex-wrap: wrap;
-    }
-
-    .post-author-wrap {
-      display: flex;
-      align-items: center;
+    .hub-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 0.65rem;
     }
 
-    .post-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 11px;
+    .hub-info-tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.75rem 0.85rem;
+    }
+
+    .hub-info-tile small {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .hub-info-tile strong {
+      display: block;
+      font-size: 0.92rem;
+      margin-top: 0.15rem;
+    }
+
+    .hub-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 0.7rem 1rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .filter-pill.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .hub-composer {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.5rem 1.6rem;
+      box-shadow: var(--shadow);
+    }
+
+    .hub-composer textarea {
+      width: 100%;
+      min-height: 96px;
+      resize: vertical;
+      border-radius: 15px;
+      padding: 0.85rem 1rem;
+      font-family: inherit;
+    }
+
+    .media-tools-row {
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+      margin-top: 0.85rem;
+      align-items: center;
+    }
+
+    .tool-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.5rem 0.82rem;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.16s ease;
+    }
+
+    .tool-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .tool-btn.recording {
+      background: rgba(225, 29, 42, 0.14);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .media-attach-panel {
+      display: none;
+      margin-top: 0.9rem;
+      padding: 0.9rem 1rem;
+      border-radius: 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .media-attach-panel.open {
+      display: block;
+    }
+
+    .voice-preview-box,
+    .video-preview-box {
+      margin-top: 0.75rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .voice-preview-box.active,
+    .video-preview-box.active {
+      display: flex;
+    }
+
+    .voice-preview-box audio,
+    .video-preview-box video {
+      width: 100%;
+      max-height: 260px;
+      border-radius: 12px;
+      background: #000;
+    }
+
+    .composer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .hub-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .hub-post {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.25rem 1.4rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .post-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    .post-user {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .post-av {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
       background: rgba(225, 29, 42, 0.14);
       color: var(--primary);
       font-weight: 800;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
 
-    .post-author-name {
-      font-weight: 700;
-      font-size: 0.94rem;
+    .post-author {
+      font-weight: 800;
+      font-size: 0.96rem;
     }
 
-    .post-role-tag {
+    .post-badge {
       font-size: 0.72rem;
       font-weight: 700;
-      padding: 0.16rem 0.5rem;
+      padding: 0.18rem 0.55rem;
       border-radius: 999px;
       background: var(--bg);
       color: var(--muted);
       border: 1px solid var(--border);
     }
 
-    .post-role-tag.admin {
+    .post-badge.admin {
       background: rgba(225, 29, 42, 0.12);
       color: var(--primary);
       border-color: rgba(225, 29, 42, 0.28);
     }
 
-    .post-meta-right {
+    .post-right {
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -146,22 +277,65 @@
       color: var(--muted);
     }
 
-    .post-content {
+    .post-text {
       margin: 0;
-      font-size: 0.94rem;
-      line-height: 1.55;
+      font-size: 0.95rem;
+      line-height: 1.58;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
-    .forum-empty {
+    .post-media {
+      margin-top: 0.85rem;
+    }
+
+    .post-media audio,
+    .post-media video,
+    .post-media iframe {
+      width: 100%;
+      max-height: 310px;
+      border-radius: 14px;
+      background: #000;
+    }
+
+    .post-media iframe {
+      height: 260px;
+      border: none;
+    }
+
+    .post-actions-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.9rem;
+      padding-top: 0.7rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .react-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .react-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .hub-empty {
       text-align: center;
-      padding: 2rem 1.2rem;
+      padding: 2.2rem 1.2rem;
       background: var(--surface);
       border: 1px dashed var(--border);
-      border-radius: 20px;
+      border-radius: 22px;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.92rem;
     }
   </style>
 </head>
@@ -216,33 +390,89 @@
   </aside>
 
   <main>
-    <div class="forum-shell">
-      <section class="forum-hero">
+    <div class="hub-wrap">
+      <section class="hub-banner">
         <div>
-          <span class="badge">🚒 Forum • Membres connectés</span>
-          <h1>Forum Vos JSP</h1>
-          <p>Échange avec la section, partage tes retours d'expérience et discute en direct.</p>
+          <span class="badge">🚒 Hub Communautaire Vos JSP</span>
+          <h1>Forum, Vocaux &amp; Vidéos</h1>
+          <p>Partage des messages, enregistre un vocal au micro, filme un clip ou colle un lien vidéo pour animer la communauté JSP.</p>
         </div>
-        <span class="badge" id="forum-count-badge">0 message</span>
+        <div class="hub-info-grid">
+          <div class="hub-info-tile">
+            <small>Messages actifs</small>
+            <strong id="hub-total-count">0</strong>
+          </div>
+          <div class="hub-info-tile">
+            <small>Formats supportés</small>
+            <strong>Texte • Vocal • Vidéo</strong>
+          </div>
+          <div class="hub-info-tile">
+            <small>Esprit &amp; cadre</small>
+            <strong>Respect • Cohésion</strong>
+          </div>
+          <div class="hub-info-tile">
+            <small>Statut salon</small>
+            <strong id="hub-live-status">● En ligne</strong>
+          </div>
+        </div>
       </section>
+
+      <div class="hub-toolbar">
+        <div class="filter-pills" role="group" aria-label="Filtrer les publications">
+          <button type="button" class="filter-pill active" data-filter="all">Tout</button>
+          <button type="button" class="filter-pill" data-filter="text">Discussions</button>
+          <button type="button" class="filter-pill" data-filter="voice">Vocaux</button>
+          <button type="button" class="filter-pill" data-filter="video">Vidéos</button>
+        </div>
+        <span class="badge" id="hub-filter-label">Filtre : Tout</span>
+      </div>
 
       <div id="forum-alert" class="alert"></div>
 
-      <section class="forum-composer" id="forum-composer-box">
+      <section class="hub-composer" id="forum-composer-box">
         <form id="forum-form">
           <div class="form-group" style="margin-bottom: 0;">
-            <label for="forum-message">Nouveau message</label>
-            <textarea id="forum-message" placeholder="Écris ton message ici..." maxlength="1500" required></textarea>
+            <label for="forum-message">Ton message sur le forum</label>
+            <textarea id="forum-message" placeholder="Raconte ta séance JSP, pose une question ou partage une info..." maxlength="1500"></textarea>
           </div>
-          <div class="composer-footer">
-            <span class="char-counter" id="forum-char-count">0 / 1500</span>
-            <button type="submit" id="forum-submit-btn" class="btn">Publier</button>
+
+          <div class="media-tools-row">
+            <button type="button" class="tool-btn" id="btn-record-voice">🎤 Vocal micro</button>
+            <button type="button" class="tool-btn" id="btn-toggle-video">🎥 Ajouter vidéo</button>
+            <button type="button" class="tool-btn" id="btn-clear-media" style="display: none;">✕ Retirer média</button>
+          </div>
+
+          <div class="media-attach-panel" id="video-panel">
+            <div class="form-group" style="margin-bottom: 0.6rem;">
+              <label for="forum-video-url">Lien vidéo (YouTube, Vimeo ou fichier .mp4)</label>
+              <input type="url" id="forum-video-url" placeholder="https://www.youtube.com/watch?v=... ou https://.../clip.mp4">
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+              <button type="button" class="btn btn-secondary btn-small" id="btn-camera-start">📹 Filmer caméra</button>
+              <button type="button" class="btn btn-secondary btn-small" id="btn-camera-stop" style="display: none;">⏹ Stop caméra</button>
+              <span id="camera-status-txt" style="font-size: 0.78rem; color: var(--muted);"></span>
+            </div>
+          </div>
+
+          <div class="voice-preview-box" id="voice-preview-box">
+            <span style="font-size: 0.78rem; font-weight: 700; color: var(--muted);">Aperçu vocal prêt :</span>
+            <audio id="voice-preview-audio" controls></audio>
+          </div>
+
+          <div class="video-preview-box" id="video-preview-box">
+            <span style="font-size: 0.78rem; font-weight: 700; color: var(--muted);">Aperçu vidéo :</span>
+            <video id="video-preview-el" controls playsinline></video>
+          </div>
+
+          <div class="composer-bottom">
+            <span style="font-size: 0.8rem; color: var(--muted);" id="forum-char-count">0 / 1500</span>
+            <button type="submit" id="forum-submit-btn" class="btn">Publier sur le forum</button>
           </div>
         </form>
       </section>
 
-      <section class="forum-feed" id="forum-feed">
-        <div class="forum-empty">Chargement des messages...</div>
+      <section class="hub-feed" id="forum-feed">
+        <div class="hub-empty">Chargement du forum...</div>
       </section>
     </div>
   </main>
@@ -287,11 +517,13 @@
       orderBy,
       limit,
       addDoc,
+      updateDoc,
       deleteDoc,
       doc,
       getDoc,
       onSnapshot,
-      serverTimestamp
+      serverTimestamp,
+      increment
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const profileBox = document.getElementById('drawer-profile-box');
@@ -302,19 +534,49 @@
     const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
     const drawerAdminLink = document.getElementById('drawer-admin-link');
 
+    const totalCountEl = document.getElementById('hub-total-count');
+    const liveStatusEl = document.getElementById('hub-live-status');
+    const filterLabelEl = document.getElementById('hub-filter-label');
+    const filterButtons = Array.from(document.querySelectorAll('.filter-pill'));
+
     const alertEl = document.getElementById('forum-alert');
     const composerBox = document.getElementById('forum-composer-box');
     const formEl = document.getElementById('forum-form');
     const messageInput = document.getElementById('forum-message');
     const charCountEl = document.getElementById('forum-char-count');
     const submitBtn = document.getElementById('forum-submit-btn');
+
+    const btnRecordVoice = document.getElementById('btn-record-voice');
+    const btnToggleVideo = document.getElementById('btn-toggle-video');
+    const btnClearMedia = document.getElementById('btn-clear-media');
+    const videoPanel = document.getElementById('video-panel');
+    const videoUrlInput = document.getElementById('forum-video-url');
+    const btnCameraStart = document.getElementById('btn-camera-start');
+    const btnCameraStop = document.getElementById('btn-camera-stop');
+    const cameraStatusTxt = document.getElementById('camera-status-txt');
+
+    const voicePreviewBox = document.getElementById('voice-preview-box');
+    const voicePreviewAudio = document.getElementById('voice-preview-audio');
+    const videoPreviewBox = document.getElementById('video-preview-box');
+    const videoPreviewEl = document.getElementById('video-preview-el');
+
     const feedEl = document.getElementById('forum-feed');
-    const countBadge = document.getElementById('forum-count-badge');
 
     let currentUser = null;
     let currentProfile = { pseudo: 'Membre', role: 'membre' };
     let userUnsubscribe = null;
     let forumUnsubscribe = null;
+    let allPosts = [];
+    let activeFilter = 'all';
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecordingVoice = false;
+    let attachedAudioDataUrl = '';
+    let attachedVideoDataUrl = '';
+    let cameraStream = null;
+    let videoRecorder = null;
+    let videoChunks = [];
 
     function showAlert(msg, isSuccess = false) {
       alertEl.style.display = 'block';
@@ -327,10 +589,14 @@
       alertEl.textContent = '';
     }
 
-    function getInitials(label) {
-      const clean = String(label || 'JS')
+    function cleanDisplayName(raw) {
+      return String(raw || 'Membre')
         .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
-        .trim() || 'JS';
+        .trim() || 'Membre';
+    }
+
+    function getInitials(label) {
+      const clean = cleanDisplayName(label);
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
@@ -345,6 +611,345 @@
         month: '2-digit',
         hour: '2-digit',
         minute: '2-digit'
+      });
+    }
+
+    function parseYoutubeEmbedUrl(urlStr) {
+      try {
+        const u = new URL(String(urlStr || '').trim());
+        if (u.hostname.includes('youtu.be')) {
+          const id = u.pathname.replace('/', '').trim();
+          return id ? `https://www.youtube.com/embed/${encodeURIComponent(id)}` : '';
+        }
+        if (u.hostname.includes('youtube.com')) {
+          const v = u.searchParams.get('v');
+          if (v) return `https://www.youtube.com/embed/${encodeURIComponent(v)}`;
+          const parts = u.pathname.split('/').filter(Boolean);
+          const idx = parts.indexOf('shorts');
+          if (idx !== -1 && parts[idx + 1]) {
+            return `https://www.youtube.com/embed/${encodeURIComponent(parts[idx + 1])}`;
+          }
+        }
+      } catch (_) {}
+      return '';
+    }
+
+    function isSafeHttpUrl(urlStr) {
+      try {
+        const u = new URL(String(urlStr || '').trim());
+        return u.protocol === 'https:' || u.protocol === 'http:';
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('Lecture média impossible'));
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function stopCameraStream() {
+      if (videoRecorder && videoRecorder.state !== 'inactive') {
+        try { videoRecorder.stop(); } catch (_) {}
+      }
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((t) => t.stop());
+        cameraStream = null;
+      }
+      btnCameraStart.style.display = 'inline-flex';
+      btnCameraStop.style.display = 'none';
+      cameraStatusTxt.textContent = '';
+    }
+
+    function clearAttachedMedia() {
+      stopCameraStream();
+      attachedAudioDataUrl = '';
+      attachedVideoDataUrl = '';
+      videoUrlInput.value = '';
+      voicePreviewAudio.removeAttribute('src');
+      voicePreviewBox.classList.remove('active');
+      videoPreviewEl.removeAttribute('src');
+      videoPreviewBox.classList.remove('active');
+      btnClearMedia.style.display = 'none';
+    }
+
+    btnToggleVideo.addEventListener('click', () => {
+      videoPanel.classList.toggle('open');
+      if (!videoPanel.classList.contains('open')) {
+        stopCameraStream();
+      }
+    });
+
+    btnClearMedia.addEventListener('click', () => {
+      clearAttachedMedia();
+    });
+
+    btnRecordVoice.addEventListener('click', async () => {
+      hideAlert();
+      if (!isRecordingVoice) {
+        try {
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            showAlert('Micro non disponible sur ce navigateur.');
+            return;
+          }
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          audioChunks = [];
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.ondataavailable = (ev) => {
+            if (ev.data && ev.data.size > 0) audioChunks.push(ev.data);
+          };
+          mediaRecorder.onstop = async () => {
+            stream.getTracks().forEach((t) => t.stop());
+            const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+            const dataUrl = await blobToDataUrl(blob);
+            if (dataUrl.length > 650000) {
+              showAlert('Vocal trop long pour être enregistré directement (fais un vocal plus court, ~10–15s max).');
+              return;
+            }
+            attachedAudioDataUrl = dataUrl;
+            voicePreviewAudio.src = attachedAudioDataUrl;
+            voicePreviewBox.classList.add('active');
+            btnClearMedia.style.display = 'inline-flex';
+          };
+          mediaRecorder.start();
+          isRecordingVoice = true;
+          btnRecordVoice.classList.add('recording');
+          btnRecordVoice.textContent = '⏹ Stop vocal';
+        } catch (err) {
+          showAlert('Accès micro refusé ou indisponible : ' + (err.message || err));
+        }
+      } else {
+        isRecordingVoice = false;
+        btnRecordVoice.classList.remove('recording');
+        btnRecordVoice.textContent = '🎤 Vocal micro';
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+      }
+    });
+
+    btnCameraStart.addEventListener('click', async () => {
+      hideAlert();
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          showAlert('Caméra indisponible sur ce navigateur.');
+          return;
+        }
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        videoChunks = [];
+        videoRecorder = new MediaRecorder(cameraStream);
+        videoRecorder.ondataavailable = (ev) => {
+          if (ev.data && ev.data.size > 0) videoChunks.push(ev.data);
+        };
+        videoRecorder.onstop = async () => {
+          const blob = new Blob(videoChunks, { type: videoRecorder.mimeType || 'video/webm' });
+          const dataUrl = await blobToDataUrl(blob);
+          if (dataUrl.length > 650000) {
+            showAlert('Clip caméra trop lourd pour la base directe (utilise un lien vidéo YouTube/MP4 ou un clip très court).');
+            return;
+          }
+          attachedVideoDataUrl = dataUrl;
+          videoPreviewEl.srcObject = null;
+          videoPreviewEl.src = attachedVideoDataUrl;
+          videoPreviewEl.muted = false;
+          videoPreviewEl.controls = true;
+          videoPreviewBox.classList.add('active');
+          btnClearMedia.style.display = 'inline-flex';
+        };
+        videoPreviewEl.srcObject = cameraStream;
+        videoPreviewEl.muted = true;
+        videoPreviewEl.controls = false;
+        await videoPreviewEl.play();
+        videoRecorder.start();
+
+        btnCameraStart.style.display = 'none';
+        btnCameraStop.style.display = 'inline-flex';
+        cameraStatusTxt.textContent = 'Enregistrement vidéo en cours...';
+      } catch (err) {
+        showAlert('Caméra refusée ou indisponible : ' + (err.message || err));
+      }
+    });
+
+    btnCameraStop.addEventListener('click', () => {
+      stopCameraStream();
+    });
+
+    videoUrlInput.addEventListener('input', () => {
+      const val = videoUrlInput.value.trim();
+      if (!val) {
+        if (!attachedVideoDataUrl) videoPreviewBox.classList.remove('active');
+        return;
+      }
+      attachedVideoDataUrl = '';
+      if (isSafeHttpUrl(val)) {
+        videoPreviewEl.srcObject = null;
+        videoPreviewEl.src = val;
+        videoPreviewEl.controls = true;
+        videoPreviewBox.classList.add('active');
+        btnClearMedia.style.display = 'inline-flex';
+      }
+    });
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeFilter = btn.dataset.filter || 'all';
+        filterButtons.forEach((b) => b.classList.toggle('active', b === btn));
+        filterLabelEl.textContent = 'Filtre : ' + btn.textContent;
+        renderFeed();
+      });
+    });
+
+    function getPostCategory(post) {
+      if (post.audioDataUrl) return 'voice';
+      if (post.videoDataUrl || post.videoUrl) return 'video';
+      return 'text';
+    }
+
+    function renderFeed() {
+      totalCountEl.textContent = String(allPosts.length);
+
+      const filtered = allPosts.filter((p) => {
+        if (activeFilter === 'all') return true;
+        return getPostCategory(p) === activeFilter;
+      });
+
+      if (filtered.length === 0) {
+        feedEl.innerHTML = '<div class="hub-empty">Aucune publication dans cette catégorie pour l’instant.</div>';
+        return;
+      }
+
+      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
+      feedEl.innerHTML = '';
+
+      filtered.forEach((post) => {
+        const article = document.createElement('article');
+        article.className = 'hub-post';
+
+        const top = document.createElement('div');
+        top.className = 'post-top';
+
+        const userWrap = document.createElement('div');
+        userWrap.className = 'post-user';
+
+        const av = document.createElement('div');
+        av.className = 'post-av';
+        av.textContent = getInitials(post.authorPseudo || 'Membre');
+
+        const authorName = document.createElement('span');
+        authorName.className = 'post-author';
+        authorName.textContent = post.authorPseudo || 'Membre';
+
+        const badge = document.createElement('span');
+        const pRole = post.authorRole || 'membre';
+        badge.className = 'post-badge' + ((pRole === 'admin' || pRole === 'superadmin') ? ' admin' : '');
+        badge.textContent = pRole;
+
+        userWrap.appendChild(av);
+        userWrap.appendChild(authorName);
+        userWrap.appendChild(badge);
+
+        const right = document.createElement('div');
+        right.className = 'post-right';
+
+        const dt = document.createElement('span');
+        dt.textContent = formatDate(post.createdAt);
+        right.appendChild(dt);
+
+        const canDelete = currentUser && (isUserAdmin || post.authorUid === currentUser.uid);
+        if (canDelete) {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Supprimer';
+          delBtn.addEventListener('click', async () => {
+            try {
+              await deleteDoc(doc(db, "forum", post.id));
+            } catch (err) {
+              showAlert('Suppression impossible : ' + (err.code || err.message));
+            }
+          });
+          right.appendChild(delBtn);
+        }
+
+        top.appendChild(userWrap);
+        top.appendChild(right);
+        article.appendChild(top);
+
+        const textVal = post.message || post.content || '';
+        if (textVal) {
+          const p = document.createElement('p');
+          p.className = 'post-text';
+          p.textContent = textVal;
+          article.appendChild(p);
+        }
+
+        if (post.audioDataUrl && String(post.audioDataUrl).startsWith('data:audio/')) {
+          const mediaBox = document.createElement('div');
+          mediaBox.className = 'post-media';
+          const audioEl = document.createElement('audio');
+          audioEl.controls = true;
+          audioEl.src = post.audioDataUrl;
+          mediaBox.appendChild(audioEl);
+          article.appendChild(mediaBox);
+        }
+
+        if (post.videoDataUrl && String(post.videoDataUrl).startsWith('data:video/')) {
+          const mediaBox = document.createElement('div');
+          mediaBox.className = 'post-media';
+          const vidEl = document.createElement('video');
+          vidEl.controls = true;
+          vidEl.playsInline = true;
+          vidEl.src = post.videoDataUrl;
+          mediaBox.appendChild(vidEl);
+          article.appendChild(mediaBox);
+        } else if (post.videoUrl && isSafeHttpUrl(post.videoUrl)) {
+          const mediaBox = document.createElement('div');
+          mediaBox.className = 'post-media';
+          const ytEmbed = parseYoutubeEmbedUrl(post.videoUrl);
+          if (ytEmbed) {
+            const iframe = document.createElement('iframe');
+            iframe.src = ytEmbed;
+            iframe.allowFullscreen = true;
+            mediaBox.appendChild(iframe);
+          } else {
+            const vidEl = document.createElement('video');
+            vidEl.controls = true;
+            vidEl.playsInline = true;
+            vidEl.src = post.videoUrl;
+            mediaBox.appendChild(vidEl);
+          }
+          article.appendChild(mediaBox);
+        }
+
+        const actionsBar = document.createElement('div');
+        actionsBar.className = 'post-actions-bar';
+
+        const reactBtn = document.createElement('button');
+        reactBtn.type = 'button';
+        reactBtn.className = 'react-btn';
+        const likesCount = Number(post.likes || 0);
+        reactBtn.textContent = `🚒 Soutien (${likesCount})`;
+        reactBtn.addEventListener('click', async () => {
+          if (!currentUser) {
+            showAlert('Connecte-toi pour réagir.');
+            return;
+          }
+          try {
+            await updateDoc(doc(db, "forum", post.id), {
+              likes: increment(1)
+            });
+          } catch (err) {
+            showAlert('Réaction impossible : ' + (err.code || err.message));
+          }
+        });
+
+        actionsBar.appendChild(reactBtn);
+        article.appendChild(actionsBar);
+        feedEl.appendChild(article);
       });
     }
 
@@ -377,89 +982,21 @@
 
     function startForumListener() {
       stopForumListener();
-      const q = query(collection(db, "forum"), orderBy("createdAt", "desc"), limit(100));
+      const q = query(collection(db, "forum"), orderBy("createdAt", "desc"), limit(80));
 
       forumUnsubscribe = onSnapshot(q, (snap) => {
         hideAlert();
-        const posts = [];
-        snap.forEach((docSnap) => {
-          posts.push({ id: docSnap.id, ...(docSnap.data() || {}) });
+        liveStatusEl.textContent = '● En ligne';
+        const list = [];
+        snap.forEach((d) => {
+          list.push({ id: d.id, ...(d.data() || {}) });
         });
-
-        countBadge.textContent = `${posts.length} message${posts.length > 1 ? 's' : ''}`;
-
-        if (posts.length === 0) {
-          feedEl.innerHTML = '<div class="forum-empty">Aucun message pour le moment. Lance la discussion !</div>';
-          return;
-        }
-
-        const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
-        feedEl.innerHTML = '';
-
-        posts.forEach((post) => {
-          const article = document.createElement('article');
-          article.className = 'forum-post';
-
-          const head = document.createElement('div');
-          head.className = 'post-head';
-
-          const authorWrap = document.createElement('div');
-          authorWrap.className = 'post-author-wrap';
-
-          const avatar = document.createElement('div');
-          avatar.className = 'post-avatar';
-          avatar.textContent = getInitials(post.authorPseudo || 'Membre');
-
-          const nameSpan = document.createElement('span');
-          nameSpan.className = 'post-author-name';
-          nameSpan.textContent = post.authorPseudo || 'Membre';
-
-          const roleBadge = document.createElement('span');
-          const postRole = post.authorRole || 'membre';
-          roleBadge.className = 'post-role-tag' + ((postRole === 'admin' || postRole === 'superadmin') ? ' admin' : '');
-          roleBadge.textContent = postRole;
-
-          authorWrap.appendChild(avatar);
-          authorWrap.appendChild(nameSpan);
-          authorWrap.appendChild(roleBadge);
-
-          const metaRight = document.createElement('div');
-          metaRight.className = 'post-meta-right';
-
-          const timeSpan = document.createElement('span');
-          timeSpan.textContent = formatDate(post.createdAt);
-          metaRight.appendChild(timeSpan);
-
-          const canDelete = currentUser && (isUserAdmin || post.authorUid === currentUser.uid);
-          if (canDelete) {
-            const delBtn = document.createElement('button');
-            delBtn.type = 'button';
-            delBtn.className = 'btn btn-secondary btn-small';
-            delBtn.textContent = 'Supprimer';
-            delBtn.addEventListener('click', async () => {
-              try {
-                await deleteDoc(doc(db, "forum", post.id));
-              } catch (err) {
-                showAlert('Suppression impossible : ' + (err.code || err.message));
-              }
-            });
-            metaRight.appendChild(delBtn);
-          }
-
-          head.appendChild(authorWrap);
-          head.appendChild(metaRight);
-
-          const bodyP = document.createElement('p');
-          bodyP.className = 'post-content';
-          bodyP.textContent = post.message || post.content || '';
-
-          article.appendChild(head);
-          article.appendChild(bodyP);
-          feedEl.appendChild(article);
-        });
+        allPosts = list;
+        renderFeed();
       }, (err) => {
-        feedEl.innerHTML = `<div class="forum-empty">Impossible de charger les messages (${err.code || 'erreur'}).</div>`;
-        showAlert('Erreur Firestore sur le forum : ' + (err.code || err.message));
+        liveStatusEl.textContent = '● Limité';
+        feedEl.innerHTML = `<div class="hub-empty">Impossible de charger les messages (${err.code || 'erreur'}).</div>`;
+        showAlert('Erreur Firestore : ' + (err.code || err.message));
       });
     }
 
@@ -472,40 +1009,53 @@
       hideAlert();
 
       if (!currentUser) {
-        showAlert('Tu dois être connecté pour publier un message.');
+        showAlert('Connecte-toi pour publier un message, un vocal ou une vidéo.');
         return;
       }
 
-      const content = messageInput.value.trim();
-      if (!content) {
-        showAlert('Écris un message avant de publier.');
-        messageInput.focus();
+      const textVal = messageInput.value.trim();
+      const vidUrlVal = videoUrlInput.value.trim();
+
+      if (!textVal && !attachedAudioDataUrl && !attachedVideoDataUrl && !vidUrlVal) {
+        showAlert('Ajoute du texte, un vocal ou une vidéo avant de publier.');
+        return;
+      }
+
+      if (vidUrlVal && !isSafeHttpUrl(vidUrlVal)) {
+        showAlert('Le lien vidéo doit commencer par https:// ou http://');
         return;
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Envoi...';
+      submitBtn.textContent = 'Publication...';
 
       try {
         await addDoc(collection(db, "forum"), {
           authorUid: currentUser.uid,
           authorPseudo: currentProfile.pseudo,
           authorRole: currentProfile.role,
-          message: content,
+          message: textVal,
+          audioDataUrl: attachedAudioDataUrl || '',
+          videoDataUrl: attachedVideoDataUrl || '',
+          videoUrl: isSafeHttpUrl(vidUrlVal) ? vidUrlVal : '',
+          likes: 0,
           createdAt: serverTimestamp()
         });
+
         messageInput.value = '';
         charCountEl.textContent = '0 / 1500';
+        clearAttachedMedia();
       } catch (err) {
-        showAlert('Envoi impossible : ' + (err.code || err.message));
+        showAlert('Publication impossible : ' + (err.code || err.message));
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Publier';
+        submitBtn.textContent = 'Publier sur le forum';
       }
     });
 
     drawerLogoutBtn.addEventListener('click', async () => {
       stopForumListener();
+      stopCameraStream();
       await signOut(auth);
       window.location.replace('login.html');
     });
@@ -527,7 +1077,7 @@
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
-        feedEl.innerHTML = '<div class="forum-empty">Connecte-toi pour accéder au forum. <a href="login.html">Se connecter</a></div>';
+        feedEl.innerHTML = '<div class="hub-empty">Connecte-toi pour accéder au forum. <a href="login.html">Se connecter</a></div>';
         return;
       }
 

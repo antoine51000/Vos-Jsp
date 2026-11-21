@@ -3,186 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Poste de commandement Admin</title>
+  <title>Vos JSP — Admin</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .adm-page {
-      max-width: 1180px;
-      margin: 1.8rem auto 3.8rem;
+    .adm-wrap {
+      max-width: 1040px;
+      margin: 1.8rem auto 3.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1.2rem;
     }
 
-    .adm-header {
-      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+    .adm-top {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 26px;
-      padding: 1.65rem 1.85rem;
+      border-radius: 24px;
+      padding: 1.5rem 1.75rem;
       box-shadow: var(--shadow);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 1.2rem;
+      gap: 1rem;
       flex-wrap: wrap;
     }
 
-    .adm-header-title {
-      margin: 0.45rem 0 0.3rem;
-      font-size: 1.85rem;
-      letter-spacing: -0.025em;
-      line-height: 1.12;
+    .adm-top h1 {
+      margin: 0.35rem 0 0.25rem;
+      font-size: 1.7rem;
     }
 
-    .adm-header-sub {
+    .adm-top p {
       margin: 0;
       color: var(--muted);
-      font-size: 0.92rem;
-      max-width: 620px;
+      font-size: 0.9rem;
     }
 
-    .adm-header-actions {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .adm-kpis {
+    .adm-menu {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 0.85rem;
+      gap: 0.65rem;
     }
 
-    @media (max-width: 900px) {
-      .adm-kpis {
+    @media (max-width: 820px) {
+      .adm-menu {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 520px) {
-      .adm-kpis {
+    @media (max-width: 480px) {
+      .adm-menu {
         grid-template-columns: 1fr;
       }
     }
 
-    .adm-kpi {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1rem 1.2rem;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
-    }
-
-    .adm-kpi small {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    .adm-kpi strong {
-      display: block;
-      font-size: 1.5rem;
-      font-weight: 900;
-      margin-top: 0.2rem;
-      color: var(--primary);
-    }
-
-    .adm-nav-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 0.5rem;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
-      display: flex;
-      gap: 0.4rem;
-      overflow-x: auto;
-      scrollbar-width: thin;
-    }
-
-    .adm-tab {
+    .adm-nav-btn {
       appearance: none;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--muted);
-      font-weight: 800;
-      font-size: 0.84rem;
-      padding: 0.65rem 1rem;
-      border-radius: 15px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-    }
-
-    .adm-tab:hover {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
       color: var(--text);
-      background: var(--bg);
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 0.85rem 1rem;
+      border-radius: 18px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
     }
 
-    .adm-tab.active {
-      background: var(--primary);
-      color: #fff;
+    .adm-nav-btn:hover {
       border-color: var(--primary);
-      box-shadow: 0 6px 16px rgba(225, 29, 42, 0.22);
     }
 
-    .adm-tab-count {
-      font-size: 0.72rem;
-      padding: 0.1rem 0.45rem;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.08);
-    }
-
-    .adm-tab.active .adm-tab-count {
-      background: rgba(255, 255, 255, 0.24);
+    .adm-nav-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
       color: #fff;
     }
 
-    .adm-panel {
+    .adm-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 24px;
-      padding: 1.55rem 1.65rem;
+      padding: 1.5rem 1.65rem;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .adm-panel-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-      flex-wrap: wrap;
-      padding-bottom: 0.9rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .adm-panel-head h2 {
-      margin: 0 0 0.2rem;
-      font-size: 1.25rem;
-    }
-
-    .adm-panel-head p {
-      margin: 0;
-      font-size: 0.86rem;
-      color: var(--muted);
-    }
-
-    .adm-subgrid {
-      display: grid;
-      grid-template-columns: 1fr 1.25fr;
       gap: 1.2rem;
-      align-items: start;
     }
 
-    @media (max-width: 900px) {
-      .adm-subgrid {
+    .adm-card h2 {
+      margin: 0 0 0.2rem;
+      font-size: 1.2rem;
+    }
+
+    .adm-card-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .adm-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 780px) {
+      .adm-two {
         grid-template-columns: 1fr;
       }
     }
@@ -190,166 +117,75 @@
     .adm-box {
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.2rem 1.25rem;
+      border-radius: 18px;
+      padding: 1.15rem;
     }
 
     .adm-box h3 {
-      margin: 0 0 0.25rem;
-      font-size: 1.04rem;
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
     }
 
-    .adm-box-desc {
-      margin: 0 0 1rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .adm-form-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-
-    @media (max-width: 600px) {
-      .adm-form-grid-2 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .adm-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .adm-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1rem 1.15rem;
+    .adm-rows {
       display: flex;
       flex-direction: column;
       gap: 0.65rem;
     }
 
-    .adm-item-top {
+    .adm-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 0.75rem;
       flex-wrap: wrap;
     }
 
-    .adm-item-title {
+    .adm-row-title {
       font-weight: 800;
-      font-size: 0.98rem;
+      font-size: 0.92rem;
       display: block;
     }
 
-    .adm-item-meta {
+    .adm-row-sub {
       font-size: 0.78rem;
       color: var(--muted);
       display: block;
       margin-top: 0.15rem;
     }
 
-    .adm-item-body {
-      margin: 0;
-      font-size: 0.86rem;
-      color: var(--text);
-      line-height: 1.48;
-      white-space: pre-wrap;
-    }
-
-    .adm-item-actions {
+    .adm-actions {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.45rem;
       flex-wrap: wrap;
       align-items: center;
-    }
-
-    .adm-pill {
-      display: inline-flex;
-      align-items: center;
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 0.22rem 0.62rem;
-      border-radius: 999px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-
-    .adm-pill.superadmin {
-      background: rgba(225, 29, 42, 0.14);
-      border-color: rgba(225, 29, 42, 0.35);
-      color: var(--primary);
-    }
-
-    .adm-pill.admin {
-      background: rgba(37, 99, 235, 0.12);
-      border-color: rgba(37, 99, 235, 0.3);
-      color: #1d4ed8;
-    }
-
-    .adm-pill.ok {
-      background: rgba(22, 163, 74, 0.12);
-      border-color: rgba(22, 163, 74, 0.3);
-      color: #15803d;
-    }
-
-    .adm-pill.warn {
-      background: rgba(225, 29, 42, 0.12);
-      border-color: rgba(225, 29, 42, 0.3);
-      color: var(--primary);
-    }
-
-    .adm-inline-check {
-      display: inline-flex !important;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .adm-inline-check input[type="checkbox"] {
-      width: auto !important;
-      margin: 0 !important;
-      accent-color: var(--primary);
     }
 
     .adm-empty {
       text-align: center;
-      padding: 1.5rem 1rem;
-      border: 1px dashed var(--border);
-      border-radius: 16px;
+      padding: 1.2rem;
       color: var(--muted);
-      font-size: 0.86rem;
+      font-size: 0.85rem;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
     }
 
-    .adm-search-row {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      margin-bottom: 0.85rem;
+    .adm-check {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
     }
 
-    .adm-search-row input,
-    .adm-search-row select {
-      flex: 1 1 180px;
-    }
-
-    .btn-danger {
-      background: #b91c1c;
-      color: #fff;
-      border-color: #b91c1c;
-    }
-
-    .btn-danger:hover {
-      background: #991b1b;
+    .adm-check input {
+      width: auto !important;
+      margin: 0 !important;
+      accent-color: var(--primary);
     }
   </style>
 </head>
@@ -408,276 +244,166 @@
   </aside>
 
   <main>
-    <div class="adm-page">
+    <div class="adm-wrap">
       <div id="adm-alert" class="alert"></div>
 
-      <div id="adm-denied-card" class="adm-panel" style="display: none; text-align: center;">
-        <span class="badge">Accès restreint</span>
-        <h1 style="margin: 0.55rem 0 0.3rem; font-size: 1.6rem;">Réservé à l'équipe d'administration</h1>
-        <p class="adm-header-sub" style="margin: 0 auto 1.1rem;">Connecte-toi avec un compte disposant des droits admin ou superadmin pour accéder au poste de commandement.</p>
-        <a href="login.html" class="btn btn-small">Connexion</a>
+      <div id="adm-denied" class="adm-card" style="display: none; text-align: center;">
+        <h1>Accès admin uniquement</h1>
+        <p class="adm-card-sub">Connecte-toi avec un compte admin ou superadmin.</p>
+        <div><a href="login.html" class="btn btn-small">Connexion</a></div>
       </div>
 
-      <div id="adm-shell" style="display: none; flex-direction: column; gap: 1.2rem;">
-        <header class="adm-header">
+      <div id="adm-content" style="display: none; flex-direction: column; gap: 1.2rem;">
+        <header class="adm-top">
           <div>
-            <span class="badge">Administration • Accès restreint</span>
-            <h1 class="adm-header-title">Poste de commandement Vos JSP</h1>
-            <p class="adm-header-sub">Gère les membres, les adresses mail admin, les ressources, le recrutement, les actualités et la modération depuis un espace clair.</p>
+            <span class="badge" id="adm-role-badge">admin</span>
+            <h1>Espace Admin</h1>
+            <p>Choisis une rubrique ci-dessous. Tout est simple et direct.</p>
           </div>
-          <div class="adm-header-actions">
-            <span class="adm-pill superadmin" id="adm-current-role-pill">admin</span>
-            <a href="mail.html" class="btn btn-small">Ouvrir la boîte mail</a>
-            <button type="button" id="adm-logout-btn" class="btn btn-secondary btn-small">Déconnexion</button>
+          <div class="adm-actions">
+            <a href="mail.html" class="btn btn-small">Messagerie</a>
+            <button type="button" id="adm-logout" class="btn btn-secondary btn-small">Déconnexion</button>
           </div>
         </header>
 
-        <section class="adm-kpis">
-          <div class="adm-kpi">
-            <small>Membres inscrits</small>
-            <strong id="kpi-users">0</strong>
-          </div>
-          <div class="adm-kpi">
-            <small>Propositions en attente</small>
-            <strong id="kpi-props">0</strong>
-          </div>
-          <div class="adm-kpi">
-            <small>Candidatures reçues</small>
-            <strong id="kpi-apps">0</strong>
-          </div>
-          <div class="adm-kpi">
-            <small>Adresses mail admin</small>
-            <strong id="kpi-mails">0</strong>
-          </div>
-        </section>
-
-        <!-- BARRE D'ONGLETS UNIQUE ET LISIBLE -->
-        <nav class="adm-nav-wrap" aria-label="Sections d'administration">
-          <button type="button" class="adm-tab active" data-adm-tab="accounts">
-            Comptes &amp; Mails <span class="adm-tab-count" id="tab-count-accounts">0</span>
-          </button>
-          <button type="button" class="adm-tab" data-adm-tab="content">
-            Actualités &amp; Propositions <span class="adm-tab-count" id="tab-count-content">0</span>
-          </button>
-          <button type="button" class="adm-tab" data-adm-tab="moderation">
-            Ressources &amp; Modération <span class="adm-tab-count" id="tab-count-moderation">0</span>
-          </button>
-          <button type="button" class="adm-tab" data-adm-tab="recruitment">
-            Recrutement &amp; Candidatures <span class="adm-tab-count" id="tab-count-recruitment">0</span>
-          </button>
-          <button type="button" class="adm-tab" data-adm-tab="logs">
-            Journal d'activité <span class="adm-tab-count" id="tab-count-logs">0</span>
-          </button>
+        <!-- MENU SIMPLE EN 4 BOUTONS -->
+        <nav class="adm-menu">
+          <button type="button" class="adm-nav-btn active" data-sec="membres">1. Membres &amp; Mails</button>
+          <button type="button" class="adm-nav-btn" data-sec="actus">2. Actus &amp; Propositions</button>
+          <button type="button" class="adm-nav-btn" data-sec="mod">3. Forum &amp; Galerie</button>
+          <button type="button" class="adm-nav-btn" data-sec="recrut">4. Recrutement</button>
         </nav>
 
-        <!-- 1. COMPTES & MAILS -->
-        <section class="adm-panel" id="panel-accounts">
-          <div class="adm-panel-head">
-            <div>
-              <h2>Comptes, rôles &amp; messagerie interne</h2>
-              <p>Crée une adresse mail admin, gère les rôles membres/admin (superadmin requis) et applique des sanctions propres.</p>
-            </div>
+        <!-- 1. MEMBRES & MAILS -->
+        <section class="adm-card" id="sec-membres">
+          <div>
+            <h2>Membres &amp; adresses mail admin</h2>
+            <p class="adm-card-sub">Gère les comptes, les rôles, les bans et les mails internes.</p>
           </div>
 
-          <div class="adm-subgrid">
+          <div class="adm-two">
             <div class="adm-box">
               <h3>Créer une adresse mail admin</h3>
-              <p class="adm-box-desc">Attribue ou crée une adresse interne (ex. : <code>leo@vosjsp.fr</code>) liée à la boîte mail admin ou à un UID.</p>
-
-              <form id="adm-mail-form">
-                <div class="adm-form-grid-2">
-                  <div class="form-group">
-                    <label for="adm-mail-address">Identifiant / adresse mail</label>
-                    <input type="text" id="adm-mail-address" required placeholder="Ex. : leo ou leo@vos-jsp.com">
-                  </div>
-                  <div class="form-group">
-                    <label for="adm-mail-holder">Pseudo / Titulaire</label>
-                    <input type="text" id="adm-mail-holder" required placeholder="Ex. : [ ADMIN ] Léo">
-                  </div>
+              <form id="mail-form">
+                <div class="form-group">
+                  <label for="mail-addr">Adresse ou pseudo mail</label>
+                  <input type="text" id="mail-addr" required placeholder="Ex. : leo ou leo@vos-jsp.com">
                 </div>
                 <div class="form-group">
-                  <label for="adm-mail-uid">UID Firebase lié (optionnel)</label>
-                  <input type="text" id="adm-mail-uid" placeholder="Colle l'UID du membre si tu veux lier l'adresse à son profil">
+                  <label for="mail-holder">Nom affiché</label>
+                  <input type="text" id="mail-holder" required placeholder="Ex. : [ ADMIN ] Léo">
                 </div>
-                <button type="submit" id="adm-mail-submit" class="btn btn-small">Créer l'adresse mail</button>
+                <div class="form-group">
+                  <label for="mail-uid">UID lié (optionnel)</label>
+                  <input type="text" id="mail-uid" placeholder="UID Firebase">
+                </div>
+                <button type="submit" class="btn btn-small">Ajouter</button>
               </form>
-
-              <div class="adm-list" id="adm-mails-list" style="margin-top: 1.1rem;">
-                <div class="adm-empty">Chargement des adresses mail...</div>
-              </div>
+              <div class="adm-rows" id="mails-list" style="margin-top: 0.9rem;"></div>
             </div>
 
             <div class="adm-box">
-              <h3>Gestion des comptes, rôles &amp; bannissements</h3>
-              <p class="adm-box-desc">Seul un <strong>superadmin</strong> peut promouvoir/rétrograder un admin ou supprimer un profil Firestore. Bannir un membre exige une raison, génère un message officiel sur <code>ban.html</code> et peut bloquer son IP.</p>
-
-              <div class="adm-search-row">
-                <input type="search" id="adm-user-search" placeholder="Rechercher pseudo, e-mail, UID ou IP...">
-                <select id="adm-user-role-filter">
-                  <option value="all">Tous les rôles</option>
-                  <option value="superadmin">Superadmin</option>
-                  <option value="admin">Admin</option>
-                  <option value="membre">Membre</option>
-                </select>
+              <h3>Liste des membres</h3>
+              <div class="form-group">
+                <input type="search" id="user-search" placeholder="Chercher un membre (pseudo, mail, IP)...">
               </div>
-
-              <div class="adm-list" id="adm-users-list">
-                <div class="adm-empty">Chargement des membres...</div>
-              </div>
+              <div class="adm-rows" id="users-list"></div>
             </div>
           </div>
         </section>
 
-        <!-- 2. ACTUALITÉS & PROPOSITIONS -->
-        <section class="adm-panel" id="panel-content" style="display: none;">
-          <div class="adm-panel-head">
-            <div>
-              <h2>Actualités &amp; Propositions</h2>
-              <p>Publie directement une actualité ou valide/refuse les propositions envoyées par la communauté.</p>
-            </div>
+        <!-- 2. ACTUS & PROPOSITIONS -->
+        <section class="adm-card" id="sec-actus" style="display: none;">
+          <div>
+            <h2>Actualités &amp; Propositions</h2>
+            <p class="adm-card-sub">Publie une actu ou valide les propositions des membres.</p>
           </div>
 
-          <div class="adm-subgrid">
+          <div class="adm-two">
             <div class="adm-box">
-              <h3>Publier une actualité</h3>
-              <p class="adm-box-desc">Ajoute un article directement sur le fil d'actualités.</p>
-
-              <form id="adm-actu-form">
+              <h3>Nouvelle actualité</h3>
+              <form id="actu-form">
                 <div class="form-group">
-                  <label for="adm-actu-title">Titre</label>
-                  <input type="text" id="adm-actu-title" required placeholder="Titre de l'actualité">
-                </div>
-                <div class="adm-form-grid-2">
-                  <div class="form-group">
-                    <label for="adm-actu-cat">Catégorie</label>
-                    <select id="adm-actu-cat">
-                      <option value="Cursus JSP">Cursus JSP</option>
-                      <option value="Secourisme">Secourisme</option>
-                      <option value="Sécurité Civile">Sécurité Civile</option>
-                      <option value="Blocus & Violences">Blocus &amp; Violences</option>
-                      <option value="Vie de section">Vie de section</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label for="adm-actu-source">Lien source (optionnel)</label>
-                    <input type="url" id="adm-actu-source" placeholder="https://...">
-                  </div>
+                  <label for="actu-title">Titre</label>
+                  <input type="text" id="actu-title" required>
                 </div>
                 <div class="form-group">
-                  <label for="adm-actu-summary">Résumé court</label>
-                  <textarea id="adm-actu-summary" rows="2" required placeholder="Résumé en 2-3 phrases..."></textarea>
+                  <label for="actu-cat">Catégorie</label>
+                  <select id="actu-cat">
+                    <option value="Cursus JSP">Cursus JSP</option>
+                    <option value="Secourisme">Secourisme</option>
+                    <option value="Sécurité Civile">Sécurité Civile</option>
+                    <option value="Vie de section">Vie de section</option>
+                  </select>
                 </div>
                 <div class="form-group">
-                  <label for="adm-actu-body">Texte complet</label>
-                  <textarea id="adm-actu-body" rows="5" required placeholder="Texte complet (sépare les paragraphes par une ligne vide)..."></textarea>
+                  <label for="actu-summary">Résumé</label>
+                  <textarea id="actu-summary" rows="2" required></textarea>
                 </div>
-                <button type="submit" id="adm-actu-submit" class="btn btn-small">Publier l'actualité</button>
+                <div class="form-group">
+                  <label for="actu-body">Texte complet</label>
+                  <textarea id="actu-body" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-small">Publier</button>
               </form>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 1.1rem;">
-              <div class="adm-box">
-                <h3>Propositions communautaires</h3>
-                <p class="adm-box-desc">Valide pour publier dans <code>actus</code> ou refuse / supprime.</p>
-                <div class="adm-list" id="adm-props-list">
-                  <div class="adm-empty">Chargement des propositions...</div>
-                </div>
-              </div>
-
-              <div class="adm-box">
-                <h3>Actualités publiées</h3>
-                <p class="adm-box-desc">Supprime ou consulte les articles actuellement en ligne.</p>
-                <div class="adm-list" id="adm-actus-list">
-                  <div class="adm-empty">Chargement des actualités...</div>
-                </div>
-              </div>
+            <div class="adm-box">
+              <h3>Propositions en attente</h3>
+              <div class="adm-rows" id="props-list"></div>
+              <h3 style="margin-top: 1rem;">Actus en ligne</h3>
+              <div class="adm-rows" id="actus-list"></div>
             </div>
           </div>
         </section>
 
-        <!-- 3. RESSOURCES & MODÉRATION -->
-        <section class="adm-panel" id="panel-moderation" style="display: none;">
-          <div class="adm-panel-head">
-            <div>
-              <h2>Ressources &amp; Modération</h2>
-              <p>Surveille et nettoie les sujets du forum et les photos publiées dans la galerie.</p>
-            </div>
+        <!-- 3. FORUM & GALERIE -->
+        <section class="adm-card" id="sec-mod" style="display: none;">
+          <div>
+            <h2>Forum &amp; Galerie</h2>
+            <p class="adm-card-sub">Supprime les publications qui ne respectent pas les règles.</p>
           </div>
 
-          <div class="adm-subgrid">
+          <div class="adm-two">
             <div class="adm-box">
               <h3>Sujets du forum</h3>
-              <p class="adm-box-desc">Modération en direct de la collection <code>forum</code>.</p>
-              <div class="adm-list" id="adm-forum-list">
-                <div class="adm-empty">Chargement du forum...</div>
-              </div>
+              <div class="adm-rows" id="forum-list"></div>
             </div>
-
             <div class="adm-box">
               <h3>Photos de la galerie</h3>
-              <p class="adm-box-desc">Modération en direct de la collection <code>galerie</code>.</p>
-              <div class="adm-list" id="adm-gallery-list">
-                <div class="adm-empty">Chargement de la galerie...</div>
-              </div>
+              <div class="adm-rows" id="gallery-list"></div>
             </div>
           </div>
         </section>
 
-        <!-- 4. RECRUTEMENT & CANDIDATURES -->
-        <section class="adm-panel" id="panel-recruitment" style="display: none;">
-          <div class="adm-panel-head">
-            <div>
-              <h2>Recrutement &amp; Candidatures</h2>
-              <p>Crée ou ouvre/clôture des postes et traite les candidatures reçues.</p>
-            </div>
+        <!-- 4. RECRUTEMENT -->
+        <section class="adm-card" id="sec-recrut" style="display: none;">
+          <div>
+            <h2>Recrutement &amp; Candidatures</h2>
+            <p class="adm-card-sub">Gère les postes ouverts et les candidatures reçues.</p>
           </div>
 
-          <div class="adm-subgrid">
+          <div class="adm-two">
             <div class="adm-box">
               <h3>Ajouter un poste</h3>
-              <p class="adm-box-desc">Publie une nouvelle fiche de recrutement visible sur <code>recrutement.html</code>.</p>
-
-              <form id="adm-role-form">
+              <form id="role-form">
                 <div class="form-group">
-                  <label for="adm-role-title">Intitulé du poste</label>
-                  <input type="text" id="adm-role-title" required placeholder="Ex. : Modérateur Forum & Discord">
+                  <label for="role-title">Titre du poste</label>
+                  <input type="text" id="role-title" required placeholder="Ex. : Modérateur">
                 </div>
                 <div class="form-group">
-                  <label for="adm-role-tag">Pôle</label>
-                  <input type="text" id="adm-role-tag" placeholder="Ex. : Modération">
+                  <label for="role-desc">Description</label>
+                  <textarea id="role-desc" rows="3" required></textarea>
                 </div>
-                <div class="form-group">
-                  <label for="adm-role-desc">Description</label>
-                  <textarea id="adm-role-desc" rows="3" required placeholder="Missions principales du poste..."></textarea>
-                </div>
-                <button type="submit" id="adm-role-submit" class="btn btn-small">Ajouter le poste</button>
+                <button type="submit" class="btn btn-small">Ajouter le poste</button>
               </form>
-
-              <div class="adm-list" id="adm-roles-list" style="margin-top: 1.1rem;">
-                <div class="adm-empty">Chargement des postes...</div>
-              </div>
+              <div class="adm-rows" id="roles-list" style="margin-top: 0.9rem;"></div>
             </div>
 
             <div class="adm-box">
               <h3>Candidatures reçues</h3>
-              <p class="adm-box-desc">Accepte, refuse ou supprime les dossiers soumis par les membres.</p>
-              <div class="adm-list" id="adm-apps-list">
-                <div class="adm-empty">Aucune candidature pour le moment.</div>
-              </div>
+              <div class="adm-rows" id="apps-list"></div>
             </div>
-          </div>
-        </section>
-
-        <!-- 5. JOURNAL D'ACTIVITÉ -->
-        <section class="adm-panel" id="panel-logs" style="display: none;">
-          <div class="adm-panel-head">
-            <div>
-              <h2>Journal d'activité admin</h2>
-              <p>Historique des actions importantes effectuées depuis le poste de commandement.</p>
-            </div>
-          </div>
-          <div class="adm-list" id="adm-logs-list">
-            <div class="adm-empty">Aucune action enregistrée pour le moment.</div>
           </div>
         </section>
       </div>
@@ -686,9 +412,7 @@
 
   <footer>
     <div class="footer-container">
-      <div>
-        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
-      </div>
+      <div><strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.</div>
       <div class="footer-links">
         <a href="mentions-legales.html">Mentions légales</a>
         <a href="confidentialite.html">Confidentialité</a>
@@ -719,14 +443,7 @@
     import { auth, db } from './js/firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
-      collection,
-      doc,
-      addDoc,
-      setDoc,
-      updateDoc,
-      deleteDoc,
-      onSnapshot,
-      serverTimestamp
+      collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const profileBox = document.getElementById('drawer-profile-box');
@@ -739,909 +456,416 @@
     const drawerMailLink = document.getElementById('drawer-mail-link');
 
     const alertEl = document.getElementById('adm-alert');
-    const deniedCard = document.getElementById('adm-denied-card');
-    const shellEl = document.getElementById('adm-shell');
-    const currentRolePill = document.getElementById('adm-current-role-pill');
-    const logoutBtn = document.getElementById('adm-logout-btn');
+    const deniedEl = document.getElementById('adm-denied');
+    const contentEl = document.getElementById('adm-content');
+    const roleBadge = document.getElementById('adm-role-badge');
 
-    const kpiUsers = document.getElementById('kpi-users');
-    const kpiProps = document.getElementById('kpi-props');
-    const kpiApps = document.getElementById('kpi-apps');
-    const kpiMails = document.getElementById('kpi-mails');
-
-    const tabs = Array.from(document.querySelectorAll('.adm-tab'));
-    const panels = {
-      accounts: document.getElementById('panel-accounts'),
-      content: document.getElementById('panel-content'),
-      moderation: document.getElementById('panel-moderation'),
-      recruitment: document.getElementById('panel-recruitment'),
-      logs: document.getElementById('panel-logs')
+    const navBtns = Array.from(document.querySelectorAll('.adm-nav-btn'));
+    const secs = {
+      membres: document.getElementById('sec-membres'),
+      actus: document.getElementById('sec-actus'),
+      mod: document.getElementById('sec-mod'),
+      recrut: document.getElementById('sec-recrut')
     };
 
-    const mailForm = document.getElementById('adm-mail-form');
-    const mailAddressInput = document.getElementById('adm-mail-address');
-    const mailHolderInput = document.getElementById('adm-mail-holder');
-    const mailUidInput = document.getElementById('adm-mail-uid');
-    const mailsListEl = document.getElementById('adm-mails-list');
-
-    const userSearchInput = document.getElementById('adm-user-search');
-    const userRoleFilter = document.getElementById('adm-user-role-filter');
-    const usersListEl = document.getElementById('adm-users-list');
-
-    const actuForm = document.getElementById('adm-actu-form');
-    const propsListEl = document.getElementById('adm-props-list');
-    const actusListEl = document.getElementById('adm-actus-list');
-
-    const forumListEl = document.getElementById('adm-forum-list');
-    const galleryListEl = document.getElementById('adm-gallery-list');
-
-    const roleForm = document.getElementById('adm-role-form');
-    const rolesListEl = document.getElementById('adm-roles-list');
-    const appsListEl = document.getElementById('adm-apps-list');
-    const logsListEl = document.getElementById('adm-logs-list');
-
     let currentUser = null;
-    let currentRole = 'membre';
-    let currentAdminLabel = 'Admin';
     let isSuperAdmin = false;
-    let authUnsubscribe = null;
-    let collectionUnsubs = [];
+    let adminLabel = 'Admin';
+    let authSub = null;
+    let dataSubs = [];
 
-    let stateUsers = [];
-    let stateMails = [];
-    let stateProps = [];
-    let stateActus = [];
-    let stateForum = [];
-    let stateGallery = [];
-    let stateRoles = [];
-    let stateApps = [];
-    let stateLogs = [];
+    let users = [], mails = [], props = [], actus = [], forum = [], galerie = [], roles = [], apps = [];
 
-    function showAlert(msg, isSuccess = false) {
+    function notify(msg, ok = false) {
       alertEl.style.display = 'block';
-      alertEl.className = isSuccess ? 'alert success' : 'alert';
+      alertEl.className = ok ? 'alert success' : 'alert';
       alertEl.textContent = msg;
-      alertEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function getInitials(label) {
       const clean = String(label || 'JS')
         .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
         .trim() || 'JS';
-      const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-      return clean.slice(0, 2).toUpperCase();
+      const p = clean.split(/[\s._-]+/).filter(Boolean);
+      return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : clean.slice(0, 2).toUpperCase();
     }
 
-    function formatAdminPseudo(userData, fallbackDisplay) {
-      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
-      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
-      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
-      return `[ ADMIN ] ${firstName}`;
+    function formatAdminPseudo(d, fallback) {
+      const raw = (d && (d.prenom || d.pseudo || d.displayName)) || fallback || 'Membre';
+      const first = String(raw).replace(/^\s*\[[^\]]+\]\s*/g, '').trim().split(/\s+/)[0] || 'Membre';
+      return `[ ADMIN ] ${first}`;
     }
 
-    function paintAvatar(container, imgSrc, pseudo) {
-      container.innerHTML = '';
-      if (imgSrc) {
+    function paintAvatar(el, src, pseudo) {
+      el.innerHTML = '';
+      if (src) {
         const img = document.createElement('img');
-        img.src = imgSrc;
+        img.src = src;
         img.alt = pseudo || 'Avatar';
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = 'inherit';
-        img.style.display = 'block';
-        container.appendChild(img);
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;';
+        el.appendChild(img);
       } else {
-        container.textContent = getInitials(pseudo);
+        el.textContent = getInitials(pseudo);
       }
     }
 
-    function setActiveTab(tabName) {
-      tabs.forEach((t) => t.classList.toggle('active', t.dataset.admTab === tabName));
-      Object.entries(panels).forEach(([key, el]) => {
-        if (el) el.style.display = key === tabName ? 'flex' : 'none';
+    navBtns.forEach((b) => {
+      b.addEventListener('click', () => {
+        const key = b.dataset.sec;
+        navBtns.forEach((x) => x.classList.toggle('active', x === b));
+        Object.entries(secs).forEach(([k, el]) => {
+          el.style.display = k === key ? 'flex' : 'none';
+        });
       });
-    }
-
-    tabs.forEach((t) => {
-      t.addEventListener('click', () => setActiveTab(t.dataset.admTab));
     });
 
-    async function writeLog(actionText) {
-      if (!currentUser) return;
-      try {
-        await addDoc(collection(db, "admin_logs"), {
-          action: actionText,
-          actorUid: currentUser.uid,
-          actorName: currentAdminLabel,
-          createdAt: serverTimestamp()
-        });
-      } catch (_) {}
-    }
-
-    function refreshCounters() {
-      const pendingProps = stateProps.filter((p) => (p.status || 'en_attente') === 'en_attente');
-      kpiUsers.textContent = String(stateUsers.length);
-      kpiProps.textContent = String(pendingProps.length);
-      kpiApps.textContent = String(stateApps.length);
-      kpiMails.textContent = String(stateMails.length);
-
-      document.getElementById('tab-count-accounts').textContent = String(stateUsers.length);
-      document.getElementById('tab-count-content').textContent = String(pendingProps.length + stateActus.length);
-      document.getElementById('tab-count-moderation').textContent = String(stateForum.length + stateGallery.length);
-      document.getElementById('tab-count-recruitment').textContent = String(stateApps.length);
-      document.getElementById('tab-count-logs').textContent = String(stateLogs.length);
-    }
-
-    function renderMails() {
-      mailsListEl.innerHTML = '';
-      if (stateMails.length === 0) {
-        mailsListEl.innerHTML = '<div class="adm-empty">Aucune adresse mail admin enregistrée.</div>';
-        return;
-      }
-
-      stateMails.forEach((m) => {
-        const row = document.createElement('div');
-        row.className = 'adm-item';
-
-        const top = document.createElement('div');
-        top.className = 'adm-item-top';
-
-        const info = document.createElement('div');
-        const addr = document.createElement('span');
-        addr.className = 'adm-item-title';
-        addr.textContent = m.address || m.id;
-
-        const sub = document.createElement('span');
-        sub.className = 'adm-item-meta';
-        sub.textContent = `Titulaire : ${m.holder || 'Admin'}${m.uid ? ` • UID : ${m.uid}` : ''}`;
-
-        info.appendChild(addr);
-        info.appendChild(sub);
-
-        const delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'btn btn-secondary btn-small';
-        delBtn.textContent = 'Supprimer';
-        delBtn.addEventListener('click', async () => {
-          try {
-            await deleteDoc(doc(db, "admin_mails", m.id));
-            await writeLog(`Suppression de l'adresse mail ${m.address || m.id}`);
-            showAlert('Adresse mail supprimée.', true);
-          } catch (err) {
-            showAlert('Erreur suppression : ' + (err.code || err.message));
-          }
-        });
-
-        top.appendChild(info);
-        top.appendChild(delBtn);
-        row.appendChild(top);
-        mailsListEl.appendChild(row);
-      });
-    }
-
-    mailForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      let rawAddr = mailAddressInput.value.trim().toLowerCase();
-      if (!rawAddr) return;
-      if (!rawAddr.includes('@')) {
-        rawAddr = `${rawAddr}@vos-jsp.com`;
-      }
-      const holder = mailHolderInput.value.trim() || '[ ADMIN ] Admin';
-      const linkedUid = mailUidInput.value.trim();
-
-      try {
-        const docId = rawAddr.replace(/[^a-zA-Z0-9_-]/g, '_');
-        await setDoc(doc(db, "admin_mails", docId), {
-          address: rawAddr,
-          holder,
-          uid: linkedUid,
-          createdAt: serverTimestamp()
-        }, { merge: true });
-
-        if (linkedUid) {
-          await setDoc(doc(db, "users", linkedUid), {
-            adminMail: rawAddr
-          }, { merge: true });
-        }
-
-        await writeLog(`Création / liaison de l'adresse mail ${rawAddr}`);
-        mailForm.reset();
-        showAlert(`Adresse ${rawAddr} enregistrée.`, true);
-      } catch (err) {
-        showAlert('Erreur création mail : ' + (err.code || err.message));
-      }
-    });
-
-    function sanitizeIpDocId(ip) {
+    function sanitizeIp(ip) {
       return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
     }
 
     function renderUsers() {
-      const needle = (userSearchInput.value || '').trim().toLowerCase();
-      const roleFilter = userRoleFilter.value || 'all';
-
-      const filtered = stateUsers.filter((u) => {
-        const role = String(u.role || u.grade || 'membre').toLowerCase();
-        if (roleFilter !== 'all' && role !== roleFilter) return false;
-        if (!needle) return true;
-        const hay = `${u.pseudo || ''} ${u.email || ''} ${u.id || ''} ${u.lastIp || ''} ${u.ip || ''}`.toLowerCase();
-        return hay.includes(needle);
+      const box = document.getElementById('users-list');
+      const q = (document.getElementById('user-search').value || '').trim().toLowerCase();
+      const list = users.filter((u) => {
+        if (!q) return true;
+        return `${u.pseudo || ''} ${u.email || ''} ${u.id || ''} ${u.lastIp || ''} ${u.ip || ''}`.toLowerCase().includes(q);
       });
-
-      usersListEl.innerHTML = '';
-      if (filtered.length === 0) {
-        usersListEl.innerHTML = '<div class="adm-empty">Aucun membre trouvé avec ces filtres.</div>';
+      box.innerHTML = '';
+      if (!list.length) {
+        box.innerHTML = '<div class="adm-empty">Aucun membre.</div>';
         return;
       }
-
-      filtered.forEach((u) => {
+      list.forEach((u) => {
         const role = String(u.role || u.grade || 'membre').toLowerCase();
-        const isBanned = u.banned === true;
-        const ipVal = u.lastIp || u.ip || '';
+        const banned = u.banned === true;
+        const ip = u.lastIp || u.ip || '';
+        const row = document.createElement('div');
+        row.className = 'adm-row';
 
-        const item = document.createElement('div');
-        item.className = 'adm-item';
+        const info = document.createElement('div');
+        const t = document.createElement('span');
+        t.className = 'adm-row-title';
+        t.textContent = `${u.pseudo || 'Membre'} (${u.email || '—'})`;
+        const s = document.createElement('span');
+        s.className = 'adm-row-sub';
+        s.textContent = `Rôle : ${role}${banned ? ' • BANNI' : ''}${ip ? ` • IP : ${ip}` : ''}`;
+        info.append(t, s);
 
-        const top = document.createElement('div');
-        top.className = 'adm-item-top';
-
-        const left = document.createElement('div');
-        const title = document.createElement('span');
-        title.className = 'adm-item-title';
-        title.textContent = `${u.pseudo || 'Membre'} (${u.email || 'sans e-mail'})`;
-
-        const meta = document.createElement('span');
-        meta.className = 'adm-item-meta';
-        meta.textContent = `Rôle : ${role} • Statut : ${isBanned ? 'Banni' : 'Actif'}${ipVal ? ` • IP : ${ipVal}` : ''} • UID : ${u.id}`;
-
-        left.appendChild(title);
-        left.appendChild(meta);
-
-        const badges = document.createElement('div');
-        badges.className = 'adm-item-actions';
-
-        const roleBadge = document.createElement('span');
-        roleBadge.className = `adm-pill ${role === 'superadmin' ? 'superadmin' : (role === 'admin' ? 'admin' : '')}`;
-        roleBadge.textContent = role;
-        badges.appendChild(roleBadge);
-
-        if (isBanned) {
-          const bBadge = document.createElement('span');
-          bBadge.className = 'adm-pill warn';
-          bBadge.textContent = 'banni';
-          badges.appendChild(bBadge);
-        }
-
-        top.appendChild(left);
-        top.appendChild(badges);
-        item.appendChild(top);
-
-        const actions = document.createElement('div');
-        actions.className = 'adm-item-actions';
+        const acts = document.createElement('div');
+        acts.className = 'adm-actions';
 
         if (isSuperAdmin && u.id !== (currentUser && currentUser.uid)) {
-          if (role !== 'admin') {
-            const promoBtn = document.createElement('button');
-            promoBtn.type = 'button';
-            promoBtn.className = 'btn btn-secondary btn-small';
-            promoBtn.textContent = 'Promouvoir admin';
-            promoBtn.addEventListener('click', async () => {
-              await updateDoc(doc(db, "users", u.id), { role: 'admin', grade: 'admin' });
-              await writeLog(`Promotion admin de ${u.pseudo || u.id}`);
-              showAlert('Rôle mis à jour : admin.', true);
-            });
-            actions.appendChild(promoBtn);
-          } else {
-            const retroBtn = document.createElement('button');
-            retroBtn.type = 'button';
-            retroBtn.className = 'btn btn-secondary btn-small';
-            retroBtn.textContent = 'Rétrograder membre';
-            retroBtn.addEventListener('click', async () => {
-              await updateDoc(doc(db, "users", u.id), { role: 'membre', grade: 'membre' });
-              await writeLog(`Rétrogradation membre de ${u.pseudo || u.id}`);
-              showAlert('Rôle mis à jour : membre.', true);
-            });
-            actions.appendChild(retroBtn);
-          }
+          const roleBtn = document.createElement('button');
+          roleBtn.type = 'button';
+          roleBtn.className = 'btn btn-secondary btn-small';
+          roleBtn.textContent = role === 'admin' ? 'Rétrograder' : 'Passer admin';
+          roleBtn.addEventListener('click', async () => {
+            const next = role === 'admin' ? 'membre' : 'admin';
+            await updateDoc(doc(db, 'users', u.id), { role: next, grade: next });
+            notify(`Rôle changé : ${next}`, true);
+          });
+          acts.appendChild(roleBtn);
         }
 
-        if (!isBanned) {
-          const reasonInput = document.createElement('input');
-          reasonInput.type = 'text';
-          reasonInput.placeholder = 'Raison du ban (obligatoire)';
-          reasonInput.style.maxWidth = '230px';
+        if (!banned) {
+          const reasonIn = document.createElement('input');
+          reasonIn.type = 'text';
+          reasonIn.placeholder = 'Raison du ban';
+          reasonIn.style.maxWidth = '170px';
 
-          const banIpLabel = document.createElement('label');
-          banIpLabel.className = 'adm-inline-check';
-          const banIpCheck = document.createElement('input');
-          banIpCheck.type = 'checkbox';
-          const banIpTxt = document.createElement('span');
-          banIpTxt.textContent = ipVal ? `Ban IP (${ipVal})` : 'Ban IP';
-          banIpLabel.appendChild(banIpCheck);
-          banIpLabel.appendChild(banIpTxt);
+          const ipChk = document.createElement('input');
+          ipChk.type = 'checkbox';
+          const ipLbl = document.createElement('label');
+          ipLbl.className = 'adm-check';
+          ipLbl.append(ipChk, document.createTextNode('Ban IP'));
 
           const banBtn = document.createElement('button');
           banBtn.type = 'button';
-          banBtn.className = 'btn btn-danger btn-small';
+          banBtn.className = 'btn btn-small';
           banBtn.textContent = 'Bannir';
           banBtn.addEventListener('click', async () => {
-            const reason = reasonInput.value.trim();
+            const reason = reasonIn.value.trim();
             if (!reason) {
-              showAlert('Indique une raison obligatoire avant de bannir un membre.');
-              reasonInput.focus();
+              notify('Écris une raison avant de bannir.');
               return;
             }
-            const officialMessage = `Madame, Monsieur,\n\nÀ la suite d'un manquement aux règles de la plateforme Vos JSP (${reason}), votre compte a fait l'objet d'une mesure de suspension.\n\nVous pouvez soumettre une demande d'examen via la page dédiée si vous souhaitez contester cette décision.\n\nCordialement,\nLa direction Vos JSP.`;
-
-            try {
-              await updateDoc(doc(db, "users", u.id), {
-                banned: true,
-                banReason: reason,
-                banMessage: officialMessage,
-                bannedAt: serverTimestamp()
-              });
-              if (banIpCheck.checked && ipVal) {
-                await setDoc(doc(db, "banned_ips", sanitizeIpDocId(ipVal)), {
-                  ip: ipVal,
-                  uid: u.id,
-                  reason,
-                  createdAt: serverTimestamp()
-                }, { merge: true });
-              }
-              await writeLog(`Bannissement de ${u.pseudo || u.id} — Motif : ${reason}`);
-              showAlert('Membre banni avec notification officielle.', true);
-            } catch (err) {
-              showAlert('Erreur bannissement : ' + (err.code || err.message));
+            const msg = `Madame, Monsieur,\n\nÀ la suite d'un manquement aux règles de Vos JSP (${reason}), votre compte a été suspendu.\n\nVous pouvez faire une demande via la page Contester si besoin.\n\nCordialement,\nL'équipe Vos JSP.`;
+            await updateDoc(doc(db, 'users', u.id), {
+              banned: true, banReason: reason, banMessage: msg, bannedAt: serverTimestamp()
+            });
+            if (ipChk.checked && ip) {
+              await setDoc(doc(db, 'banned_ips', sanitizeIp(ip)), {
+                ip, uid: u.id, reason, createdAt: serverTimestamp()
+              }, { merge: true });
             }
+            notify('Membre banni.', true);
           });
-
-          actions.appendChild(reasonInput);
-          actions.appendChild(banIpLabel);
-          actions.appendChild(banBtn);
+          acts.append(reasonIn, ipLbl, banBtn);
         } else {
           const unbanBtn = document.createElement('button');
           unbanBtn.type = 'button';
           unbanBtn.className = 'btn btn-secondary btn-small';
-          unbanBtn.textContent = 'Lever le ban';
+          unbanBtn.textContent = 'Débannir';
           unbanBtn.addEventListener('click', async () => {
-            await updateDoc(doc(db, "users", u.id), {
-              banned: false,
-              banReason: '',
-              banMessage: ''
-            });
-            if (ipVal) {
-              try { await deleteDoc(doc(db, "banned_ips", sanitizeIpDocId(ipVal))); } catch (_) {}
-            }
-            await writeLog(`Levée du ban pour ${u.pseudo || u.id}`);
-            showAlert('Ban levé.', true);
+            await updateDoc(doc(db, 'users', u.id), { banned: false, banReason: '', banMessage: '' });
+            if (ip) { try { await deleteDoc(doc(db, 'banned_ips', sanitizeIp(ip))); } catch (_) {} }
+            notify('Ban retiré.', true);
           });
-          actions.appendChild(unbanBtn);
+          acts.appendChild(unbanBtn);
         }
 
         if (isSuperAdmin && u.id !== (currentUser && currentUser.uid)) {
-          const delUserBtn = document.createElement('button');
-          delUserBtn.type = 'button';
-          delUserBtn.className = 'btn btn-secondary btn-small';
-          delUserBtn.textContent = 'Supprimer profil';
-          delUserBtn.addEventListener('click', async () => {
-            try {
-              await deleteDoc(doc(db, "users", u.id));
-              await writeLog(`Suppression du profil Firestore de ${u.pseudo || u.id}`);
-              showAlert('Profil Firestore supprimé.', true);
-            } catch (err) {
-              showAlert('Erreur suppression : ' + (err.code || err.message));
-            }
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Suppr.';
+          delBtn.addEventListener('click', async () => {
+            await deleteDoc(doc(db, 'users', u.id));
+            notify('Profil supprimé.', true);
           });
-          actions.appendChild(delUserBtn);
+          acts.appendChild(delBtn);
         }
 
-        item.appendChild(actions);
-        usersListEl.appendChild(item);
+        row.append(info, acts);
+        box.appendChild(row);
       });
     }
 
-    userSearchInput.addEventListener('input', renderUsers);
-    userRoleFilter.addEventListener('change', renderUsers);
+    document.getElementById('user-search').addEventListener('input', renderUsers);
 
-    actuForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const title = document.getElementById('adm-actu-title').value.trim();
-      const category = document.getElementById('adm-actu-cat').value;
-      const sourceUrl = document.getElementById('adm-actu-source').value.trim();
-      const summary = document.getElementById('adm-actu-summary').value.trim();
-      const rawBody = document.getElementById('adm-actu-body').value.trim();
-      if (!title || !summary || !rawBody) return;
-
-      const paragraphs = rawBody.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
-      try {
-        await addDoc(collection(db, "actus"), {
-          title,
-          category,
-          author: currentAdminLabel,
-          sourceUrl,
-          summary,
-          content: rawBody,
-          fullText: paragraphs.length ? paragraphs : [rawBody],
-          createdAt: serverTimestamp()
-        });
-        await writeLog(`Publication de l'actualité "${title}"`);
-        actuForm.reset();
-        showAlert('Actualité publiée.', true);
-      } catch (err) {
-        showAlert('Erreur publication : ' + (err.code || err.message));
-      }
-    });
-
-    function renderPropsAndActus() {
-      const pending = stateProps.filter((p) => (p.status || 'en_attente') === 'en_attente');
-      propsListEl.innerHTML = '';
-      if (pending.length === 0) {
-        propsListEl.innerHTML = '<div class="adm-empty">Aucune proposition en attente.</div>';
-      } else {
-        pending.forEach((p) => {
-          const item = document.createElement('div');
-          item.className = 'adm-item';
-
-          const top = document.createElement('div');
-          top.className = 'adm-item-top';
-          const left = document.createElement('div');
-          const t = document.createElement('span');
-          t.className = 'adm-item-title';
-          t.textContent = p.title || 'Proposition';
-          const m = document.createElement('span');
-          m.className = 'adm-item-meta';
-          m.textContent = `${p.category || 'Actu'} • Par ${p.author || 'Membre'}`;
-          left.appendChild(t);
-          left.appendChild(m);
-          top.appendChild(left);
-
-          const body = document.createElement('p');
-          body.className = 'adm-item-body';
-          body.textContent = p.summary || p.content || '';
-
-          const actions = document.createElement('div');
-          actions.className = 'adm-item-actions';
-
-          const pubBtn = document.createElement('button');
-          pubBtn.type = 'button';
-          pubBtn.className = 'btn btn-small';
-          pubBtn.textContent = 'Valider & Publier';
-          pubBtn.addEventListener('click', async () => {
-            try {
-              const raw = p.content || p.summary || '';
-              const paras = String(raw).split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
-              await addDoc(collection(db, "actus"), {
-                title: p.title || 'Actualité',
-                category: p.category || 'Cursus JSP',
-                author: p.author || currentAdminLabel,
-                sourceUrl: p.sourceUrl || '',
-                summary: p.summary || '',
-                content: raw,
-                fullText: paras.length ? paras : [raw],
-                createdAt: serverTimestamp()
-              });
-              await updateDoc(doc(db, "propositions", p.id), { status: 'validee' });
-              await writeLog(`Validation et publication de la proposition "${p.title || p.id}"`);
-              showAlert('Proposition publiée dans les actualités.', true);
-            } catch (err) {
-              showAlert('Erreur validation : ' + (err.code || err.message));
-            }
-          });
-
-          const refBtn = document.createElement('button');
-          refBtn.type = 'button';
-          refBtn.className = 'btn btn-secondary btn-small';
-          refBtn.textContent = 'Refuser';
-          refBtn.addEventListener('click', async () => {
-            await updateDoc(doc(db, "propositions", p.id), { status: 'refusee' });
-            await writeLog(`Refus de la proposition "${p.title || p.id}"`);
-          });
-
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.className = 'btn btn-secondary btn-small';
-          delBtn.textContent = 'Supprimer';
-          delBtn.addEventListener('click', async () => {
-            await deleteDoc(doc(db, "propositions", p.id));
-          });
-
-          actions.appendChild(pubBtn);
-          actions.appendChild(refBtn);
-          actions.appendChild(delBtn);
-
-          item.appendChild(top);
-          item.appendChild(body);
-          item.appendChild(actions);
-          propsListEl.appendChild(item);
-        });
-      }
-
-      actusListEl.innerHTML = '';
-      if (stateActus.length === 0) {
-        actusListEl.innerHTML = '<div class="adm-empty">Aucune actualité publiée.</div>';
-      } else {
-        stateActus.forEach((a) => {
-          const item = document.createElement('div');
-          item.className = 'adm-item';
-          const top = document.createElement('div');
-          top.className = 'adm-item-top';
-
-          const left = document.createElement('div');
-          const t = document.createElement('span');
-          t.className = 'adm-item-title';
-          t.textContent = a.title || 'Actualité';
-          const m = document.createElement('span');
-          m.className = 'adm-item-meta';
-          m.textContent = `${a.category || 'Actu'} • ${a.author || 'Équipe'}`;
-          left.appendChild(t);
-          left.appendChild(m);
-
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.className = 'btn btn-secondary btn-small';
-          delBtn.textContent = 'Supprimer';
-          delBtn.addEventListener('click', async () => {
-            await deleteDoc(doc(db, "actus", a.id));
-            await writeLog(`Suppression de l'actualité "${a.title || a.id}"`);
-          });
-
-          top.appendChild(left);
-          top.appendChild(delBtn);
-          item.appendChild(top);
-          actusListEl.appendChild(item);
-        });
-      }
-    }
-
-    function renderModeration() {
-      forumListEl.innerHTML = '';
-      if (stateForum.length === 0) {
-        forumListEl.innerHTML = '<div class="adm-empty">Aucun sujet sur le forum.</div>';
-      } else {
-        stateForum.forEach((f) => {
-          const item = document.createElement('div');
-          item.className = 'adm-item';
-          const top = document.createElement('div');
-          top.className = 'adm-item-top';
-
-          const left = document.createElement('div');
-          const t = document.createElement('span');
-          t.className = 'adm-item-title';
-          t.textContent = f.title || 'Sujet';
-          const m = document.createElement('span');
-          m.className = 'adm-item-meta';
-          m.textContent = `${f.category || 'Général'} • Par ${f.author || 'Membre'}`;
-          left.appendChild(t);
-          left.appendChild(m);
-
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.className = 'btn btn-secondary btn-small';
-          delBtn.textContent = 'Supprimer';
-          delBtn.addEventListener('click', async () => {
-            await deleteDoc(doc(db, "forum", f.id));
-            await writeLog(`Suppression du sujet forum "${f.title || f.id}"`);
-          });
-
-          top.appendChild(left);
-          top.appendChild(delBtn);
-          item.appendChild(top);
-          forumListEl.appendChild(item);
-        });
-      }
-
-      galleryListEl.innerHTML = '';
-      if (stateGallery.length === 0) {
-        galleryListEl.innerHTML = '<div class="adm-empty">Aucune photo dans la galerie.</div>';
-      } else {
-        stateGallery.forEach((g) => {
-          const item = document.createElement('div');
-          item.className = 'adm-item';
-          const top = document.createElement('div');
-          top.className = 'adm-item-top';
-
-          const left = document.createElement('div');
-          const t = document.createElement('span');
-          t.className = 'adm-item-title';
-          t.textContent = g.title || 'Photo';
-          const m = document.createElement('span');
-          m.className = 'adm-item-meta';
-          m.textContent = `${g.category || 'Autre'} • Par ${g.author || 'Membre'}`;
-          left.appendChild(t);
-          left.appendChild(m);
-
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.className = 'btn btn-secondary btn-small';
-          delBtn.textContent = 'Supprimer';
-          delBtn.addEventListener('click', async () => {
-            await deleteDoc(doc(db, "galerie", g.id));
-            await writeLog(`Suppression de la photo galerie "${g.title || g.id}"`);
-          });
-
-          top.appendChild(left);
-          top.appendChild(delBtn);
-          item.appendChild(top);
-          galleryListEl.appendChild(item);
-        });
-      }
-    }
-
-    roleForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const title = document.getElementById('adm-role-title').value.trim();
-      const tag = document.getElementById('adm-role-tag').value.trim();
-      const description = document.getElementById('adm-role-desc').value.trim();
-      if (!title || !description) return;
-
-      try {
-        await addDoc(collection(db, "recrutement_postes"), {
-          title,
-          tag,
-          description,
-          open: true,
-          createdAt: serverTimestamp()
-        });
-        await writeLog(`Ajout du poste de recrutement "${title}"`);
-        roleForm.reset();
-        showAlert('Poste ajouté.', true);
-      } catch (err) {
-        showAlert('Erreur ajout poste : ' + (err.code || err.message));
-      }
-    });
-
-    function renderRecruitment() {
-      rolesListEl.innerHTML = '';
-      if (stateRoles.length === 0) {
-        rolesListEl.innerHTML = '<div class="adm-empty">Aucun poste personnalisé enregistré.</div>';
-      } else {
-        stateRoles.forEach((r) => {
-          const isOpen = r.open !== false;
-          const item = document.createElement('div');
-          item.className = 'adm-item';
-
-          const top = document.createElement('div');
-          top.className = 'adm-item-top';
-
-          const left = document.createElement('div');
-          const t = document.createElement('span');
-          t.className = 'adm-item-title';
-          t.textContent = r.title || 'Poste';
-          const m = document.createElement('span');
-          m.className = 'adm-item-meta';
-          m.textContent = isOpen ? 'Statut : Ouvert' : 'Statut : Clôturé';
-          left.appendChild(t);
-          left.appendChild(m);
-
-          const actions = document.createElement('div');
-          actions.className = 'adm-item-actions';
-
-          const toggleBtn = document.createElement('button');
-          toggleBtn.type = 'button';
-          toggleBtn.className = 'btn btn-secondary btn-small';
-          toggleBtn.textContent = isOpen ? 'Clôturer' : 'Ouvrir';
-          toggleBtn.addEventListener('click', async () => {
-            await updateDoc(doc(db, "recrutement_postes", r.id), { open: !isOpen });
-          });
-
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.className = 'btn btn-secondary btn-small';
-          delBtn.textContent = 'Supprimer';
-          delBtn.addEventListener('click', async () => {
-            await deleteDoc(doc(db, "recrutement_postes", r.id));
-          });
-
-          actions.appendChild(toggleBtn);
-          actions.appendChild(delBtn);
-          top.appendChild(left);
-          top.appendChild(actions);
-          item.appendChild(top);
-          rolesListEl.appendChild(item);
-        });
-      }
-
-      appsListEl.innerHTML = '';
-      if (stateApps.length === 0) {
-        appsListEl.innerHTML = '<div class="adm-empty">Aucune candidature reçue.</div>';
-      } else {
-        stateApps.forEach((app) => {
-          const item = document.createElement('div');
-          item.className = 'adm-item';
-
-          const top = document.createElement('div');
-          top.className = 'adm-item-top';
-
-          const left = document.createElement('div');
-          const t = document.createElement('span');
-          t.className = 'adm-item-title';
-          t.textContent = `${app.applicantName || 'Candidat'} — ${app.role || 'Poste'}`;
-          const m = document.createElement('span');
-          m.className = 'adm-item-meta';
-          m.textContent = `${app.age || '?'} ans • ${app.jspStatus || 'JSP'} • Contact : ${app.contact || '—'} • Dispos : ${app.availability || '—'}`;
-          left.appendChild(t);
-          left.appendChild(m);
-
-          const stPill = document.createElement('span');
-          stPill.className = 'adm-pill';
-          stPill.textContent = app.status || 'en_attente';
-
-          top.appendChild(left);
-          top.appendChild(stPill);
-
-          const body = document.createElement('p');
-          body.className = 'adm-item-body';
-          body.textContent = `Expérience : ${app.experience || '—'}\nMotivation : ${app.motivation || '—'}`;
-
-          const actions = document.createElement('div');
-          actions.className = 'adm-item-actions';
-
-          const accBtn = document.createElement('button');
-          accBtn.type = 'button';
-          accBtn.className = 'btn btn-small';
-          accBtn.textContent = 'Accepter';
-          accBtn.addEventListener('click', async () => {
-            await updateDoc(doc(db, "candidatures", app.id), { status: 'acceptee' });
-            await writeLog(`Candidature acceptée : ${app.applicantName || app.id} (${app.role || ''})`);
-          });
-
-          const refBtn = document.createElement('button');
-          refBtn.type = 'button';
-          refBtn.className = 'btn btn-secondary btn-small';
-          refBtn.textContent = 'Refuser';
-          refBtn.addEventListener('click', async () => {
-            await updateDoc(doc(db, "candidatures", app.id), { status: 'refusee' });
-            await writeLog(`Candidature refusée : ${app.applicantName || app.id} (${app.role || ''})`);
-          });
-
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.className = 'btn btn-secondary btn-small';
-          delBtn.textContent = 'Supprimer';
-          delBtn.addEventListener('click', async () => {
-            await deleteDoc(doc(db, "candidatures", app.id));
-          });
-
-          actions.appendChild(accBtn);
-          actions.appendChild(refBtn);
-          actions.appendChild(delBtn);
-
-          item.appendChild(top);
-          item.appendChild(body);
-          item.appendChild(actions);
-          appsListEl.appendChild(item);
-        });
-      }
-    }
-
-    function renderLogs() {
-      logsListEl.innerHTML = '';
-      if (stateLogs.length === 0) {
-        logsListEl.innerHTML = '<div class="adm-empty">Aucune action enregistrée pour le moment.</div>';
+    function renderMails() {
+      const box = document.getElementById('mails-list');
+      box.innerHTML = '';
+      if (!mails.length) {
+        box.innerHTML = '<div class="adm-empty">Aucune adresse mail.</div>';
         return;
       }
-
-      const sorted = [...stateLogs].sort((a, b) => {
-        const ta = a.createdAt && a.createdAt.seconds ? a.createdAt.seconds : 0;
-        const tb = b.createdAt && b.createdAt.seconds ? b.createdAt.seconds : 0;
-        return tb - ta;
-      });
-
-      sorted.forEach((l) => {
-        const item = document.createElement('div');
-        item.className = 'adm-item';
-        const t = document.createElement('span');
-        t.className = 'adm-item-title';
-        t.textContent = l.action || 'Action admin';
-        const m = document.createElement('span');
-        m.className = 'adm-item-meta';
-        m.textContent = `Par ${l.actorName || 'Admin'}`;
-        item.appendChild(t);
-        item.appendChild(m);
-        logsListEl.appendChild(item);
+      mails.forEach((m) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        const info = document.createElement('div');
+        info.innerHTML = `<span class="adm-row-title">${m.address || m.id}</span><span class="adm-row-sub">${m.holder || 'Admin'}</span>`;
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'btn btn-secondary btn-small';
+        del.textContent = 'Supprimer';
+        del.addEventListener('click', async () => {
+          await deleteDoc(doc(db, 'admin_mails', m.id));
+          notify('Adresse supprimée.', true);
+        });
+        row.append(info, del);
+        box.appendChild(row);
       });
     }
 
-    function stopAllListeners() {
-      collectionUnsubs.forEach((fn) => {
-        try { fn(); } catch (_) {}
+    document.getElementById('mail-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let addr = document.getElementById('mail-addr').value.trim().toLowerCase();
+      if (!addr.includes('@')) addr = `${addr}@vos-jsp.com`;
+      const holder = document.getElementById('mail-holder').value.trim() || '[ ADMIN ] Admin';
+      const uid = document.getElementById('mail-uid').value.trim();
+      await setDoc(doc(db, 'admin_mails', sanitizeIp(addr)), {
+        address: addr, holder, uid, createdAt: serverTimestamp()
+      }, { merge: true });
+      if (uid) await setDoc(doc(db, 'users', uid), { adminMail: addr }, { merge: true });
+      e.target.reset();
+      notify(`Adresse ${addr} créée.`, true);
+    });
+
+    function renderActusAndProps() {
+      const pBox = document.getElementById('props-list');
+      const aBox = document.getElementById('actus-list');
+      const pending = props.filter((p) => (p.status || 'en_attente') === 'en_attente');
+
+      pBox.innerHTML = '';
+      if (!pending.length) {
+        pBox.innerHTML = '<div class="adm-empty">Aucune proposition en attente.</div>';
+      } else {
+        pending.forEach((p) => {
+          const row = document.createElement('div');
+          row.className = 'adm-row';
+          const info = document.createElement('div');
+          info.innerHTML = `<span class="adm-row-title">${p.title || 'Proposition'}</span><span class="adm-row-sub">Par ${p.author || 'Membre'} • ${p.category || 'Actu'}</span>`;
+          const acts = document.createElement('div');
+          acts.className = 'adm-actions';
+
+          const okBtn = document.createElement('button');
+          okBtn.type = 'button';
+          okBtn.className = 'btn btn-small';
+          okBtn.textContent = 'Publier';
+          okBtn.addEventListener('click', async () => {
+            const raw = p.content || p.summary || '';
+            const paras = String(raw).split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
+            await addDoc(collection(db, 'actus'), {
+              title: p.title || 'Actualité', category: p.category || 'Cursus JSP',
+              author: p.author || adminLabel, summary: p.summary || '',
+              content: raw, fullText: paras.length ? paras : [raw], createdAt: serverTimestamp()
+            });
+            await updateDoc(doc(db, 'propositions', p.id), { status: 'validee' });
+            notify('Proposition publiée.', true);
+          });
+
+          const noBtn = document.createElement('button');
+          noBtn.type = 'button';
+          noBtn.className = 'btn btn-secondary btn-small';
+          noBtn.textContent = 'Refuser';
+          noBtn.addEventListener('click', async () => {
+            await updateDoc(doc(db, 'propositions', p.id), { status: 'refusee' });
+          });
+
+          acts.append(okBtn, noBtn);
+          row.append(info, acts);
+          pBox.appendChild(row);
+        });
+      }
+
+      aBox.innerHTML = '';
+      if (!actus.length) {
+        aBox.innerHTML = '<div class="adm-empty">Aucune actu.</div>';
+      } else {
+        actus.forEach((a) => {
+          const row = document.createElement('div');
+          row.className = 'adm-row';
+          const info = document.createElement('div');
+          info.innerHTML = `<span class="adm-row-title">${a.title || 'Actu'}</span><span class="adm-row-sub">${a.category || ''}</span>`;
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'btn btn-secondary btn-small';
+          del.textContent = 'Supprimer';
+          del.addEventListener('click', async () => { await deleteDoc(doc(db, 'actus', a.id)); });
+          row.append(info, del);
+          aBox.appendChild(row);
+        });
+      }
+    }
+
+    document.getElementById('actu-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('actu-title').value.trim();
+      const category = document.getElementById('actu-cat').value;
+      const summary = document.getElementById('actu-summary').value.trim();
+      const body = document.getElementById('actu-body').value.trim();
+      const paras = body.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
+      await addDoc(collection(db, 'actus'), {
+        title, category, author: adminLabel, summary, content: body,
+        fullText: paras.length ? paras : [body], createdAt: serverTimestamp()
       });
-      collectionUnsubs = [];
+      e.target.reset();
+      notify('Actualité publiée.', true);
+    });
+
+    function renderMod() {
+      const fBox = document.getElementById('forum-list');
+      const gBox = document.getElementById('gallery-list');
+
+      fBox.innerHTML = forum.length ? '' : '<div class="adm-empty">Aucun sujet.</div>';
+      forum.forEach((f) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        row.innerHTML = `<div><span class="adm-row-title">${f.title || 'Sujet'}</span><span class="adm-row-sub">Par ${f.author || 'Membre'}</span></div>`;
+        const del = document.createElement('button');
+        del.type = 'button'; del.className = 'btn btn-secondary btn-small'; del.textContent = 'Supprimer';
+        del.addEventListener('click', async () => { await deleteDoc(doc(db, 'forum', f.id)); });
+        row.appendChild(del); fBox.appendChild(row);
+      });
+
+      gBox.innerHTML = galerie.length ? '' : '<div class="adm-empty">Aucune photo.</div>';
+      galerie.forEach((g) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        row.innerHTML = `<div><span class="adm-row-title">${g.title || 'Photo'}</span><span class="adm-row-sub">Par ${g.author || 'Membre'}</span></div>`;
+        const del = document.createElement('button');
+        del.type = 'button'; del.className = 'btn btn-secondary btn-small'; del.textContent = 'Supprimer';
+        del.addEventListener('click', async () => { await deleteDoc(doc(db, 'galerie', g.id)); });
+        row.appendChild(del); gBox.appendChild(row);
+      });
     }
 
-    function startAdminStreams() {
-      stopAllListeners();
+    function renderRecrut() {
+      const rBox = document.getElementById('roles-list');
+      const apBox = document.getElementById('apps-list');
 
-      collectionUnsubs.push(onSnapshot(collection(db, "users"), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        stateUsers = list;
-        refreshCounters();
-        renderUsers();
-      }));
+      rBox.innerHTML = roles.length ? '' : '<div class="adm-empty">Aucun poste ajouté.</div>';
+      roles.forEach((r) => {
+        const open = r.open !== false;
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        row.innerHTML = `<div><span class="adm-row-title">${r.title || 'Poste'}</span><span class="adm-row-sub">${open ? 'Ouvert' : 'Clôturé'}</span></div>`;
+        const acts = document.createElement('div'); acts.className = 'adm-actions';
+        const tgl = document.createElement('button');
+        tgl.type = 'button'; tgl.className = 'btn btn-secondary btn-small';
+        tgl.textContent = open ? 'Clôturer' : 'Ouvrir';
+        tgl.addEventListener('click', async () => { await updateDoc(doc(db, 'recrutement_postes', r.id), { open: !open }); });
+        const del = document.createElement('button');
+        del.type = 'button'; del.className = 'btn btn-secondary btn-small'; del.textContent = 'Suppr.';
+        del.addEventListener('click', async () => { await deleteDoc(doc(db, 'recrutement_postes', r.id)); });
+        acts.append(tgl, del); row.appendChild(acts); rBox.appendChild(row);
+      });
 
-      collectionUnsubs.push(onSnapshot(collection(db, "admin_mails"), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        stateMails = list;
-        refreshCounters();
-        renderMails();
-      }));
-
-      collectionUnsubs.push(onSnapshot(collection(db, "propositions"), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        stateProps = list;
-        refreshCounters();
-        renderPropsAndActus();
-      }));
-
-      collectionUnsubs.push(onSnapshot(collection(db, "actus"), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        stateActus = list;
-        refreshCounters();
-        renderPropsAndActus();
-      }));
-
-      collectionUnsubs.push(onSnapshot(collection(db, "forum"), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        stateForum = list;
-        refreshCounters();
-        renderModeration();
-      }));
-
-      collectionUnsubs.push(onSnapshot(collection(db, "galerie"), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        stateGallery = list;
-        refreshCounters();
-        renderModeration();
-      }));
-
-      collectionUnsubs.push(onSnapshot(collection(db, "recrutement_postes"), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        stateRoles = list;
-        renderRecruitment();
-      }));
-
-      collectionUnsubs.push(onSnapshot(collection(db, "candidatures"), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        stateApps = list;
-        refreshCounters();
-        renderRecruitment();
-      }));
-
-      collectionUnsubs.push(onSnapshot(collection(db, "admin_logs"), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        stateLogs = list;
-        refreshCounters();
-        renderLogs();
-      }));
+      apBox.innerHTML = apps.length ? '' : '<div class="adm-empty">Aucune candidature.</div>';
+      apps.forEach((a) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        row.innerHTML = `<div><span class="adm-row-title">${a.applicantName || 'Candidat'} — ${a.role || 'Poste'}</span><span class="adm-row-sub">${a.contact || ''} • Statut : ${a.status || 'en_attente'}</span></div>`;
+        const acts = document.createElement('div'); acts.className = 'adm-actions';
+        const ok = document.createElement('button');
+        ok.type = 'button'; ok.className = 'btn btn-small'; ok.textContent = 'Accepter';
+        ok.addEventListener('click', async () => { await updateDoc(doc(db, 'candidatures', a.id), { status: 'acceptee' }); });
+        const no = document.createElement('button');
+        no.type = 'button'; no.className = 'btn btn-secondary btn-small'; no.textContent = 'Refuser';
+        no.addEventListener('click', async () => { await updateDoc(doc(db, 'candidatures', a.id), { status: 'refusee' }); });
+        acts.append(ok, no); row.appendChild(acts); apBox.appendChild(row);
+      });
     }
 
-    async function handleLogout() {
-      stopAllListeners();
+    document.getElementById('role-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await addDoc(collection(db, 'recrutement_postes'), {
+        title: document.getElementById('role-title').value.trim(),
+        description: document.getElementById('role-desc').value.trim(),
+        open: true, createdAt: serverTimestamp()
+      });
+      e.target.reset();
+      notify('Poste ajouté.', true);
+    });
+
+    function stopDataSubs() {
+      dataSubs.forEach((u) => { try { u(); } catch (_) {} });
+      dataSubs = [];
+    }
+
+    function startDataSubs() {
+      stopDataSubs();
+      const map = [
+        ['users', (l) => { users = l; renderUsers(); }],
+        ['admin_mails', (l) => { mails = l; renderMails(); }],
+        ['propositions', (l) => { props = l; renderActusAndProps(); }],
+        ['actus', (l) => { actus = l; renderActusAndProps(); }],
+        ['forum', (l) => { forum = l; renderMod(); }],
+        ['galerie', (l) => { galerie = l; renderMod(); }],
+        ['recrutement_postes', (l) => { roles = l; renderRecrut(); }],
+        ['candidatures', (l) => { apps = l; renderRecrut(); }]
+      ];
+      map.forEach(([colName, cb]) => {
+        dataSubs.push(onSnapshot(collection(db, colName), (snap) => {
+          const list = [];
+          snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+          cb(list);
+        }));
+      });
+    }
+
+    async function doLogout() {
+      stopDataSubs();
       await signOut(auth);
       window.location.replace('login.html');
     }
-
-    drawerLogoutBtn.addEventListener('click', handleLogout);
-    logoutBtn.addEventListener('click', handleLogout);
+    drawerLogoutBtn.addEventListener('click', doLogout);
+    document.getElementById('adm-logout').addEventListener('click', doLogout);
 
     onAuthStateChanged(auth, (user) => {
-      if (authUnsubscribe) {
-        authUnsubscribe();
-        authUnsubscribe = null;
-      }
-      stopAllListeners();
-
+      if (authSub) { authSub(); authSub = null; }
+      stopDataSubs();
       currentUser = user || null;
 
       if (!user) {
@@ -1650,57 +874,49 @@
         drawerAdminLink.style.display = 'none';
         drawerMailLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
-        deniedCard.style.display = 'block';
-        shellEl.style.display = 'none';
+        deniedEl.style.display = 'flex';
+        contentEl.style.display = 'none';
         return;
       }
 
       drawerAuthBtn.style.display = 'none';
       drawerLogoutBtn.style.display = 'inline-flex';
-      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      const fallback = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
 
-      authUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
-        const data = snap.exists() ? (snap.data() || {}) : {};
-        if (data.banned === true) {
-          stopAllListeners();
+      authSub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
+        const d = snap.exists() ? (snap.data() || {}) : {};
+        if (d.banned === true) {
+          stopDataSubs();
           window.location.replace('ban.html');
           return;
         }
 
-        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const rawRole = String(d.role || d.grade || 'membre').toLowerCase();
         const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
         isSuperAdmin = rawRole === 'superadmin';
-        currentRole = isSuperAdmin ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
-        const pseudo = isAdmin
-          ? formatAdminPseudo(data, fallbackName)
-          : (data.pseudo || fallbackName);
-        currentAdminLabel = pseudo;
+        const roleLabel = isSuperAdmin ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        const pseudo = isAdmin ? formatAdminPseudo(d, fallback) : (d.pseudo || fallback);
+        adminLabel = pseudo;
 
         profileBox.style.display = 'flex';
-        paintAvatar(profileAvatar, data.photoDataUrl || '', pseudo);
+        paintAvatar(profileAvatar, d.photoDataUrl || '', pseudo);
         profileName.textContent = pseudo;
-        profileRole.textContent = currentRole;
+        profileRole.textContent = roleLabel;
         profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
         drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
         drawerMailLink.style.display = isAdmin ? 'block' : 'none';
 
         if (!isAdmin) {
-          stopAllListeners();
-          deniedCard.style.display = 'block';
-          shellEl.style.display = 'none';
+          stopDataSubs();
+          deniedEl.style.display = 'flex';
+          contentEl.style.display = 'none';
           return;
         }
 
-        deniedCard.style.display = 'none';
-        shellEl.style.display = 'flex';
-        currentRolePill.textContent = currentRole;
-        currentRolePill.className = `adm-pill ${isSuperAdmin ? 'superadmin' : 'admin'}`;
-
-        if (collectionUnsubs.length === 0) {
-          startAdminStreams();
-        } else {
-          renderUsers();
-        }
+        deniedEl.style.display = 'none';
+        contentEl.style.display = 'flex';
+        roleBadge.textContent = roleLabel;
+        if (!dataSubs.length) startDataSubs();
       });
     });
   </script>

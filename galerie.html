@@ -70,6 +70,33 @@
       margin-top: 0.1rem;
     }
 
+    .gal-purge-btn {
+      appearance: none;
+      border: 1px solid rgba(225, 29, 42, 0.35);
+      background: rgba(225, 29, 42, 0.08);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.62rem 0.95rem;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.42rem;
+      transition: all 0.16s ease;
+    }
+
+    .gal-purge-btn:hover:not(:disabled) {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .gal-purge-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .gal-controls-bar {
       display: flex;
       justify-content: space-between;
@@ -192,6 +219,57 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
+    .gal-dropzone {
+      position: relative;
+      border: 1.5px dashed var(--border);
+      background: var(--bg);
+      border-radius: 18px;
+      padding: 1.4rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.18s ease, background 0.18s ease;
+      margin-bottom: 0.85rem;
+    }
+
+    .gal-dropzone:hover,
+    .gal-dropzone.dragover {
+      border-color: var(--primary);
+      background: rgba(225, 29, 42, 0.04);
+    }
+
+    .gal-dropzone-title {
+      display: block;
+      font-weight: 800;
+      font-size: 0.92rem;
+      margin-top: 0.45rem;
+    }
+
+    .gal-dropzone-sub {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .gal-file-pill {
+      display: none;
+      margin-top: 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(225, 29, 42, 0.08);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .gal-file-pill.visible {
+      display: inline-block;
+    }
+
     @keyframes galSlideForward {
       0% { opacity: 0; transform: translateX(24px); }
       100% { opacity: 1; transform: translateX(0); }
@@ -212,7 +290,7 @@
 
     .gal-live-preview {
       display: none;
-      margin: 0.85rem 0 1rem;
+      margin: 0.75rem 0 1rem;
       border-radius: 16px;
       overflow: hidden;
       border: 1px solid var(--border);
@@ -225,7 +303,7 @@
 
     .gal-live-preview img {
       width: 100%;
-      max-height: 220px;
+      max-height: 210px;
       object-fit: cover;
       display: block;
     }
@@ -456,6 +534,17 @@
       gap: 1rem;
       flex-wrap: wrap;
     }
+
+    .ico-svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -525,7 +614,10 @@
             <small>Soutiens cumulés</small>
             <strong id="gal-total-likes">0</strong>
           </div>
-          <button type="button" id="gal-purge-all-btn" class="btn btn-secondary btn-small" style="display: none;">Tout supprimer</button>
+          <button type="button" id="gal-purge-all-btn" class="gal-purge-btn" style="display: none;">
+            <svg class="ico-svg" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            <span>Tout supprimer</span>
+          </button>
         </div>
       </header>
 
@@ -543,18 +635,23 @@
 
           <div id="gal-title-stage" class="gal-stage">
             <h2 id="gal-step-heading" style="font-size: 1.35rem; margin: 0 0 0.2rem;">Choisis ton image</h2>
-            <p id="gal-step-sub" style="color: var(--muted); font-size: 0.86rem; margin: 0 0 1rem;">Étape 1/2 — Importe un fichier ou colle un lien image, puis continue.</p>
+            <p id="gal-step-sub" style="color: var(--muted); font-size: 0.86rem; margin: 0 0 1rem;">Étape 1/2 — Dépose une photo ou colle un lien image, puis continue.</p>
           </div>
 
           <form id="gal-step-1-form" class="gal-stage">
             <div class="gal-source-switch" role="tablist">
-              <button type="button" class="gal-source-btn active" id="src-file-btn">Fichier image</button>
+              <button type="button" class="gal-source-btn active" id="src-file-btn">Importer une image</button>
               <button type="button" class="gal-source-btn" id="src-url-btn">Lien URL</button>
             </div>
 
-            <div class="form-group" id="src-file-group" style="margin-bottom: 0.4rem;">
-              <label for="gal-file">Importer depuis l'appareil</label>
-              <input type="file" id="gal-file" accept="image/*">
+            <div id="src-file-group">
+              <input type="file" id="gal-file" accept="image/*" style="display: none;">
+              <div class="gal-dropzone" id="gal-dropzone" role="button" tabindex="0">
+                <svg class="ico-svg" style="width: 24px; height: 24px; margin: 0 auto; color: var(--primary);" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span class="gal-dropzone-title">Clique pour choisir une photo ou glisse-la ici</span>
+                <span class="gal-dropzone-sub">JPG, PNG ou WebP — optimisation automatique</span>
+                <span class="gal-file-pill" id="gal-file-pill"></span>
+              </div>
             </div>
 
             <div class="form-group" id="src-url-group" style="display: none; margin-bottom: 0.4rem;">
@@ -712,6 +809,8 @@
     const srcFileGroup = document.getElementById('src-file-group');
     const srcUrlGroup = document.getElementById('src-url-group');
     const fileInput = document.getElementById('gal-file');
+    const dropzone = document.getElementById('gal-dropzone');
+    const filePill = document.getElementById('gal-file-pill');
     const urlInput = document.getElementById('gal-url');
     const step1PreviewBox = document.getElementById('gal-step1-preview-box');
     const step1PreviewImg = document.getElementById('gal-step1-preview-img');
@@ -789,7 +888,7 @@
         step1Form.style.display = 'block';
         triggerStageAnim(step1Form, animCls);
         stepHeading.textContent = 'Choisis ton image';
-        stepSub.textContent = 'Étape 1/2 — Importe un fichier ou colle un lien image, puis continue.';
+        stepSub.textContent = 'Étape 1/2 — Dépose une photo ou colle un lien image, puis continue.';
       } else {
         dot1.classList.remove('active');
         dot2.classList.add('active');
@@ -819,7 +918,30 @@
       srcFileGroup.style.display = 'none';
       fileInput.value = '';
       compressedDataUrl = '';
+      filePill.textContent = '';
+      filePill.classList.remove('visible');
       syncStep1Preview();
+    });
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+    dropzone.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) await handleSelectedFile(file);
     });
 
     function compressImageFile(file) {
@@ -869,11 +991,12 @@
       }
     }
 
-    fileInput.addEventListener('change', async () => {
+    async function handleSelectedFile(file) {
       hideAlert();
-      const file = fileInput.files && fileInput.files[0];
       if (!file) {
         compressedDataUrl = '';
+        filePill.textContent = '';
+        filePill.classList.remove('visible');
         syncStep1Preview();
         return;
       }
@@ -883,14 +1006,23 @@
           showAlert('Image trop lourde même après compression. Choisis un fichier plus léger ou un lien URL.');
           fileInput.value = '';
           compressedDataUrl = '';
+          filePill.textContent = '';
+          filePill.classList.remove('visible');
           syncStep1Preview();
           return;
         }
         compressedDataUrl = dataUrl;
+        filePill.textContent = file.name;
+        filePill.classList.add('visible');
         syncStep1Preview();
       } catch (err) {
         showAlert(err.message || 'Impossible de lire cette image.');
       }
+    }
+
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files && fileInput.files[0];
+      await handleSelectedFile(file);
     });
 
     urlInput.addEventListener('input', () => {
@@ -902,7 +1034,7 @@
       hideAlert();
       const urlVal = urlInput.value.trim();
       if (!compressedDataUrl && !isSafeHttpUrl(urlVal)) {
-        showAlert('Choisis un fichier image ou saisis un lien valide (https://...).');
+        showAlert('Choisis une photo ou saisis un lien valide (https://...).');
         return;
       }
       goToStep(2, 'forward');
@@ -924,7 +1056,8 @@
         return;
       }
       purgeAllBtn.disabled = true;
-      purgeAllBtn.textContent = 'Suppression...';
+      const labelSpan = purgeAllBtn.querySelector('span');
+      if (labelSpan) labelSpan.textContent = 'Suppression...';
       try {
         for (const item of allItems) {
           await deleteDoc(doc(db, "galerie", item.id));
@@ -934,7 +1067,7 @@
         showAlert('Suppression complète impossible : ' + (err.code || err.message));
       } finally {
         purgeAllBtn.disabled = false;
-        purgeAllBtn.textContent = 'Tout supprimer';
+        if (labelSpan) labelSpan.textContent = 'Tout supprimer';
       }
     });
 
@@ -1176,6 +1309,8 @@
         titleInput.value = '';
         urlInput.value = '';
         fileInput.value = '';
+        filePill.textContent = '';
+        filePill.classList.remove('visible');
         descInput.value = '';
         compressedDataUrl = '';
         syncStep1Preview();

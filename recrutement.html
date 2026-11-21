@@ -408,9 +408,11 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
+      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
       <a href="recrutement.html" class="active">Recrutement</a>
       <a href="profil.html">Profil</a>
+      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
       <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -605,6 +607,9 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('nav a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
   </script>
 
   <script type="module">
@@ -631,6 +636,7 @@
     const drawerAuthBtn = document.getElementById('drawer-auth-btn');
     const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
     const drawerAdminLink = document.getElementById('drawer-admin-link');
+    const drawerMailLink = document.getElementById('drawer-mail-link');
 
     const alertEl = document.getElementById('rec-alert');
     const openCountEl = document.getElementById('rec-open-count');
@@ -701,7 +707,6 @@
 
     let currentStep = 1;
     let currentUser = null;
-    let currentProfile = { pseudo: '', role: 'membre' };
     let userUnsubscribe = null;
     let rolesUnsubscribe = null;
     let myAppsUnsubscribe = null;
@@ -726,6 +731,13 @@
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
+    }
+
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
     }
 
     function paintAvatar(container, imgSrc, pseudo) {
@@ -955,6 +967,17 @@
       });
     }
 
+    function formatStatusBadge(status) {
+      const s = String(status || 'en_attente').toLowerCase();
+      if (s === 'acceptee' || s === 'acceptée' || s === 'accepted') {
+        return { label: 'Acceptée', cls: 'accepted' };
+      }
+      if (s === 'refusee' || s === 'refusée' || s === 'rejected') {
+        return { label: 'Refusée', cls: 'rejected' };
+      }
+      return { label: 'En attente', cls: '' };
+    }
+
     function stopMyAppsListener() {
       if (myAppsUnsubscribe) {
         myAppsUnsubscribe();
@@ -982,37 +1005,30 @@
 
             const left = document.createElement('div');
             const titleEl = document.createElement('strong');
+            titleEl.textContent = app.role || 'Poste';
             titleEl.style.display = 'block';
-            titleEl.style.fontSize = '0.94rem';
-            titleEl.textContent = app.roleTitle || 'Poste';
 
-            const subEl = document.createElement('span');
-            subEl.style.fontSize = '0.8rem';
-            subEl.style.color = 'var(--muted)';
-            subEl.textContent = `Âge : ${app.age || '—'} ans • Dispo : ${app.availability || '—'}`;
+            const metaEl = document.createElement('span');
+            metaEl.textContent = `${app.applicantName || 'Candidat'} • ${app.jspStatus || 'JSP'} • ${app.contact || ''}`;
+            metaEl.style.fontSize = '0.8rem';
+            metaEl.style.color = 'var(--muted)';
 
             left.appendChild(titleEl);
-            left.appendChild(subEl);
+            left.appendChild(metaEl);
 
-            const st = String(app.status || 'en_attente').toLowerCase();
+            const st = formatStatusBadge(app.status);
             const badge = document.createElement('span');
-            badge.className = 'rec-app-badge';
-            if (st === 'acceptee' || st === 'acceptée' || st === 'retenu') {
-              badge.classList.add('accepted');
-              badge.textContent = 'Retenu';
-            } else if (st === 'refusee' || st === 'refusée' || st === 'refuse') {
-              badge.classList.add('rejected');
-              badge.textContent = 'Refusé';
-            } else {
-              badge.textContent = 'En attente';
-            }
+            badge.className = `rec-app-badge ${st.cls}`;
+            badge.textContent = st.label;
 
             row.appendChild(left);
             row.appendChild(badge);
             myAppsListEl.appendChild(row);
           });
         },
-        () => {}
+        () => {
+          myAppsListEl.innerHTML = '<div class="rec-empty">Impossible de charger tes candidatures.</div>';
+        }
       );
     }
 
@@ -1021,58 +1037,43 @@
       hideAlert();
 
       if (!currentUser) {
-        showAlert('Tu dois être connecté pour envoyer une candidature.');
+        showAlert('Connecte-toi pour envoyer ta candidature.');
         return;
       }
-
       if (!validateStep(1) || !validateStep(2) || !validateStep(3)) {
         return;
       }
-
       if (!commitCheck.checked) {
-        showAlert("Coche l'engagement à respecter les règles avant d'envoyer.");
+        showAlert('Coche l’engagement avant d’envoyer ta candidature.');
         return;
       }
 
-      const chosenRole = roleSelectEl.value.trim();
-      const applicantName = nameInput.value.trim();
       const ageVal = Number(ageInput.value);
-      const jspStatusVal = jspStatusSelect.value || '';
-      const contactVal = contactInput.value.trim();
-      const availVal = availInput.value.trim();
-      const expVal = expInput.value.trim();
-      const motivationVal = motivationInput.value.trim();
-
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Envoi...';
+      submitBtn.textContent = 'Envoi en cours...';
 
       try {
         await addDoc(collection(db, "candidatures"), {
-          applicantUid: currentUser.uid,
-          applicantPseudo: currentProfile.pseudo || applicantName,
-          applicantName: applicantName,
+          role: roleSelectEl.value.trim(),
+          applicantName: nameInput.value.trim(),
           age: ageVal,
-          jspStatus: jspStatusVal,
-          contact: contactVal,
-          roleTitle: chosenRole,
-          availability: availVal,
-          experience: expVal,
-          motivation: motivationVal,
-          acceptedRules: true,
+          jspStatus: jspStatusSelect.value,
+          contact: contactInput.value.trim(),
+          availability: availInput.value.trim(),
+          experience: expInput.value.trim(),
+          motivation: motivationInput.value.trim(),
+          applicantUid: currentUser.uid,
+          applicantEmail: currentUser.email || '',
           status: 'en_attente',
           createdAt: serverTimestamp()
         });
 
-        ageInput.value = '';
-        contactInput.value = '';
-        availInput.value = '';
-        expInput.value = '';
-        motivationInput.value = '';
+        applyForm.reset();
         commitCheck.checked = false;
         setStep(1);
-        showAlert('Candidature envoyée avec succès.', true);
+        showAlert('Candidature envoyée avec succès ! Elle apparaît dans "Mes candidatures".', true);
       } catch (err) {
-        showAlert('Envoi impossible : ' + (err.code || err.message));
+        showAlert('Impossible d’envoyer la candidature : ' + (err.code || err.message));
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Envoyer ma candidature';
@@ -1102,11 +1103,11 @@
     drawerLogoutBtn.addEventListener('click', async () => {
       stopMyAppsListener();
       await signOut(auth);
-      window.location.replace('login.html');
+      window.location.replace('recrutement.html');
     });
 
-    setStep(1);
     startRolesListener();
+    setStep(1);
 
     onAuthStateChanged(auth, async (user) => {
       if (userUnsubscribe) {
@@ -1120,23 +1121,30 @@
       currentUser = user || null;
 
       if (!user) {
-        currentProfile = { pseudo: '', role: 'membre' };
-        authLockEl.style.display = 'block';
-        applyForm.style.display = 'none';
-        myAppsBox.style.display = 'none';
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
+        drawerMailLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
+        authLockEl.style.display = 'block';
+        applyForm.style.display = 'none';
+        myAppsBox.style.display = 'none';
         return;
       }
 
+      drawerAuthBtn.style.display = 'none';
+      drawerLogoutBtn.style.display = 'inline-flex';
       authLockEl.style.display = 'none';
       applyForm.style.display = 'block';
       myAppsBox.style.display = 'block';
-      drawerAuthBtn.style.display = 'none';
-      drawerLogoutBtn.style.display = 'inline-flex';
-      startMyAppsListener(user.uid);
+
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      if (!nameInput.value.trim()) {
+        nameInput.value = fallbackName;
+      }
+      if (!contactInput.value.trim() && user.email) {
+        contactInput.value = user.email;
+      }
 
       userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
         const data = snap.exists() ? (snap.data() || {}) : {};
@@ -1146,22 +1154,28 @@
           return;
         }
 
-        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-        const role = data.role || 'membre';
+        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
+        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        const pseudo = isAdmin
+          ? formatAdminPseudo(data, fallbackName)
+          : (data.pseudo || fallbackName);
         const photoDataUrl = data.photoDataUrl || '';
-        currentProfile = { pseudo, role };
-
-        if (!nameInput.value.trim()) {
-          nameInput.value = pseudo;
-        }
 
         profileBox.style.display = 'flex';
         paintAvatar(profileAvatar, photoDataUrl, pseudo);
         profileName.textContent = pseudo;
-        profileRole.textContent = role;
-        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
-        drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
+        profileRole.textContent = roleLabel;
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+        drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
+        drawerMailLink.style.display = isAdmin ? 'block' : 'none';
+
+        if (!nameInput.value.trim() || nameInput.value === fallbackName) {
+          nameInput.value = pseudo;
+        }
       });
+
+      startMyAppsListener(user.uid);
     });
   </script>
 </body>

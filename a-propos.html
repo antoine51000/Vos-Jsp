@@ -1,310 +1,617 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — À propos &amp; Contact</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>À propos & Contact Admins — Vos JSP</title>
   <style>
-    .admins-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem;
-      margin-top: 0.75rem;
+    :root {
+      --bg: #0c0f14;
+      --surface: #141922;
+      --surface-2: #1b2230;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #f3f6fb;
+      --muted: #9aa5b8;
+      --accent: #e11d48;
+      --accent-hover: #be123c;
+      --accent-soft: rgba(225, 29, 72, 0.14);
+      --ok: #10b981;
+      --err: #ef4444;
+      --radius: 16px;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
     }
 
-    .admin-pill {
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(225, 29, 72, 0.16), transparent 40%),
+        radial-gradient(circle at 85% 0%, rgba(59, 130, 246, 0.12), transparent 38%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+      background: rgba(12, 15, 20, 0.78);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .brand-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      border: 1px solid rgba(225, 29, 72, 0.35);
+      font-size: 1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      padding: 8px 13px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      color: var(--muted);
+      border: 1px solid transparent;
+      transition: 0.18s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--border);
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 36px 20px 64px;
+    }
+
+    .hero {
+      background: linear-gradient(145deg, rgba(27, 34, 48, 0.92), rgba(20, 25, 34, 0.95));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+    }
+
+    .pill {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.55rem 1rem;
+      gap: 8px;
+      padding: 6px 12px;
       border-radius: 999px;
+      background: var(--accent-soft);
+      color: #fda4af;
+      border: 1px solid rgba(225, 29, 72, 0.32);
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      line-height: 1.18;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 72ch;
+      font-size: 1rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .section-header h2 {
+      font-size: 1.35rem;
+    }
+
+    .section-header span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .admins-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .admin-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .admin-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: var(--shadow);
+    }
+
+    .admin-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 1rem;
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .admin-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .admin-role {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .admin-bio {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .btn-select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .btn-select:hover,
+    .admin-card.selected .btn-select {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .admin-card.selected {
+      border-color: rgba(225, 29, 72, 0.65);
+      box-shadow: 0 0 0 1px rgba(225, 29, 72, 0.35);
+    }
+
+    .contact-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .contact-panel h2 {
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+    }
+
+    .contact-panel .sub {
+      color: var(--muted);
+      font-size: 0.94rem;
+      margin-bottom: 22px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(225, 29, 72, 0.7);
+      box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.16);
+    }
+
+    textarea {
+      min-height: 135px;
+      resize: vertical;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .privacy-note {
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .btn-submit {
+      padding: 12px 22px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
       font-weight: 700;
       font-size: 0.95rem;
-      color: #ffffff;
-      background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
-      box-shadow: 0 8px 20px rgba(225, 29, 72, 0.22);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: pointer;
+      transition: background 0.18s ease, transform 0.12s ease;
     }
 
-    .admin-pill:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(225, 29, 72, 0.3);
+    .btn-submit:hover:not(:disabled) {
+      background: var(--accent-hover);
     }
 
-    .admin-pill::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #fde047;
-      box-shadow: 0 0 8px #fde047;
+    .btn-submit:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .status-msg {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      display: none;
+    }
+
+    .status-msg.ok {
+      display: block;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+    }
+
+    .status-msg.err {
+      display: block;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+
+    @media (max-width: 640px) {
+      .hero,
+      .contact-panel {
+        padding: 22px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-left">
-      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <a href="index.html" class="brand">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-badge">🚒</span>
+        <span>Vos JSP</span>
       </a>
+      <nav class="nav-links">
+        <a class="nav-link" href="index.html">Accueil</a>
+        <a class="nav-link" href="actus.html">Actus</a>
+        <a class="nav-link" href="forum.html">Forum</a>
+        <a class="nav-link" href="galerie.html">Galerie</a>
+        <a class="nav-link active" href="a-propos.html">À propos</a>
+      </nav>
     </div>
-    <a href="actus.html" class="btn btn-secondary btn-small">Actualités</a>
-  </div>
+  </header>
 
-  <div class="nav-backdrop" id="nav-backdrop"></div>
-
-  <aside class="drawer" id="drawer">
-    <div class="drawer-header">
-      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
-      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
-    </div>
-
-    <div class="drawer-label">Navigation</div>
-    <nav>
-      <a href="index.html">Accueil</a>
-      <a href="actus.html">Actualités</a>
-      <a href="galerie.html">Galerie</a>
-      <a href="proposer.html">Proposer</a>
-      <a href="a-propos.html" class="active">À propos</a>
-       <a href="forum.html">Forum</a>
-    </nav>
-
-    <a href="login.html" class="btn btn-secondary">Connexion</a>
-  </aside>
-
-  <main>
-    <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
-      <span class="badge">À propos &amp; Contact • Vos JSP</span>
+  <main class="container">
+    <section class="hero">
+      <div class="pill">Équipe & Support</div>
       <h1>À propos de Vos JSP</h1>
-      <p class="subtitle" style="margin-bottom: 0;">Tout savoir sur la plateforme communautaire indépendante Vos JSP, l'équipe d'administration composée de deux JSP et le formulaire de contact envoyé dans le panel admin.</p>
+      <p>
+        Espace communautaire dédié aux Jeunes Sapeurs-Pompiers pour partager l'actualité, échanger et centraliser les demandes.
+        Choisis un administrateur ci-dessous pour lui envoyer un message directement depuis cette page.
+      </p>
     </section>
 
-    <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.5rem;">
-      <div>
-        <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">1. Qu'est-ce que Vos JSP ?</h2>
-        <p><strong>Vos JSP</strong> est une plateforme communautaire indépendante dédiée à l'univers des Jeunes Sapeurs-Pompiers (JSP). Elle permet de suivre des actualités, de partager des photos dans la galerie, de proposer des contenus et d'échanger dans un cadre clair et respectueux. Elle ne représente pas un site officiel d'un SDIS ni d'une administration.</p>
+    <section aria-labelledby="admins-title">
+      <div class="section-header">
+        <h2 id="admins-title">Équipe d'administration</h2>
+        <span>Clique sur un admin pour pré-remplir le destinataire</span>
       </div>
 
-      <div>
-        <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">2. Qui sont vos admins ?</h2>
-        <p>La gestion et la modération de la plateforme sont assurées par <strong>deux administrateurs qui sont des JSP</strong> :</p>
+      <div class="admins-grid" id="adminsGrid"></div>
+    </section>
 
-        <div id="admins-list" class="admins-pills">
-          <span style="color: var(--muted); font-size: 0.9rem;">Chargement...</span>
-        </div>
-      </div>
+    <section class="contact-panel" id="contact-admin" aria-labelledby="contact-title">
+      <h2 id="contact-title">Envoyer un message à un admin</h2>
+      <p class="sub">
+        Les adresses e-mail personnelles ne sont pas affichées publiquement : ton message est transmis vers la boîte interne de l'administrateur choisi.
+      </p>
 
-      <div>
-        <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">3. Fonctionnement de la communauté</h2>
-        <ul style="margin-top: 0.35rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.45rem;">
-          <li><strong>Actualités &amp; propositions :</strong> les membres peuvent proposer des sujets relus avant publication par l'administration.</li>
-          <li><strong>Galerie photo :</strong> les comptes connectés peuvent publier des photos liées à la vie JSP, aux manœuvres ou au matériel.</li>
-          <li><strong>Modération &amp; contestation :</strong> tout manquement peut entraîner une sanction, avec la possibilité de contester un bannissement si le compte est concerné.</li>
-        </ul>
-      </div>
+      <form id="adminContactForm" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="adminTarget">Administrateur destinataire</label>
+            <select id="adminTarget" name="adminTarget" required></select>
+          </div>
 
-      <div>
-        <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">4. Contact &amp; demandes pertinentes</h2>
-        <p>Utilise le formulaire ci-dessous pour envoyer ta demande directement dans le panel admin. Si ta demande est pertinente (y compris pour connaître l'éditeur du site, non divulgué publiquement pour des raisons de sécurité), nous te répondrons.</p>
-      </div>
+          <div class="field">
+            <label for="senderName">Ton pseudo ou prénom</label>
+            <input id="senderName" name="senderName" type="text" placeholder="Ex. Léo" required />
+          </div>
 
-      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-        <a href="#contact-form-section" class="btn btn-small">Aller au formulaire</a>
-        <a href="actus.html" class="btn btn-secondary btn-small">Voir les actualités</a>
-        <a href="galerie.html" class="btn btn-secondary btn-small">Explorer la galerie</a>
-        <a href="mentions-legales.html" class="btn btn-secondary btn-small">Mentions légales</a>
-      </div>
-    </div>
+          <div class="field">
+            <label for="senderEmail">Ton e-mail (pour qu'on te réponde)</label>
+            <input id="senderEmail" name="senderEmail" type="email" placeholder="toi@exemple.fr" required />
+          </div>
 
-    <div class="form-box" id="contact-form-section" style="max-width: 100%; margin: 0;">
-      <span class="badge">Formulaire de contact</span>
-      <h2 style="margin-top: 0.4rem; margin-bottom: 0.35rem;">Envoyer un message à l'administration</h2>
-      <p class="subtitle" style="margin-bottom: 1.25rem; font-size: 0.92rem;">Remplis les champs ci-dessous : ton message arrive directement dans le panel admin.</p>
+          <div class="field">
+            <label for="subject">Sujet</label>
+            <input id="subject" name="subject" type="text" placeholder="Question, signalement, proposition..." required />
+          </div>
 
-      <div id="contact-alert" class="alert"></div>
-
-      <form id="contact-form">
-        <div class="form-group">
-          <label for="contact-name">Nom ou pseudo</label>
-          <input type="text" id="contact-name" placeholder="Ton nom ou pseudo" required>
+          <div class="field full">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Écris ton message ici..." required></textarea>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="contact-email">Adresse e-mail de réponse</label>
-          <input type="email" id="contact-email" placeholder="toi@exemple.fr" required>
+        <div class="actions">
+          <span class="privacy-note">Envoi sécurisé vers l'espace admin (`mail.html`).</span>
+          <button class="btn-submit" id="submitBtn" type="submit">Envoyer le message</button>
         </div>
 
-        <div class="form-group">
-          <label for="contact-subject">Objet</label>
-          <select id="contact-subject" required>
-            <option value="Question / Suggestion">Question / Suggestion</option>
-            <option value="Signalement / Modération">Signalement / Modération</option>
-            <option value="Demande d'information éditeur">Demande d'information éditeur</option>
-            <option value="Autre demande">Autre demande</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="contact-message">Message</label>
-          <textarea id="contact-message" rows="5" placeholder="Écris ton message ici..." required></textarea>
-        </div>
-
-        <button type="submit" id="contact-submit" class="btn" style="width: 100%;">Envoyer dans le panel admin</button>
+        <div class="status-msg" id="statusMsg" role="status" aria-live="polite"></div>
       </form>
-    </div>
+    </section>
   </main>
 
-  <footer>
-    <div class="footer-container">
-      <div>
-        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
-      </div>
-      <div class="footer-links">
-        <a href="mentions-legales.html">Mentions légales</a>
-        <a href="confidentialite.html">Confidentialité</a>
-        <a href="a-propos.html">Contact</a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    const drawer = document.getElementById('drawer');
-    const backdrop = document.getElementById('nav-backdrop');
-    document.getElementById('menu-open').addEventListener('click', () => {
-      drawer.classList.add('open');
-      backdrop.classList.add('open');
-    });
-    function closeDrawer() {
-      drawer.classList.remove('open');
-      backdrop.classList.remove('open');
-    }
-    document.getElementById('menu-close').addEventListener('click', closeDrawer);
-    backdrop.addEventListener('click', closeDrawer);
-  </script>
-
   <script type="module">
-    import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import {
-      collection,
-      addDoc,
-      getDocs,
-      query,
-      where,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    // Adapte ce chemin selon l'emplacement réel de ta config Firebase (ex. ./js/firebase-config.js)
+    import { db } from "./js/firebase-config.js";
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const adminsListEl = document.getElementById('admins-list');
-    const contactForm = document.getElementById('contact-form');
-    const nameInput = document.getElementById('contact-name');
-    const emailInput = document.getElementById('contact-email');
-    const subjectInput = document.getElementById('contact-subject');
-    const messageInput = document.getElementById('contact-message');
-    const submitBtn = document.getElementById('contact-submit');
-    const alertBox = document.getElementById('contact-alert');
+    // Liste publique des pseudos / rôles admins (aucune adresse e-mail exposée)
+    const ADMINS = [
+      {
+        id: "antoine",
+        pseudo: "Antoine",
+        role: "Fondateur & Admin Principal",
+        bio: "Gestion globale de la plateforme, comptes et modération.",
+        initials: "AN"
+      },
+      {
+        id: "moderation",
+        pseudo: "Modération JSP",
+        role: "Équipe Modération",
+        bio: "Suivi des publications, signalements et entraide sur le site.",
+        initials: "MJ"
+      },
+      {
+        id: "technique",
+        pseudo: "Support Technique",
+        role: "Technique & Bug",
+        bio: "Problèmes d'affichage, connexion ou suggestions d'amélioration.",
+        initials: "ST"
+      }
+    ];
 
-    let currentUser = null;
+    const adminsGrid = document.getElementById("adminsGrid");
+    const adminSelect = document.getElementById("adminTarget");
+    const form = document.getElementById("adminContactForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusMsg = document.getElementById("statusMsg");
 
-    function showAlert(msg, isSuccess = false) {
-      alertBox.style.display = 'block';
-      alertBox.className = isSuccess ? 'alert success' : 'alert';
-      alertBox.textContent = msg;
-    }
+    function renderAdmins() {
+      adminsGrid.innerHTML = "";
+      adminSelect.innerHTML = "";
 
-    function renderAdminPills(pseudos) {
-      adminsListEl.textContent = '';
-      pseudos.forEach(pseudo => {
-        const pill = document.createElement('span');
-        pill.className = 'admin-pill';
-        pill.textContent = pseudo;
-        adminsListEl.appendChild(pill);
+      ADMINS.forEach((admin, index) => {
+        const option = document.createElement("option");
+        option.value = admin.id;
+        option.textContent = `${admin.pseudo} — ${admin.role}`;
+        if (index === 0) option.selected = true;
+        adminSelect.appendChild(option);
+
+        const card = document.createElement("article");
+        card.className = `admin-card${index === 0 ? " selected" : ""}`;
+        card.dataset.adminId = admin.id;
+        card.innerHTML = `
+          <div>
+            <div class="admin-top">
+              <div class="avatar">${admin.initials}</div>
+              <div>
+                <div class="admin-name">${admin.pseudo}</div>
+                <div class="admin-role">${admin.role}</div>
+              </div>
+            </div>
+            <p class="admin-bio" style="margin-top: 12px;">${admin.bio}</p>
+          </div>
+          <button type="button" class="btn-select" data-select-admin="${admin.id}">
+            Contacter ${admin.pseudo}
+          </button>
+        `;
+        adminsGrid.appendChild(card);
       });
     }
 
-    async function loadAdmins() {
-      try {
-        const q = query(collection(db, "users"), where("role", "in", ["admin", "superadmin"]));
-        const snap = await getDocs(q);
-        const pseudos = [];
-
-        snap.forEach(d => {
-          const data = d.data();
-          if (data.banned === true) return;
-          if (data.pseudo) pseudos.push(data.pseudo);
-        });
-
-        if (pseudos.length > 0) {
-          renderAdminPills(pseudos);
-          return;
-        }
-      } catch (err) {}
-
-      adminsListEl.textContent = '';
-      const fallback = document.createElement('span');
-      fallback.style.color = 'var(--muted)';
-      fallback.style.fontSize = '0.9rem';
-      fallback.textContent = 'Deux administrateurs JSP';
-      adminsListEl.appendChild(fallback);
+    function selectAdmin(adminId, scrollToForm = false) {
+      adminSelect.value = adminId;
+      document.querySelectorAll(".admin-card").forEach((card) => {
+        card.classList.toggle("selected", card.dataset.adminId === adminId);
+      });
+      if (scrollToForm) {
+        document.getElementById("contact-admin").scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("senderName").focus();
+      }
     }
 
-    onAuthStateChanged(auth, (user) => {
-      currentUser = user;
-      if (user) {
-        if (!nameInput.value && user.displayName) nameInput.value = user.displayName;
-        if (!emailInput.value && user.email) emailInput.value = user.email;
-      }
-      loadAdmins();
+    adminsGrid.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-select-admin]");
+      if (!btn) return;
+      selectAdmin(btn.dataset.selectAdmin, true);
     });
 
-    loadAdmins();
+    adminSelect.addEventListener("change", () => {
+      selectAdmin(adminSelect.value, false);
+    });
 
-    contactForm.addEventListener('submit', async (e) => {
+    function showStatus(type, text) {
+      statusMsg.className = `status-msg ${type}`;
+      statusMsg.textContent = text;
+    }
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = nameInput.value.trim();
-      const email = emailInput.value.trim();
-      const subject = subjectInput.value;
-      const message = messageInput.value.trim();
+      statusMsg.className = "status-msg";
+      statusMsg.textContent = "";
 
-      if (!name || !email || !message) {
-        showAlert('Remplis tous les champs avant d\'envoyer.');
+      const selectedId = adminSelect.value;
+      const adminObj = ADMINS.find((a) => a.id === selectedId) || ADMINS[0];
+      const senderName = document.getElementById("senderName").value.trim();
+      const senderEmail = document.getElementById("senderEmail").value.trim();
+      const subject = document.getElementById("subject").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!senderName || !senderEmail || !subject || !message) {
+        showStatus("err", "Merci de remplir tous les champs avant d'envoyer.");
         return;
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Envoi en cours...';
-      alertBox.style.display = 'none';
+      submitBtn.textContent = "Envoi en cours...";
 
       try {
-        await addDoc(collection(db, "contacts"), {
-          uid: currentUser ? currentUser.uid : null,
-          name,
-          email,
+        // Adapte le nom de collection ("admin_messages") et les champs à ceux attendus par mail.html
+        await addDoc(collection(db, "admin_messages"), {
+          toAdminId: adminObj.id,
+          toAdminPseudo: adminObj.pseudo,
+          senderName,
+          senderEmail,
           subject,
           message,
-          status: 'non_lu',
+          read: false,
           createdAt: serverTimestamp()
         });
 
-        showAlert('Message envoyé dans le panel admin ! Si ta demande est pertinente, nous te répondrons.', true);
-        messageInput.value = '';
+        form.reset();
+        selectAdmin(adminObj.id, false);
+        showStatus("ok", `Message envoyé à ${adminObj.pseudo}. Il apparaîtra dans la messagerie admin.`);
       } catch (err) {
-        showAlert('Impossible d\'envoyer le message (' + (err.code || err.message) + ').');
+        console.error(err);
+        showStatus("err", "Impossible d'envoyer le message pour le moment. Vérifie la connexion et les règles Firestore.");
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Envoyer dans le panel admin';
+        submitBtn.textContent = "Envoyer le message";
       }
     });
+
+    renderAdmins();
   </script>
 </body>
 </html>

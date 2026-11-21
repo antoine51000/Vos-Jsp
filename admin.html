@@ -252,7 +252,7 @@
         <details class="panel-box">
           <summary>Gestion des comptes, rôles &amp; bannissements</summary>
           <div class="panel-content">
-            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong>. Les comptes bannis sont bloqués dès leur connexion.</p>
+            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong>. Promouvoir un membre le renomme automatiquement avec <strong>[ ADMIN ] Prénom</strong>. Les comptes bannis sont bloqués dès leur connexion.</p>
             <div id="users-list">
               <p>Chargement des utilisateurs...</p>
             </div>
@@ -347,6 +347,15 @@
         return (parts[0][0] + parts[1][0]).toUpperCase();
       }
       return clean.slice(0, 2).toUpperCase();
+    }
+
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource)
+        .replace(/^\s*\[[^\]]+\]\s*/g, '')
+        .trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
     }
 
     function showAlert(msg, isSuccess = false) {
@@ -826,10 +835,33 @@
             roleBtn.textContent = role === 'admin' ? 'Rétrograder membre' : 'Mettre admin';
             roleBtn.addEventListener('click', async () => {
               roleBtn.disabled = true;
-              const nextRole = role === 'admin' ? 'membre' : 'admin';
+              const isPromoting = role !== 'admin';
+              const nextRole = isPromoting ? 'admin' : 'membre';
+              const patch = { role: nextRole };
+              let newPseudo = null;
+
+              if (isPromoting) {
+                newPseudo = formatAdminPseudo(u, display);
+                patch.pseudo = newPseudo;
+              }
+
               try {
-                await setDoc(doc(db, "users", uid), { role: nextRole }, { merge: true });
-                showAlert('Rôle de ' + display + ' mis à jour : ' + nextRole + '.', true);
+                await setDoc(doc(db, "users", uid), patch, { merge: true });
+                if (isPromoting && newPseudo) {
+                  const pubSnap = await getDoc(doc(db, "public_admins", uid));
+                  if (pubSnap.exists()) {
+                    await setDoc(doc(db, "public_admins", uid), {
+                      pseudo: newPseudo,
+                      role: 'admin'
+                    }, { merge: true });
+                  }
+                }
+                showAlert(
+                  isPromoting
+                    ? 'Compte promu admin et renommé en "' + newPseudo + '".'
+                    : 'Rôle de ' + display + ' mis à jour : membre.',
+                  true
+                );
                 await loadUsers();
               } catch (err) {
                 roleBtn.disabled = false;

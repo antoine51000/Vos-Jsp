@@ -576,14 +576,10 @@
       alertEl.textContent = '';
     }
 
-    function cleanDisplayName(raw) {
-      return String(raw || 'Membre')
-        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
-        .trim() || 'Membre';
-    }
-
     function getInitials(label) {
-      const clean = cleanDisplayName(label);
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
@@ -660,7 +656,7 @@
 
         const authorName = document.createElement('div');
         authorName.className = 'thread-author-name';
-        authorName.textContent = cleanDisplayName(post.authorPseudo || 'Membre');
+        authorName.textContent = post.authorPseudo || 'Membre';
 
         const metaLine = document.createElement('div');
         metaLine.className = 'thread-meta-line';
@@ -896,7 +892,7 @@
 
         profileBox.style.display = 'flex';
         profileAvatar.textContent = getInitials(pseudo);
-        profileName.textContent = cleanDisplayName(pseudo);
+        profileName.textContent = pseudo;
         profileRole.textContent = role;
         profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
         drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';

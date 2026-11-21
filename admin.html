@@ -6,128 +6,137 @@
   <title>Vos JSP — Panel Admin</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .adm-page {
-      max-width: 1140px;
+    .adm-wrap {
+      max-width: 1120px;
       margin: 2rem auto 3.8rem;
       display: flex;
       flex-direction: column;
-      gap: 1.3rem;
+      gap: 1.25rem;
     }
 
-    .adm-nav-tabs {
-      display: grid !important;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 0.55rem;
+    .adm-header-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.85rem 1.95rem;
+      box-shadow: var(--shadow);
+    }
+
+    .adm-header-card h1 {
+      margin: 0.55rem 0 0.35rem;
+      font-size: clamp(1.65rem, 3.2vw, 2.2rem);
+      letter-spacing: -0.02em;
+    }
+
+    .adm-header-card p {
+      margin: 0 0 1.05rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .adm-links-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .adm-tabs-strip {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: wrap !important;
+      gap: 0.5rem !important;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 0.55rem;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
-      width: 100%;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
     }
 
-    @media (max-width: 820px) {
-      .adm-nav-tabs {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    .adm-tab-btn {
+    .adm-tab {
       appearance: none;
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
-      font-weight: 700;
+      font-family: inherit;
       font-size: 0.84rem;
-      padding: 0.65rem 0.85rem;
-      border-radius: 14px;
+      font-weight: 700;
+      padding: 0.6rem 0.95rem;
+      border-radius: 13px;
       cursor: pointer;
-      text-align: center;
       width: auto !important;
+      flex: 1 1 180px;
+      text-align: center;
       transition: all 0.15s ease;
     }
 
-    .adm-tab-btn:hover {
+    .adm-tab:hover {
       border-color: var(--primary);
     }
 
-    .adm-tab-btn.active {
+    .adm-tab.active {
       background: var(--primary);
-      color: #fff;
       border-color: var(--primary);
+      color: #fff;
     }
 
-    .adm-section-card {
+    .adm-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 1.55rem 1.65rem;
+      border-radius: 22px;
+      padding: 1.5rem 1.6rem;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
       gap: 0.95rem;
     }
 
-    .adm-section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.8rem;
-    }
-
-    .adm-section-head h2 {
+    .adm-card h2 {
       margin: 0;
-      font-size: 1.22rem;
+      font-size: 1.18rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
     }
 
-    .adm-grid-2 {
+    .adm-two-cols {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.85rem;
     }
 
     @media (max-width: 720px) {
-      .adm-grid-2 {
+      .adm-two-cols {
         grid-template-columns: 1fr;
       }
     }
 
-    .quick-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.55rem;
-    }
-
-    .resources-grid {
+    .adm-res-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
       gap: 0.85rem;
     }
 
-    .resource-card {
-      padding: 1rem 1.1rem;
-      border-radius: 16px;
+    .adm-res-box {
       background: var(--bg);
       border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 0.75rem;
+      gap: 0.8rem;
     }
 
-    .resource-card strong {
-      font-size: 0.98rem;
+    .adm-res-box strong {
       display: block;
+      font-size: 0.96rem;
       margin-bottom: 0.25rem;
     }
 
-    .resource-card p {
-      font-size: 0.84rem;
-      color: var(--muted);
+    .adm-res-box p {
       margin: 0;
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.45;
     }
 
     .btn-disabled {
@@ -137,27 +146,86 @@
       filter: grayscale(0.7);
     }
 
-    .actu-row,
-    .user-row,
-    .rec-admin-row {
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-      padding: 0.95rem 1.05rem;
+    .adm-item {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 16px;
-      margin-bottom: 0.65rem;
+      padding: 1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
     }
 
-    .actu-row-top,
-    .user-row-top,
-    .rec-admin-top {
+    .adm-item-head {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 0.85rem;
+      align-items: flex-start;
+      gap: 0.75rem;
       flex-wrap: wrap;
+    }
+
+    .adm-item-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .adm-actions-line {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+    }
+
+    .adm-actions-line .btn {
+      width: auto !important;
+      flex: 0 0 auto;
+    }
+
+    .adm-actions-line input[type="text"] {
+      width: auto !important;
+      min-width: 190px;
+      max-width: 250px;
+      flex: 1 1 190px;
+      margin: 0 !important;
+    }
+
+    .adm-ip-pill {
+      display: inline-flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 0.4rem !important;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 0.36rem 0.65rem;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .adm-ip-pill input[type="checkbox"] {
+      width: auto !important;
+      margin: 0 !important;
+      accent-color: var(--primary);
+    }
+
+    .adm-pill {
+      font-size: 0.73rem;
+      font-weight: 800;
+      padding: 0.22rem 0.62rem;
+      border-radius: 999px;
+    }
+
+    .adm-pill.open {
+      background: rgba(22, 163, 74, 0.12);
+      color: #15803d;
+    }
+
+    .adm-pill.closed {
+      background: rgba(225, 29, 42, 0.12);
+      color: var(--primary);
     }
 
     .confirm-delete-box {
@@ -175,30 +243,6 @@
       gap: 0.5rem;
       flex-wrap: wrap;
       align-items: center;
-    }
-
-    .ip-check-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.86rem;
-    }
-
-    .status-pill-admin {
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 0.22rem 0.6rem;
-      border-radius: 999px;
-    }
-
-    .status-pill-admin.open {
-      background: rgba(22, 163, 74, 0.12);
-      color: #15803d;
-    }
-
-    .status-pill-admin.closed {
-      background: rgba(225, 29, 42, 0.12);
-      color: var(--primary);
     }
   </style>
 </head>
@@ -267,69 +311,63 @@
       </div>
     </div>
 
-    <div id="admin-panel" class="adm-page" style="display: none;">
-      <section class="hero" style="padding: 2rem 1.9rem; margin-bottom: 0;">
+    <div id="admin-panel" class="adm-wrap" style="display: none;">
+      <header class="adm-header-card">
         <span class="badge">Administration • Accès restreint</span>
         <h1>Poste de commandement Vos JSP</h1>
-        <p class="subtitle" style="margin-bottom: 0.9rem;">Choisis un onglet pour gérer rapidement les ressources, le recrutement, les actualités ou les membres.</p>
-        <div class="quick-bar">
+        <p>Gère les ressources, le recrutement, les actualités, les propositions et les membres depuis un espace clair.</p>
+        <div class="adm-links-row">
           <a href="mail.html" class="btn btn-small">Ouvrir mail.html</a>
-          <a href="recrutement.html" class="btn btn-secondary btn-small">Page recrutement</a>
-          <a href="actus.html" class="btn btn-secondary btn-small">Fil actualités</a>
+          <a href="recrutement.html" class="btn btn-secondary btn-small">Recrutement</a>
+          <a href="actus.html" class="btn btn-secondary btn-small">Actualités</a>
           <a href="galerie.html" class="btn btn-secondary btn-small">Galerie</a>
           <a href="forum.html" class="btn btn-secondary btn-small">Forum</a>
         </div>
-      </section>
+      </header>
 
       <div id="admin-alert" class="alert"></div>
 
-      <div class="adm-nav-tabs" role="tablist" aria-label="Sections du Panel Admin">
-        <button type="button" class="adm-tab-btn active" data-adm-tab="overview">Ressources &amp; Modération</button>
-        <button type="button" class="adm-tab-btn" data-adm-tab="recrutement">Recrutement &amp; Candidatures</button>
-        <button type="button" class="adm-tab-btn" data-adm-tab="actus">Actualités &amp; Propositions</button>
-        <button type="button" class="adm-tab-btn" data-adm-tab="users">Membres &amp; Bans</button>
+      <div class="adm-tabs-strip" role="tablist" aria-label="Onglets administration">
+        <button type="button" class="adm-tab active" data-adm-tab="overview">Ressources &amp; Modération</button>
+        <button type="button" class="adm-tab" data-adm-tab="recrutement">Recrutement &amp; Candidatures</button>
+        <button type="button" class="adm-tab" data-adm-tab="actus">Actualités &amp; Propositions</button>
+        <button type="button" class="adm-tab" data-adm-tab="users">Membres &amp; Bans</button>
       </div>
 
-      <!-- ONGLET 1 : RESSOURCES & MODÉRATION -->
-      <div id="adm-tab-overview" style="display: flex; flex-direction: column; gap: 1.25rem;">
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Vos ressources</h2>
-          </div>
-          <div class="resources-grid">
-            <div class="resource-card">
+      <!-- ONGLET 1 -->
+      <div id="adm-tab-overview" style="display: flex; flex-direction: column; gap: 1.2rem;">
+        <section class="adm-card">
+          <h2>Vos ressources</h2>
+          <div class="adm-res-grid">
+            <div class="adm-res-box">
               <div>
                 <strong>Messagerie Admin (mail.html)</strong>
-                <p>Lire et envoyer des mails internes entre admins ainsi que les messages ciblés depuis À propos.</p>
+                <p>Lire et envoyer des mails internes entre admins et consulter les messages ciblés.</p>
               </div>
-              <div>
-                <a href="mail.html" class="btn btn-small">Accéder à mail.html</a>
-              </div>
+              <div><a href="mail.html" class="btn btn-small">Accéder à mail.html</a></div>
             </div>
 
-            <div class="resource-card">
+            <div class="adm-res-box">
               <div>
                 <strong>Fil d'actualités (actus.html)</strong>
-                <p>Consulter le rendu public des articles et propositions validées sur le site.</p>
+                <p>Consulter le rendu public des articles et propositions validées.</p>
               </div>
-              <div>
-                <a href="actus.html" class="btn btn-secondary btn-small">Voir actus.html</a>
-              </div>
+              <div><a href="actus.html" class="btn btn-secondary btn-small">Voir actus.html</a></div>
             </div>
 
-            <div class="resource-card">
+            <div class="adm-res-box">
               <div>
                 <strong>Galerie, Forum &amp; Recrutement</strong>
-                <p>Vérifier les publications photos, discussions et la page recrutement publique.</p>
+                <p>Vérifier les photos, discussions et candidatures de la communauté.</p>
               </div>
-              <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+              <div class="adm-actions-line">
                 <a href="galerie.html" class="btn btn-secondary btn-small">Galerie</a>
                 <a href="forum.html" class="btn btn-secondary btn-small">Forum</a>
                 <a href="recrutement.html" class="btn btn-secondary btn-small">Recrutement</a>
               </div>
             </div>
 
-            <div class="resource-card" id="firebase-resource-card">
+            <div class="adm-res-box">
               <div>
                 <strong>Firebase Console</strong>
                 <p id="firebase-resource-desc">Réservée au superadmin (authentification, Firestore et règles de sécurité).</p>
@@ -341,33 +379,23 @@
           </div>
         </section>
 
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Contestations de ban</h2>
-          </div>
-          <div id="appeals-list">
-            <p>Chargement des contestations...</p>
-          </div>
+        <section class="adm-card">
+          <h2>Contestations de ban</h2>
+          <div id="appeals-list"><p>Chargement des contestations...</p></div>
         </section>
 
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Messages de contact</h2>
-          </div>
-          <div id="contacts-list">
-            <p>Chargement des messages...</p>
-          </div>
+        <section class="adm-card">
+          <h2>Messages de contact</h2>
+          <div id="contacts-list"><p>Chargement des messages...</p></div>
         </section>
       </div>
 
-      <!-- ONGLET 2 : RECRUTEMENT & CANDIDATURES -->
-      <div id="adm-tab-recrutement" style="display: none; flex-direction: column; gap: 1.25rem;">
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Créer un poste de recrutement</h2>
-          </div>
+      <!-- ONGLET 2 -->
+      <div id="adm-tab-recrutement" style="display: none; flex-direction: column; gap: 1.2rem;">
+        <section class="adm-card">
+          <h2>Créer un poste de recrutement</h2>
           <form id="create-role-form">
-            <div class="adm-grid-2">
+            <div class="adm-two-cols">
               <div class="form-group">
                 <label for="role-title-input">Intitulé du poste</label>
                 <input type="text" id="role-title-input" maxlength="90" placeholder="Ex. : Modérateur Forum / Discord" required>
@@ -385,42 +413,28 @@
           </form>
         </section>
 
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Postes de recrutement (ouvrir / clôturer)</h2>
-          </div>
-          <div id="admin-roles-list">
-            <p>Chargement des postes...</p>
-          </div>
+        <section class="adm-card">
+          <h2>Postes de recrutement (ouvrir / clôturer)</h2>
+          <div id="admin-roles-list"><p>Chargement des postes...</p></div>
         </section>
 
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Candidatures reçues</h2>
-          </div>
-          <div id="admin-apps-list">
-            <p>Chargement des candidatures...</p>
-          </div>
+        <section class="adm-card">
+          <h2>Candidatures reçues</h2>
+          <div id="admin-apps-list"><p>Chargement des candidatures...</p></div>
         </section>
       </div>
 
-      <!-- ONGLET 3 : ACTUALITÉS & PROPOSITIONS -->
-      <div id="adm-tab-actus" style="display: none; flex-direction: column; gap: 1.25rem;">
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Propositions en attente de validation</h2>
-          </div>
-          <div id="propositions-list">
-            <p>Chargement des propositions...</p>
-          </div>
+      <!-- ONGLET 3 -->
+      <div id="adm-tab-actus" style="display: none; flex-direction: column; gap: 1.2rem;">
+        <section class="adm-card">
+          <h2>Propositions en attente de validation</h2>
+          <div id="propositions-list"><p>Chargement des propositions...</p></div>
         </section>
 
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Publier une actualité</h2>
-          </div>
+        <section class="adm-card">
+          <h2>Publier une actualité</h2>
           <form id="publish-actu-form">
-            <div class="adm-grid-2">
+            <div class="adm-two-cols">
               <div class="form-group">
                 <label for="actu-title">Titre</label>
                 <input type="text" id="actu-title" placeholder="Titre de l'article" required>
@@ -435,7 +449,7 @@
                 </select>
               </div>
             </div>
-            <div class="adm-grid-2">
+            <div class="adm-two-cols">
               <div class="form-group">
                 <label for="actu-author">Rédacteur</label>
                 <input type="text" id="actu-author" placeholder="Nom ou pseudo du rédacteur" required>
@@ -457,27 +471,19 @@
           </form>
         </section>
 
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Actualités publiées (Firestore)</h2>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">La suppression d'une actualité nécessite de cliquer sur <strong>Confirmer la suppression</strong> et d'entrer ton mot de passe de compte.</p>
-          <div id="published-actus-list">
-            <p>Chargement des actualités...</p>
-          </div>
+        <section class="adm-card">
+          <h2>Actualités publiées (Firestore)</h2>
+          <p style="font-size: 0.84rem; color: var(--muted); margin: 0;">La suppression d'une actualité nécessite de cliquer sur <strong>Confirmer la suppression</strong> et d'entrer ton mot de passe de compte.</p>
+          <div id="published-actus-list"><p>Chargement des actualités...</p></div>
         </section>
       </div>
 
-      <!-- ONGLET 4 : MEMBRES & BANS -->
-      <div id="adm-tab-users" style="display: none; flex-direction: column; gap: 1.25rem;">
-        <section class="adm-section-card">
-          <div class="adm-section-head">
-            <h2>Gestion des comptes, rôles &amp; bannissements</h2>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong> ou supprimer un profil de Firestore. Bannir un membre exige une <strong>raison</strong>, génère automatiquement un message officiel avec formules de politesse affiché sur <code>ban.html</code>, et permet de bloquer aussi son IP.</p>
-          <div id="users-list">
-            <p>Chargement des utilisateurs...</p>
-          </div>
+      <!-- ONGLET 4 -->
+      <div id="adm-tab-users" style="display: none; flex-direction: column; gap: 1.2rem;">
+        <section class="adm-card">
+          <h2>Gestion des comptes, rôles &amp; bannissements</h2>
+          <p style="font-size: 0.84rem; color: var(--muted); margin: 0;">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong> ou supprimer un profil de Firestore. Bannir un membre exige une <strong>raison</strong>, génère automatiquement un message officiel avec formules de politesse affiché sur <code>ban.html</code>, et permet de bloquer aussi son IP.</p>
+          <div id="users-list"><p>Chargement des utilisateurs...</p></div>
         </section>
       </div>
     </div>
@@ -510,7 +516,7 @@
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
 
-    const admTabs = Array.from(document.querySelectorAll('.adm-tab-btn'));
+    const admTabs = Array.from(document.querySelectorAll('.adm-tab'));
     const admPanels = {
       overview: document.getElementById('adm-tab-overview'),
       recrutement: document.getElementById('adm-tab-recrutement'),
@@ -594,9 +600,7 @@
         .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
         .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
     }
 
@@ -606,9 +610,7 @@
 
     function formatAdminPseudo(userData, fallbackDisplay) {
       const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
-      const cleaned = String(rawSource)
-        .replace(/^\s*\[[^\]]+\]\s*/g, '')
-        .trim();
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
       const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
       return `[ ADMIN ] ${firstName}`;
     }
@@ -617,7 +619,6 @@
       const cleanMember = (memberName || 'Membre').trim();
       const cleanReason = (reason || '').trim();
       const cleanAdmin = (adminPseudo || "L'équipe d'administration").trim();
-
       return [
         `Bonjour ${cleanMember},`,
         ``,
@@ -634,7 +635,6 @@
       const fbBtn = document.getElementById('firebase-console-btn');
       const fbDesc = document.getElementById('firebase-resource-desc');
       if (!fbBtn || !fbDesc) return;
-
       const isSuperAdmin = currentRole === 'superadmin';
       if (isSuperAdmin) {
         fbBtn.classList.remove('btn-disabled');
@@ -684,39 +684,38 @@
       try {
         const snap = await getDocs(collection(db, "recrutement_postes"));
         adminRolesListEl.textContent = '';
-
         if (snap.empty) {
           const p = document.createElement('p');
-          p.textContent = 'Aucun poste personnalisé dans Firestore pour le moment (les postes par défaut s’affichent sur recrutement.html).';
+          p.textContent = 'Aucun poste personnalisé dans Firestore pour le moment.';
           adminRolesListEl.appendChild(p);
           return;
         }
-
         snap.forEach((d) => {
           const r = d.data() || {};
           const isOpen = r.open !== false;
-
           const row = document.createElement('div');
-          row.className = 'rec-admin-row';
+          row.className = 'adm-item';
 
-          const top = document.createElement('div');
-          top.className = 'rec-admin-top';
-
+          const head = document.createElement('div');
+          head.className = 'adm-item-head';
           const left = document.createElement('div');
           const strong = document.createElement('strong');
           strong.textContent = r.title || 'Poste';
           const meta = document.createElement('div');
-          meta.style.cssText = 'font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem;';
+          meta.className = 'adm-item-meta';
           meta.textContent = `${r.tag || 'Équipe'} • ${r.description || ''}`;
           left.appendChild(strong);
           left.appendChild(meta);
 
-          const actions = document.createElement('div');
-          actions.style.cssText = 'display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;';
-
           const pill = document.createElement('span');
-          pill.className = `status-pill-admin ${isOpen ? 'open' : 'closed'}`;
+          pill.className = `adm-pill ${isOpen ? 'open' : 'closed'}`;
           pill.textContent = isOpen ? 'Ouvert' : 'Clôturé';
+
+          head.appendChild(left);
+          head.appendChild(pill);
+
+          const btns = document.createElement('div');
+          btns.className = 'adm-actions-line';
 
           const toggleBtn = document.createElement('button');
           toggleBtn.type = 'button';
@@ -750,13 +749,10 @@
             }
           });
 
-          actions.appendChild(pill);
-          actions.appendChild(toggleBtn);
-          actions.appendChild(delBtn);
-
-          top.appendChild(left);
-          top.appendChild(actions);
-          row.appendChild(top);
+          btns.appendChild(toggleBtn);
+          btns.appendChild(delBtn);
+          row.appendChild(head);
+          row.appendChild(btns);
           adminRolesListEl.appendChild(row);
         });
       } catch (err) {
@@ -769,24 +765,19 @@
       try {
         const snap = await getDocs(collection(db, "candidatures"));
         adminAppsListEl.textContent = '';
-
         if (snap.empty) {
           const p = document.createElement('p');
           p.textContent = 'Aucune candidature reçue pour le moment.';
           adminAppsListEl.appendChild(p);
           return;
         }
-
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-
-        list.forEach((app) => {
+        snap.forEach((d) => {
+          const app = d.data() || {};
           const row = document.createElement('div');
-          row.className = 'rec-admin-row';
+          row.className = 'adm-item';
 
-          const top = document.createElement('div');
-          top.className = 'rec-admin-top';
-
+          const head = document.createElement('div');
+          head.className = 'adm-item-head';
           const titleEl = document.createElement('strong');
           titleEl.textContent = `${app.applicantName || app.applicantPseudo || 'Candidat'} (${app.age || '?'} ans) — ${app.roleTitle || 'Poste'}`;
 
@@ -798,14 +789,14 @@
               : 'En attente';
 
           const badge = document.createElement('span');
-          badge.className = 'status-pill-admin open';
+          badge.className = 'adm-pill open';
           badge.textContent = stLabel;
-
-          top.appendChild(titleEl);
-          top.appendChild(badge);
+          head.appendChild(titleEl);
+          head.appendChild(badge);
 
           const details = document.createElement('div');
-          details.style.cssText = 'font-size: 0.85rem; color: var(--muted); white-space: pre-line;';
+          details.className = 'adm-item-meta';
+          details.style.whiteSpace = 'pre-line';
           details.textContent = [
             `Profil JSP : ${app.jspStatus || '—'} • Contact : ${app.contact || '—'} • Dispos : ${app.availability || '—'}`,
             `Expérience : ${app.experience || '—'}`,
@@ -813,20 +804,16 @@
           ].join('\n');
 
           const btns = document.createElement('div');
-          btns.style.cssText = 'display: flex; gap: 0.45rem; flex-wrap: wrap;';
+          btns.className = 'adm-actions-line';
 
           const acceptBtn = document.createElement('button');
           acceptBtn.type = 'button';
           acceptBtn.className = 'btn btn-small';
           acceptBtn.textContent = 'Retenir';
           acceptBtn.addEventListener('click', async () => {
-            try {
-              await updateDoc(doc(db, "candidatures", app.id), { status: 'retenu' });
-              showAlert('Candidature marquée comme retenue.', true);
-              await loadAdminApplications();
-            } catch (err) {
-              showAlert('Erreur : ' + (err.code || err.message));
-            }
+            await updateDoc(doc(db, "candidatures", d.id), { status: 'retenu' });
+            showAlert('Candidature marquée comme retenue.', true);
+            await loadAdminApplications();
           });
 
           const refuseBtn = document.createElement('button');
@@ -834,13 +821,9 @@
           refuseBtn.className = 'btn btn-secondary btn-small';
           refuseBtn.textContent = 'Refuser';
           refuseBtn.addEventListener('click', async () => {
-            try {
-              await updateDoc(doc(db, "candidatures", app.id), { status: 'refuse' });
-              showAlert('Candidature marquée comme refusée.', true);
-              await loadAdminApplications();
-            } catch (err) {
-              showAlert('Erreur : ' + (err.code || err.message));
-            }
+            await updateDoc(doc(db, "candidatures", d.id), { status: 'refuse' });
+            showAlert('Candidature marquée comme refusée.', true);
+            await loadAdminApplications();
           });
 
           const delBtn = document.createElement('button');
@@ -848,20 +831,15 @@
           delBtn.className = 'btn btn-secondary btn-small';
           delBtn.textContent = 'Supprimer';
           delBtn.addEventListener('click', async () => {
-            try {
-              await deleteDoc(doc(db, "candidatures", app.id));
-              showAlert('Candidature supprimée.', true);
-              await loadAdminApplications();
-            } catch (err) {
-              showAlert('Erreur : ' + (err.code || err.message));
-            }
+            await deleteDoc(doc(db, "candidatures", d.id));
+            showAlert('Candidature supprimée.', true);
+            await loadAdminApplications();
           });
 
           btns.appendChild(acceptBtn);
           btns.appendChild(refuseBtn);
           btns.appendChild(delBtn);
-
-          row.appendChild(top);
+          row.appendChild(head);
           row.appendChild(details);
           row.appendChild(btns);
           adminAppsListEl.appendChild(row);
@@ -909,40 +887,30 @@
         const pending = [];
         snap.forEach(d => {
           const data = d.data();
-          if (!data.status || data.status === 'en_attente') {
-            pending.push({ id: d.id, ...data });
-          }
+          if (!data.status || data.status === 'en_attente') pending.push({ id: d.id, ...data });
         });
-
         appealsListEl.textContent = '';
         if (pending.length === 0) {
-          const p = document.createElement('p');
-          p.textContent = 'Aucune contestation de ban en attente.';
-          appealsListEl.appendChild(p);
+          appealsListEl.innerHTML = '<p>Aucune contestation de ban en attente.</p>';
           return;
         }
-
         pending.forEach(item => {
           const box = document.createElement('div');
-          box.className = 'list-item';
-          box.style.flexDirection = 'column';
-          box.style.alignItems = 'stretch';
-
-          const top = document.createElement('div');
-          top.style.cssText = 'display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;';
-
+          box.className = 'adm-item';
+          const head = document.createElement('div');
+          head.className = 'adm-item-head';
           const info = document.createElement('div');
-          const titleEl = document.createElement('strong');
-          titleEl.textContent = (item.pseudo || 'Membre') + ' (' + (item.email || 'sans e-mail') + ')';
-          const reasonEl = document.createElement('p');
-          reasonEl.style.cssText = 'font-size: 0.9rem; color: var(--text); margin-top: 0.35rem; white-space: pre-line;';
-          reasonEl.textContent = item.reason || item.message || '';
-
-          info.appendChild(titleEl);
-          info.appendChild(reasonEl);
+          const t = document.createElement('strong');
+          t.textContent = (item.pseudo || 'Membre') + ' (' + (item.email || 'sans e-mail') + ')';
+          const r = document.createElement('div');
+          r.className = 'adm-item-meta';
+          r.style.whiteSpace = 'pre-line';
+          r.textContent = item.reason || item.message || '';
+          info.appendChild(t);
+          info.appendChild(r);
 
           const btns = document.createElement('div');
-          btns.style.cssText = 'display: flex; gap: 0.5rem; flex-shrink: 0;';
+          btns.className = 'adm-actions-line';
 
           const unbanBtn = document.createElement('button');
           unbanBtn.type = 'button';
@@ -955,21 +923,12 @@
                 const uSnap = await getDoc(doc(db, "users", item.uid));
                 const uData = uSnap.exists() ? (uSnap.data() || {}) : {};
                 const ipToUnban = uData.bannedIp || uData.lastIp || '';
-                await setDoc(doc(db, "users", item.uid), {
-                  banned: false,
-                  banReason: '',
-                  banMessage: '',
-                  bannedIp: ''
-                }, { merge: true });
+                await setDoc(doc(db, "users", item.uid), { banned: false, banReason: '', banMessage: '', bannedIp: '' }, { merge: true });
                 if (ipToUnban) {
                   try { await deleteDoc(doc(db, "banned_ips", sanitizeIpDocId(ipToUnban))); } catch (_) {}
                 }
               }
-              await updateDoc(doc(db, "contestations", item.id), {
-                status: 'acceptee',
-                reviewedBy: currentUser.uid,
-                reviewedAt: serverTimestamp()
-              });
+              await updateDoc(doc(db, "contestations", item.id), { status: 'acceptee', reviewedBy: currentUser.uid, reviewedAt: serverTimestamp() });
               showAlert('Contestation acceptée et compte débanni.', true);
               await Promise.all([loadAppeals(), loadUsers()]);
             } catch (err) {
@@ -985,11 +944,7 @@
           denyBtn.addEventListener('click', async () => {
             denyBtn.disabled = true;
             try {
-              await updateDoc(doc(db, "contestations", item.id), {
-                status: 'refusee',
-                reviewedBy: currentUser.uid,
-                reviewedAt: serverTimestamp()
-              });
+              await updateDoc(doc(db, "contestations", item.id), { status: 'refusee', reviewedBy: currentUser.uid, reviewedAt: serverTimestamp() });
               showAlert('Contestation refusée.', true);
               await loadAppeals();
             } catch (err) {
@@ -1000,9 +955,9 @@
 
           btns.appendChild(unbanBtn);
           btns.appendChild(denyBtn);
-          top.appendChild(info);
-          top.appendChild(btns);
-          box.appendChild(top);
+          head.appendChild(info);
+          head.appendChild(btns);
+          box.appendChild(head);
           appealsListEl.appendChild(box);
         });
       } catch (err) {
@@ -1018,44 +973,29 @@
         const pending = [];
         snap.forEach(d => {
           const data = d.data();
-          if (!data.status || data.status === 'en_attente') {
-            pending.push({ id: d.id, ...data });
-          }
+          if (!data.status || data.status === 'en_attente') pending.push({ id: d.id, ...data });
         });
-
         propsListEl.textContent = '';
         if (pending.length === 0) {
-          const p = document.createElement('p');
-          p.textContent = 'Aucune proposition en attente.';
-          propsListEl.appendChild(p);
+          propsListEl.innerHTML = '<p>Aucune proposition en attente.</p>';
           return;
         }
-
         pending.forEach(item => {
           const box = document.createElement('div');
-          box.className = 'list-item';
-          box.style.flexDirection = 'column';
-          box.style.alignItems = 'stretch';
-
-          const top = document.createElement('div');
-          top.style.cssText = 'display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;';
-
+          box.className = 'adm-item';
+          const head = document.createElement('div');
+          head.className = 'adm-item-head';
           const info = document.createElement('div');
-          const titleEl = document.createElement('strong');
-          titleEl.textContent = item.title || 'Sans titre';
-          const metaEl = document.createElement('div');
-          metaEl.style.cssText = 'font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem;';
-          metaEl.textContent = (item.category || 'Infos') + ' • Par ' + (item.author || 'Anonyme');
-          const sumEl = document.createElement('p');
-          sumEl.style.cssText = 'font-size: 0.88rem; color: var(--muted); margin-top: 0.35rem;';
-          sumEl.textContent = item.summary || item.content || '';
-
-          info.appendChild(titleEl);
-          info.appendChild(metaEl);
-          info.appendChild(sumEl);
+          const t = document.createElement('strong');
+          t.textContent = item.title || 'Sans titre';
+          const m = document.createElement('div');
+          m.className = 'adm-item-meta';
+          m.textContent = `${item.category || 'Infos'} • Par ${item.author || 'Anonyme'} — ${item.summary || item.content || ''}`;
+          info.appendChild(t);
+          info.appendChild(m);
 
           const btns = document.createElement('div');
-          btns.style.cssText = 'display: flex; gap: 0.5rem; flex-shrink: 0;';
+          btns.className = 'adm-actions-line';
 
           const approveBtn = document.createElement('button');
           approveBtn.type = 'button';
@@ -1067,7 +1007,6 @@
               const fullText = Array.isArray(item.fullText) && item.fullText.length > 0
                 ? item.fullText
                 : parseParagraphs(item.content, item.summary);
-
               await addDoc(collection(db, "actus"), {
                 title: item.title || 'Sans titre',
                 category: item.category || 'Cursus JSP',
@@ -1079,18 +1018,12 @@
                 createdAt: serverTimestamp(),
                 publishedBy: currentUser.uid
               });
-
-              await updateDoc(doc(db, "propositions", item.id), {
-                status: 'validee',
-                reviewedBy: currentUser.uid,
-                reviewedAt: serverTimestamp()
-              });
-
+              await updateDoc(doc(db, "propositions", item.id), { status: 'validee', reviewedBy: currentUser.uid, reviewedAt: serverTimestamp() });
               showAlert('Proposition publiée dans les actualités.', true);
               await Promise.all([loadPropositions(), loadPublishedActus()]);
             } catch (err) {
               approveBtn.disabled = false;
-              showAlert('Erreur lors de la validation : ' + (err.code || err.message));
+              showAlert('Erreur : ' + (err.code || err.message));
             }
           });
 
@@ -1101,24 +1034,20 @@
           rejectBtn.addEventListener('click', async () => {
             rejectBtn.disabled = true;
             try {
-              await updateDoc(doc(db, "propositions", item.id), {
-                status: 'refusee',
-                reviewedBy: currentUser.uid,
-                reviewedAt: serverTimestamp()
-              });
+              await updateDoc(doc(db, "propositions", item.id), { status: 'refusee', reviewedBy: currentUser.uid, reviewedAt: serverTimestamp() });
               showAlert('Proposition refusée.', true);
               await loadPropositions();
             } catch (err) {
               rejectBtn.disabled = false;
-              showAlert('Erreur lors du refus : ' + (err.code || err.message));
+              showAlert('Erreur : ' + (err.code || err.message));
             }
           });
 
           btns.appendChild(approveBtn);
           btns.appendChild(rejectBtn);
-          top.appendChild(info);
-          top.appendChild(btns);
-          box.appendChild(top);
+          head.appendChild(info);
+          head.appendChild(btns);
+          box.appendChild(head);
           propsListEl.appendChild(box);
         });
       } catch (err) {
@@ -1132,33 +1061,25 @@
         const q = query(collection(db, "contacts"), orderBy("createdAt", "desc"));
         const snap = await getDocs(q);
         contactsListEl.textContent = '';
-
         if (snap.empty) {
-          const p = document.createElement('p');
-          p.textContent = 'Aucun message de contact pour le moment.';
-          contactsListEl.appendChild(p);
+          contactsListEl.innerHTML = '<p>Aucun message de contact pour le moment.</p>';
           return;
         }
-
         snap.forEach(d => {
           const item = d.data();
           const box = document.createElement('div');
-          box.className = 'list-item';
-          box.style.flexDirection = 'column';
-          box.style.alignItems = 'stretch';
-
-          const top = document.createElement('div');
-          top.style.cssText = 'display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;';
-
+          box.className = 'adm-item';
+          const head = document.createElement('div');
+          head.className = 'adm-item-head';
           const info = document.createElement('div');
-          const titleEl = document.createElement('strong');
-          titleEl.textContent = (item.subject || 'Contact') + ' — ' + (item.name || 'Visiteur') + ' (' + (item.email || 'sans e-mail') + ')';
-          const msgEl = document.createElement('p');
-          msgEl.style.cssText = 'font-size: 0.9rem; color: var(--text); margin-top: 0.35rem; white-space: pre-line;';
-          msgEl.textContent = item.message || '';
-
-          info.appendChild(titleEl);
-          info.appendChild(msgEl);
+          const t = document.createElement('strong');
+          t.textContent = `${item.subject || 'Contact'} — ${item.name || 'Visiteur'} (${item.email || 'sans e-mail'})`;
+          const m = document.createElement('div');
+          m.className = 'adm-item-meta';
+          m.style.whiteSpace = 'pre-line';
+          m.textContent = item.message || '';
+          info.appendChild(t);
+          info.appendChild(m);
 
           const delBtn = document.createElement('button');
           delBtn.type = 'button';
@@ -1176,9 +1097,9 @@
             }
           });
 
-          top.appendChild(info);
-          top.appendChild(delBtn);
-          box.appendChild(top);
+          head.appendChild(info);
+          head.appendChild(delBtn);
+          box.appendChild(head);
           contactsListEl.appendChild(box);
         });
       } catch (err) {
@@ -1192,28 +1113,22 @@
         const q = query(collection(db, "actus"), orderBy("createdAt", "desc"));
         const snap = await getDocs(q);
         pubListEl.textContent = '';
-
         if (snap.empty) {
-          const p = document.createElement('p');
-          p.textContent = 'Aucune actualité personnalisée dans Firestore pour le moment.';
-          pubListEl.appendChild(p);
+          pubListEl.innerHTML = '<p>Aucune actualité personnalisée dans Firestore pour le moment.</p>';
           return;
         }
-
         snap.forEach(d => {
           const item = d.data();
           const row = document.createElement('div');
-          row.className = 'actu-row';
-
-          const top = document.createElement('div');
-          top.className = 'actu-row-top';
-
+          row.className = 'adm-item';
+          const head = document.createElement('div');
+          head.className = 'adm-item-head';
           const left = document.createElement('div');
           const strong = document.createElement('strong');
           strong.textContent = item.title || 'Sans titre';
           const sub = document.createElement('div');
-          sub.style.cssText = 'font-size: 0.78rem; color: var(--muted);';
-          sub.textContent = (item.category || 'Cursus JSP') + ' • Par ' + (item.author || 'Rédaction');
+          sub.className = 'adm-item-meta';
+          sub.textContent = `${item.category || 'Cursus JSP'} • Par ${item.author || 'Rédaction'}`;
           left.appendChild(strong);
           left.appendChild(sub);
 
@@ -1221,10 +1136,9 @@
           delBtn.type = 'button';
           delBtn.className = 'btn btn-secondary btn-small';
           delBtn.textContent = 'Confirmer la suppression';
-
-          top.appendChild(left);
-          top.appendChild(delBtn);
-          row.appendChild(top);
+          head.appendChild(left);
+          head.appendChild(delBtn);
+          row.appendChild(head);
 
           const confirmBox = document.createElement('div');
           confirmBox.className = 'confirm-delete-box';
@@ -1262,12 +1176,10 @@
             confirmBox.style.display = 'flex';
             passInput.focus();
           });
-
           cancelBtn.addEventListener('click', () => {
             passInput.value = '';
             confirmBox.style.display = 'none';
           });
-
           execBtn.addEventListener('click', async () => {
             const pwd = passInput.value;
             if (!pwd) {
@@ -1296,11 +1208,7 @@
     async function syncPublicAdminDoc(uid, pseudo, isAdminRole) {
       try {
         if (isAdminRole) {
-          await setDoc(doc(db, "public_admins", uid), {
-            uid,
-            pseudo: pseudo || 'Admin',
-            updatedAt: serverTimestamp()
-          }, { merge: true });
+          await setDoc(doc(db, "public_admins", uid), { uid, pseudo: pseudo || 'Admin', updatedAt: serverTimestamp() }, { merge: true });
         } else {
           await deleteDoc(doc(db, "public_admins", uid));
         }
@@ -1312,14 +1220,10 @@
       try {
         const snap = await getDocs(collection(db, "users"));
         usersListEl.textContent = '';
-
         if (snap.empty) {
-          const p = document.createElement('p');
-          p.textContent = 'Aucun utilisateur trouvé.';
-          usersListEl.appendChild(p);
+          usersListEl.innerHTML = '<p>Aucun utilisateur trouvé.</p>';
           return;
         }
-
         const isSuperAdmin = currentRole === 'superadmin';
 
         snap.forEach(d => {
@@ -1331,22 +1235,23 @@
           const isBanned = u.banned === true;
 
           const row = document.createElement('div');
-          row.className = 'user-row';
+          row.className = 'adm-item';
 
-          const top = document.createElement('div');
-          top.className = 'user-row-top';
-
+          const head = document.createElement('div');
+          head.className = 'adm-item-head';
           const info = document.createElement('div');
           const strong = document.createElement('strong');
-          strong.textContent = (u.pseudo || 'Membre') + ' (' + (u.email || uid) + ')';
+          strong.textContent = `${u.pseudo || 'Membre'} (${u.email || uid})`;
           const meta = document.createElement('div');
-          meta.style.cssText = 'font-size: 0.78rem; color: var(--muted);';
-          meta.textContent = 'Rôle : ' + rawRole + (isBanned ? ' • BANNI' : ' • Actif') + (u.lastIp ? ' • IP : ' + u.lastIp : '');
+          meta.className = 'adm-item-meta';
+          meta.textContent = `Rôle : ${rawRole}${isBanned ? ' • BANNI' : ' • Actif'}${u.lastIp ? ' • IP : ' + u.lastIp : ''}`;
           info.appendChild(strong);
           info.appendChild(meta);
+          head.appendChild(info);
+          row.appendChild(head);
 
           const actions = document.createElement('div');
-          actions.style.cssText = 'display: flex; gap: 0.45rem; flex-wrap: wrap; align-items: center;';
+          actions.className = 'adm-actions-line';
 
           if (isSuperAdmin && !isTargetSuperAdmin && uid !== currentUser.uid) {
             const roleBtn = document.createElement('button');
@@ -1376,10 +1281,9 @@
           banReasonInput.type = 'text';
           banReasonInput.placeholder = 'Raison du ban (obligatoire)';
           banReasonInput.value = u.banReason || '';
-          banReasonInput.style.maxWidth = '230px';
 
           const ipLabel = document.createElement('label');
-          ipLabel.className = 'ip-check-row';
+          ipLabel.className = 'adm-ip-pill';
           const ipCheckbox = document.createElement('input');
           ipCheckbox.type = 'checkbox';
           ipCheckbox.checked = Boolean(u.bannedIp);
@@ -1412,14 +1316,12 @@
                   const memberName = u.pseudo || u.email || 'Membre';
                   const politeMsg = buildBanPoliteMessage(memberName, reason, currentPseudo);
                   const targetIp = ipCheckbox.checked ? (u.lastIp || u.bannedIp || '') : '';
-
                   await setDoc(doc(db, "users", uid), {
                     banned: true,
                     banReason: reason,
                     banMessage: politeMsg,
                     bannedIp: targetIp
                   }, { merge: true });
-
                   if (targetIp) {
                     await setDoc(doc(db, "banned_ips", sanitizeIpDocId(targetIp)), {
                       ip: targetIp,
@@ -1433,12 +1335,7 @@
                   showAlert('Membre banni avec message officiel.' + (targetIp ? ' IP bloquée.' : ''), true);
                 } else {
                   const ipToUnban = u.bannedIp || u.lastIp || '';
-                  await setDoc(doc(db, "users", uid), {
-                    banned: false,
-                    banReason: '',
-                    banMessage: '',
-                    bannedIp: ''
-                  }, { merge: true });
+                  await setDoc(doc(db, "users", uid), { banned: false, banReason: '', banMessage: '', bannedIp: '' }, { merge: true });
                   if (ipToUnban) {
                     try { await deleteDoc(doc(db, "banned_ips", sanitizeIpDocId(ipToUnban))); } catch (_) {}
                   }
@@ -1473,9 +1370,9 @@
             actions.appendChild(delUserBtn);
           }
 
-          top.appendChild(info);
-          top.appendChild(actions);
-          row.appendChild(top);
+          if (actions.childNodes.length > 0) {
+            row.appendChild(actions);
+          }
           usersListEl.appendChild(row);
         });
       } catch (err) {
@@ -1491,15 +1388,12 @@
       const sourceUrl = document.getElementById('actu-source').value.trim();
       const summary = document.getElementById('actu-summary').value.trim();
       const content = document.getElementById('actu-content').value.trim();
-
       if (!title || !author || !summary || !content) {
         showAlert('Remplis tous les champs obligatoires.');
         return;
       }
-
       publishBtn.disabled = true;
       publishBtn.textContent = 'Publication...';
-
       try {
         await addDoc(collection(db, "actus"), {
           title,
@@ -1512,7 +1406,6 @@
           createdAt: serverTimestamp(),
           publishedBy: currentUser.uid
         });
-
         publishForm.reset();
         showAlert('Actualité publiée avec succès sur le fil.', true);
         await loadPublishedActus();
@@ -1531,7 +1424,6 @@
 
     onAuthStateChanged(auth, async (user) => {
       currentUser = user || null;
-
       if (!user) {
         profileBox.style.display = 'none';
         logoutBtn.style.display = 'none';
@@ -1541,7 +1433,6 @@
         denyAccess('Connexion requise', 'Connecte-toi avec un compte administrateur pour accéder au panel.');
         return;
       }
-
       authBtn.style.display = 'none';
       logoutBtn.style.display = 'inline-flex';
 
@@ -1551,7 +1442,6 @@
           window.location.replace('ban.html');
           return;
         }
-
         const rawRole = (data.role || data.grade || 'membre').toLowerCase();
         const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
         currentRole = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');

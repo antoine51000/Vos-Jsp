@@ -136,6 +136,7 @@
     const toggleBtn = document.getElementById('toggle-mode-btn');
 
     let isRegisterMode = false;
+    let userUnsubscribe = null;
 
     function showAlert(msg, isSuccess = false) {
       alertEl.style.display = 'block';
@@ -250,10 +251,15 @@
     });
 
     onAuthStateChanged(auth, async (user) => {
+      if (userUnsubscribe) {
+        userUnsubscribe();
+        userUnsubscribe = null;
+      }
+
       if (await redirectIfIpBanned()) return;
       if (!user) return;
 
-      onSnapshot(doc(db, "users", user.uid), (snap) => {
+      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
         if (snap.exists() && snap.data().banned === true) {
           window.location.replace('ban.html');
         } else {

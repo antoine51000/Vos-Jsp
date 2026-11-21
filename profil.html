@@ -369,8 +369,11 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
+      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="recrutement.html">Recrutement</a>
       <a href="profil.html" class="active">Profil</a>
+      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
       <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -619,6 +622,9 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('nav a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
   </script>
 
   <script type="module">
@@ -651,6 +657,7 @@
     const drawerAuthBtn = document.getElementById('drawer-auth-btn');
     const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
     const drawerAdminLink = document.getElementById('drawer-admin-link');
+    const drawerMailLink = document.getElementById('drawer-mail-link');
 
     const alertEl = document.getElementById('pr-alert');
     const guestCard = document.getElementById('pr-guest-card');
@@ -744,6 +751,13 @@
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
+    }
+
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
     }
 
     function paintAvatar(container, imgSrc, pseudo) {
@@ -881,6 +895,7 @@
           await updateProfile(currentUser, { displayName: newPseudo });
         } catch (_) {}
 
+        draftAvatarDataUrl = '';
         avatarStatusEl.textContent = '';
         showAlert('Profil et photo enregistrés.', true);
       } catch (err) {
@@ -937,6 +952,10 @@
       const newP = newPassInput.value;
       const confP = confirmPassInput.value;
 
+      if (!oldP || !newP || !confP) {
+        showAlert('Remplis tous les champs de mot de passe.');
+        return;
+      }
       if (newP.length < 6) {
         showAlert('Le nouveau mot de passe doit contenir au moins 6 caractères.');
         return;
@@ -947,14 +966,14 @@
       }
 
       passBtn.disabled = true;
-      passBtn.textContent = 'Modification...';
+      passBtn.textContent = 'Mise à jour...';
       try {
         await reauthCurrentUser(oldP);
         await updatePassword(currentUser, newP);
         oldPassInput.value = '';
         newPassInput.value = '';
         confirmPassInput.value = '';
-        showAlert('Mot de passe modifié avec succès.', true);
+        showAlert('Mot de passe mis à jour.', true);
       } catch (err) {
         showAlert('Changement de mot de passe impossible : ' + (err.code || err.message));
       } finally {
@@ -965,7 +984,10 @@
 
     resetMailBtn.addEventListener('click', async () => {
       hideAlert();
-      if (!currentUser || !currentUser.email) return;
+      if (!currentUser || !currentUser.email) {
+        showAlert('Aucune adresse e-mail associée au compte.');
+        return;
+      }
       try {
         await sendPasswordResetEmail(auth, currentUser.email);
         showAlert(`Lien de réinitialisation envoyé à ${currentUser.email}.`, true);
@@ -974,17 +996,14 @@
       }
     });
 
-    function refreshKpis() {
+    function updateActivityUI() {
       kpiForumCount.textContent = String(myForumPosts.length);
       kpiGalleryCount.textContent = String(myGalleryItems.length);
-      let likes = 0;
-      myForumPosts.forEach((p) => { likes += Number(p.likes || 0); });
-      myGalleryItems.forEach((g) => { likes += Number(g.likes || 0); });
-      kpiLikesTotal.textContent = String(likes);
-    }
 
-    function renderMyPosts() {
-      refreshKpis();
+      let totalLikes = 0;
+      myForumPosts.forEach((p) => { totalLikes += Number(p.likes || 0); });
+      myGalleryItems.forEach((g) => { totalLikes += Number(g.likes || 0); });
+      kpiLikesTotal.textContent = String(totalLikes);
 
       myForumListEl.innerHTML = '';
       if (myForumPosts.length === 0) {
@@ -1004,11 +1023,11 @@
           left.appendChild(t);
           left.appendChild(m);
 
-          const del = document.createElement('button');
-          del.type = 'button';
-          del.className = 'btn btn-secondary btn-small';
-          del.textContent = 'Supprimer';
-          del.addEventListener('click', async () => {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Supprimer';
+          delBtn.addEventListener('click', async () => {
             try {
               await deleteDoc(doc(db, "forum", post.id));
             } catch (err) {
@@ -1017,7 +1036,7 @@
           });
 
           row.appendChild(left);
-          row.appendChild(del);
+          row.appendChild(delBtn);
           myForumListEl.appendChild(row);
         });
       }
@@ -1040,11 +1059,11 @@
           left.appendChild(t);
           left.appendChild(m);
 
-          const del = document.createElement('button');
-          del.type = 'button';
-          del.className = 'btn btn-secondary btn-small';
-          del.textContent = 'Supprimer';
-          del.addEventListener('click', async () => {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Supprimer';
+          delBtn.addEventListener('click', async () => {
             try {
               await deleteDoc(doc(db, "galerie", item.id));
             } catch (err) {
@@ -1053,7 +1072,7 @@
           });
 
           row.appendChild(left);
-          row.appendChild(del);
+          row.appendChild(delBtn);
           myGalleryListEl.appendChild(row);
         });
       }
@@ -1079,9 +1098,12 @@
           const list = [];
           snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
           myForumPosts = list;
-          renderMyPosts();
+          updateActivityUI();
         },
-        () => {}
+        () => {
+          myForumPosts = [];
+          updateActivityUI();
+        }
       );
 
       galleryUnsubscribe = onSnapshot(
@@ -1090,21 +1112,14 @@
           const list = [];
           snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
           myGalleryItems = list;
-          renderMyPosts();
+          updateActivityUI();
         },
-        () => {}
+        () => {
+          myGalleryItems = [];
+          updateActivityUI();
+        }
       );
     }
-
-    async function doLogout() {
-      stopActivityListeners();
-      await signOut(auth);
-      window.location.replace('login.html');
-    }
-
-    drawerLogoutBtn.addEventListener('click', doLogout);
-    topLogoutBtn.addEventListener('click', doLogout);
-    logoutBtn.addEventListener('click', doLogout);
 
     function sanitizeIpDocId(ip) {
       return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -1126,6 +1141,16 @@
       return false;
     }
 
+    async function handleLogout() {
+      stopActivityListeners();
+      await signOut(auth);
+      window.location.replace('login.html');
+    }
+
+    drawerLogoutBtn.addEventListener('click', handleLogout);
+    topLogoutBtn.addEventListener('click', handleLogout);
+    logoutBtn.addEventListener('click', handleLogout);
+
     onAuthStateChanged(auth, async (user) => {
       if (userUnsubscribe) {
         userUnsubscribe();
@@ -1138,11 +1163,12 @@
       currentUser = user || null;
 
       if (!user) {
-        dashboardEl.style.display = 'none';
         guestCard.style.display = 'block';
+        dashboardEl.style.display = 'none';
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
+        drawerMailLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
         return;
       }
@@ -1155,6 +1181,8 @@
       emailValEl.textContent = user.email || '—';
       uidValEl.textContent = user.uid;
 
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+
       userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
         const data = snap.exists() ? (snap.data() || {}) : {};
         if (data.banned === true) {
@@ -1163,43 +1191,45 @@
           return;
         }
 
-        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-        const role = data.role || 'membre';
+        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
+        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        const pseudo = isAdmin
+          ? formatAdminPseudo(data, fallbackName)
+          : (data.pseudo || fallbackName);
         const bio = data.bio || '';
         const jspSection = data.jspSection || '';
         const city = data.city || '';
         const visibility = data.visibility || 'public';
         const photoDataUrl = data.photoDataUrl || '';
 
-        currentProfile = { pseudo, role, bio, jspSection, city, visibility, photoDataUrl };
-        if (!draftAvatarDataUrl) {
-          paintAvatar(avatarLg, photoDataUrl, pseudo);
-          paintAvatar(profileAvatar, photoDataUrl, pseudo);
-        }
+        currentProfile = { pseudo, role: roleLabel, bio, jspSection, city, visibility, photoDataUrl };
 
-        roleBadge.textContent = role;
-        roleValEl.textContent = role;
+        profileBox.style.display = 'flex';
+        paintAvatar(profileAvatar, photoDataUrl, pseudo);
+        profileName.textContent = pseudo;
+        profileRole.textContent = roleLabel;
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+        drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
+        drawerMailLink.style.display = isAdmin ? 'block' : 'none';
+
+        paintAvatar(avatarLg, photoDataUrl, pseudo);
+        roleBadge.textContent = roleLabel;
         displayNameEl.textContent = pseudo;
-        submetaLineEl.textContent = [jspSection, city, visibility === 'discret' ? 'Profil discret' : 'Profil visible'].filter(Boolean).join(' • ') || 'Membre Vos JSP';
+        const metaParts = [jspSection || 'JSP', city || 'France'].filter(Boolean);
+        submetaLineEl.textContent = metaParts.join(' • ');
         displayBioEl.textContent = bio || 'Aucune bio renseignée pour le moment.';
+        roleValEl.textContent = roleLabel;
 
-        if (document.activeElement !== pseudoInput) pseudoInput.value = pseudo;
+        if (document.activeElement !== pseudoInput) pseudoInput.value = data.pseudo || fallbackName;
         if (document.activeElement !== jspInput) jspInput.value = jspSection;
         if (document.activeElement !== cityInput) cityInput.value = city;
         if (document.activeElement !== visibilitySelect) visibilitySelect.value = visibility;
         if (document.activeElement !== bioInput) bioInput.value = bio;
-
-        profileBox.style.display = 'flex';
-        profileName.textContent = pseudo;
-        profileRole.textContent = role;
-        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
-        drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
-
-        if (!forumUnsubscribe || !galleryUnsubscribe) {
-          startActivityListeners(user.uid);
-        }
       });
+
+      startActivityListeners(user.uid);
     });
   </script>
 </body>
-</html>s
+</html>

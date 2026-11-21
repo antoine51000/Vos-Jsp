@@ -339,7 +339,7 @@
         <details class="panel-box" open>
           <summary>Gestion des comptes, rôles &amp; bannissements</summary>
           <div class="panel-content">
-            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong>. Promouvoir un membre le renomme automatiquement avec <strong>[ ADMIN ] Prénom</strong>. Tu peux aussi retirer un compte de la base Firestore (après suppression dans Firebase Auth).</p>
+            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong> ou retirer un compte de la base Firestore. Promouvoir un membre le renomme automatiquement avec <strong>[ ADMIN ] Prénom</strong>.</p>
             <div id="users-list">
               <p>Chargement des utilisateurs...</p>
             </div>
@@ -911,7 +911,7 @@
           const targetIsPrivileged = role === 'admin' || role === 'superadmin';
           const canManageRole = !isSelf && (currentRole === 'superadmin' || !targetIsPrivileged);
           const canBan = !isSelf && (currentRole === 'superadmin' || !targetIsPrivileged);
-          const canDeleteFromDb = !isSelf && (currentRole === 'superadmin' || role !== 'superadmin');
+          const canDeleteFromDb = !isSelf && currentRole === 'superadmin';
 
           const row = document.createElement('div');
           row.className = 'user-row';
@@ -959,13 +959,12 @@
               try {
                 await setDoc(doc(db, "users", uid), patch, { merge: true });
                 if (isPromoting && newPseudo) {
-                  const pubSnap = await getDoc(doc(db, "public_admins", uid));
-                  if (pubSnap.exists()) {
-                    await setDoc(doc(db, "public_admins", uid), {
-                      pseudo: newPseudo,
-                      role: 'admin'
-                    }, { merge: true });
-                  }
+                  await setDoc(doc(db, "public_admins", uid), {
+                    pseudo: newPseudo,
+                    role: 'admin'
+                  }, { merge: true });
+                } else if (!isPromoting) {
+                  try { await deleteDoc(doc(db, "public_admins", uid)); } catch (_) {}
                 }
                 showAlert(
                   isPromoting

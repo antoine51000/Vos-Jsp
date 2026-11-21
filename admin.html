@@ -315,7 +315,7 @@
       <header class="adm-header-card">
         <span class="badge">Administration • Accès restreint</span>
         <h1>Poste de commandement Vos JSP</h1>
-        <p>Gère les ressources, le recrutement, les actualités, les propositions et les membres depuis un espace clair.</p>
+        <p>Gère les ressources, le recrutement, les actualités, les adresses mail et les membres depuis un espace clair.</p>
         <div class="adm-links-row">
           <a href="mail.html" class="btn btn-small">Ouvrir mail.html</a>
           <a href="recrutement.html" class="btn btn-secondary btn-small">Recrutement</a>
@@ -331,7 +331,7 @@
         <button type="button" class="adm-tab active" data-adm-tab="overview">Ressources &amp; Modération</button>
         <button type="button" class="adm-tab" data-adm-tab="recrutement">Recrutement &amp; Candidatures</button>
         <button type="button" class="adm-tab" data-adm-tab="actus">Actualités &amp; Propositions</button>
-        <button type="button" class="adm-tab" data-adm-tab="users">Membres &amp; Bans</button>
+        <button type="button" class="adm-tab" data-adm-tab="users">Membres, Mails &amp; Bans</button>
       </div>
 
       <!-- ONGLET 1 -->
@@ -478,8 +478,35 @@
         </section>
       </div>
 
-      <!-- ONGLET 4 -->
+      <!-- ONGLET 4 : MEMBRES, MAILS & BANS -->
       <div id="adm-tab-users" style="display: none; flex-direction: column; gap: 1.2rem;">
+        <section class="adm-card" id="admin-create-mailbox-card">
+          <h2>Créer une adresse mail admin</h2>
+          <p style="font-size: 0.84rem; color: var(--muted); margin: 0;">Attribue ou crée une adresse mail interne (ex. : <code>leo@vosjsp.fr</code>) rattachée à un compte ou à la boîte admin.</p>
+
+          <form id="create-mailbox-form">
+            <div class="adm-two-cols">
+              <div class="form-group">
+                <label for="mailbox-prefix-input">Identifiant / adresse mail</label>
+                <input type="text" id="mailbox-prefix-input" maxlength="80" placeholder="Ex. : leo ou leo@vosjsp.fr" required>
+              </div>
+              <div class="form-group">
+                <label for="mailbox-owner-input">Pseudo / Titulaire</label>
+                <input type="text" id="mailbox-owner-input" maxlength="80" placeholder="Ex. : [ ADMIN ] Léo" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="mailbox-uid-input">UID Firebase lié (optionnel)</label>
+              <input type="text" id="mailbox-uid-input" maxlength="128" placeholder="Colle l'UID du membre si tu veux lier l'adresse à son profil">
+            </div>
+
+            <button type="submit" id="create-mailbox-btn" class="btn btn-small">Créer l'adresse mail</button>
+          </form>
+
+          <div id="admin-mailboxes-list"><p>Chargement des adresses mail...</p></div>
+        </section>
+
         <section class="adm-card">
           <h2>Gestion des comptes, rôles &amp; bannissements</h2>
           <p style="font-size: 0.84rem; color: var(--muted); margin: 0;">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong> ou supprimer un profil de Firestore. Bannir un membre exige une <strong>raison</strong>, génère automatiquement un message officiel avec formules de politesse affiché sur <code>ban.html</code>, et permet de bloquer aussi son IP.</p>
@@ -590,6 +617,13 @@
     const adminRolesListEl = document.getElementById('admin-roles-list');
     const adminAppsListEl = document.getElementById('admin-apps-list');
 
+    const createMailboxForm = document.getElementById('create-mailbox-form');
+    const mailboxPrefixInput = document.getElementById('mailbox-prefix-input');
+    const mailboxOwnerInput = document.getElementById('mailbox-owner-input');
+    const mailboxUidInput = document.getElementById('mailbox-uid-input');
+    const createMailboxBtn = document.getElementById('create-mailbox-btn');
+    const adminMailboxesListEl = document.getElementById('admin-mailboxes-list');
+
     let currentUser = null;
     let currentRole = 'membre';
     let currentPseudo = 'Membre';
@@ -606,6 +640,17 @@
 
     function sanitizeIpDocId(ip) {
       return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    }
+
+    function normalizeInternalEmail(raw) {
+      const clean = String(raw || '').trim().toLowerCase().replace(/\s+/g, '');
+      if (!clean) return '';
+      if (clean.includes('@')) return clean;
+      return `${clean}@vosjsp.fr`;
+    }
+
+    function sanitizeMailboxDocId(email) {
+      return String(email || '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
     }
 
     function formatAdminPseudo(userData, fallbackDisplay) {
@@ -677,6 +722,112 @@
       }
       const cred = EmailAuthProvider.credential(currentUser.email, password);
       await reauthenticateWithCredential(currentUser, cred);
+    }
+
+    async function loadAdminMailboxes() {
+      if (!adminMailboxesListEl) return;
+      adminMailboxesListEl.textContent = 'Chargement...';
+      try {
+        const snap = await getDocs(collection(db, "admin_mailboxes"));
+        adminMailboxesListEl.textContent = '';
+
+        if (snap.empty) {
+          adminMailboxesListEl.innerHTML = '<p>Aucune adresse mail interne créée pour le moment.</p>';
+          return;
+        }
+
+        snap.forEach((d) => {
+          const m = d.data() || {};
+          const row = document.createElement('div');
+          row.className = 'adm-item';
+
+          const head = document.createElement('div');
+          head.className = 'adm-item-head';
+
+          const info = document.createElement('div');
+          const strong = document.createElement('strong');
+          strong.textContent = m.email || d.id;
+
+          const meta = document.createElement('div');
+          meta.className = 'adm-item-meta';
+          meta.textContent = `Titulaire : ${m.ownerName || 'Admin'}${m.uid ? ' • UID : ' + m.uid : ''}`;
+
+          info.appendChild(strong);
+          info.appendChild(meta);
+
+          const btns = document.createElement('div');
+          btns.className = 'adm-actions-line';
+
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Supprimer';
+          delBtn.addEventListener('click', async () => {
+            delBtn.disabled = true;
+            try {
+              await deleteDoc(doc(db, "admin_mailboxes", d.id));
+              showAlert('Adresse mail supprimée.', true);
+              await loadAdminMailboxes();
+            } catch (err) {
+              delBtn.disabled = false;
+              showAlert('Erreur suppression mail : ' + (err.code || err.message));
+            }
+          });
+
+          btns.appendChild(delBtn);
+          head.appendChild(info);
+          head.appendChild(btns);
+          row.appendChild(head);
+          adminMailboxesListEl.appendChild(row);
+        });
+      } catch (err) {
+        adminMailboxesListEl.textContent = 'Impossible de charger les adresses mail (' + (err.code || err.message) + ').';
+      }
+    }
+
+    if (createMailboxForm) {
+      createMailboxForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const emailVal = normalizeInternalEmail(mailboxPrefixInput.value);
+        const ownerVal = mailboxOwnerInput.value.trim();
+        const linkedUid = mailboxUidInput.value.trim();
+
+        if (!emailVal || !ownerVal) {
+          showAlert('Renseigne une adresse mail et un titulaire.');
+          return;
+        }
+
+        createMailboxBtn.disabled = true;
+        createMailboxBtn.textContent = 'Création...';
+
+        try {
+          const docId = sanitizeMailboxDocId(emailVal);
+          await setDoc(doc(db, "admin_mailboxes", docId), {
+            email: emailVal,
+            ownerName: ownerVal,
+            uid: linkedUid || '',
+            createdBy: currentUser.uid,
+            updatedAt: serverTimestamp()
+          }, { merge: true });
+
+          if (linkedUid) {
+            await setDoc(doc(db, "users", linkedUid), {
+              internalEmail: emailVal
+            }, { merge: true });
+          }
+
+          mailboxPrefixInput.value = '';
+          mailboxOwnerInput.value = '';
+          mailboxUidInput.value = '';
+          showAlert(`Adresse mail ${emailVal} créée avec succès.`, true);
+          await loadAdminMailboxes();
+        } catch (err) {
+          showAlert('Erreur création mail : ' + (err.code || err.message));
+        } finally {
+          createMailboxBtn.disabled = false;
+          createMailboxBtn.textContent = "Créer l'adresse mail";
+        }
+      });
     }
 
     async function loadAdminRoles() {
@@ -1244,7 +1395,7 @@
           strong.textContent = `${u.pseudo || 'Membre'} (${u.email || uid})`;
           const meta = document.createElement('div');
           meta.className = 'adm-item-meta';
-          meta.textContent = `Rôle : ${rawRole}${isBanned ? ' • BANNI' : ' • Actif'}${u.lastIp ? ' • IP : ' + u.lastIp : ''}`;
+          meta.textContent = `Rôle : ${rawRole}${isBanned ? ' • BANNI' : ' • Actif'}${u.internalEmail ? ' • Mail : ' + u.internalEmail : ''}${u.lastIp ? ' • IP : ' + u.lastIp : ''}`;
           info.appendChild(strong);
           info.appendChild(meta);
           head.appendChild(info);
@@ -1480,7 +1631,8 @@
             loadPublishedActus(),
             loadUsers(),
             loadAdminRoles(),
-            loadAdminApplications()
+            loadAdminApplications(),
+            loadAdminMailboxes()
           ]);
         }
       }, () => {

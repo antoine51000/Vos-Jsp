@@ -3,34 +3,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Login (en modif)</title>
+  <title>Vos JSP — Connexion &amp; Inscription</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .raw-box {
-      max-width: 420px;
-      margin: 2rem auto 1rem;
-      background: #ffeb3b;
-      color: #111;
-      border: 3px solid #111;
-      box-shadow: 5px 5px 0 #e11d2a;
-      padding: 0.85rem 1rem;
-      font-size: 0.88rem;
+    .step-auth-wrap {
+      max-width: 500px;
+      margin: 2.2rem auto 2.6rem;
+    }
+
+    .step-auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.75rem 1.65rem;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .step-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-dots {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .step-dot {
+      width: 26px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--border);
+      transition: background 0.25s ease, width 0.25s ease;
+    }
+
+    .step-dot.active {
+      width: 38px;
+      background: var(--primary);
+    }
+
+    .mode-switch-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.35rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.28rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .mode-btn {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.86rem;
+      padding: 0.56rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    }
+
+    .mode-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    @keyframes slideInForward {
+      0% {
+        opacity: 0;
+        transform: translateX(28px) scale(0.985);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    @keyframes slideInBackward {
+      0% {
+        opacity: 0;
+        transform: translateX(-28px) scale(0.985);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    .step-stage {
+      will-change: transform, opacity;
+    }
+
+    .step-stage.anim-forward {
+      animation: slideInForward 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .step-stage.anim-backward {
+      animation: slideInBackward 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .step-stage.anim-forward,
+      .step-stage.anim-backward {
+        animation: none;
+      }
+    }
+
+    .identity-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 1rem;
+      font-size: 0.86rem;
+    }
+
+    .identity-pill-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      min-width: 0;
+    }
+
+    .mini-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: rgba(225, 29, 42, 0.14);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .identity-mail {
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pwd-field-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .pwd-field-box input {
+      width: 100%;
+      padding-right: 2.75rem;
+    }
+
+    .pwd-vis-btn {
+      position: absolute;
+      right: 0.5rem;
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .pwd-vis-btn:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .step-actions {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+
+    .step-foot {
+      margin-top: 1.15rem;
+      padding-top: 0.95rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-size: 0.83rem;
+    }
+
+    .step-foot a {
+      color: var(--muted);
+      text-decoration: none;
       font-weight: 600;
     }
 
-    .raw-card {
-      max-width: 420px;
-      margin: 0 auto 2.5rem;
-      background: #fff;
-      color: #111;
-      border: 2px solid #111;
-      box-shadow: 5px 5px 0 #111;
-      padding: 1.2rem;
-    }
-
-    .raw-card input {
-      border-radius: 2px;
-      border: 1.5px solid #111;
+    .step-foot a:hover {
+      color: var(--primary);
     }
   </style>
 </head>
@@ -68,45 +251,86 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
-      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
-    <a href="login.html" class="btn active">Connexion</a>
+    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
+      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
+      <div class="profile-meta">
+        <strong class="profile-name" id="drawer-profile-name"></strong>
+        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      </div>
+    </div>
+
+    <a href="login.html" id="drawer-auth-btn" class="btn active">Connexion</a>
+    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
   </aside>
 
   <main>
-    <div class="raw-box">
-      🚧 LOGIN EN COURS DE MODIFICATION — Login temporaire en attendant la refonte finale (on règle ça tranquille). Tu peux te connecter ou créer un compte normalement.
-    </div>
-
-    <div class="raw-card">
-      <h1 id="auth-heading" style="font-size: 1.35rem; margin: 0 0 0.25rem;">Connexion (temp)</h1>
-      <p id="auth-sub" style="font-size: 0.84rem; color: #555; margin: 0 0 1rem;">Version simple en attendant la fin des réglages.</p>
-
-      <div id="auth-alert" class="alert"></div>
-
-      <form id="auth-form">
-        <div class="form-group" id="pseudo-group" style="display: none;">
-          <label for="auth-pseudo">Pseudo</label>
-          <input type="text" id="auth-pseudo" placeholder="Ton pseudo">
+    <div class="step-auth-wrap">
+      <div class="step-auth-card">
+        <div class="step-header-row">
+          <span class="badge">🚒 Accès Vos JSP</span>
+          <div class="step-dots" aria-hidden="true">
+            <span class="step-dot active" id="dot-step-1"></span>
+            <span class="step-dot" id="dot-step-2"></span>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="auth-email">E-mail</label>
-          <input type="email" id="auth-email" placeholder="exemple@mail.com" required>
+        <div id="title-stage" class="step-stage">
+          <h1 id="step-heading" style="font-size: 1.65rem; margin: 0 0 0.25rem;">Connexion</h1>
+          <p id="step-subtitle" style="color: var(--muted); font-size: 0.9rem; margin: 0 0 1.2rem;">Étape 1/2 — Saisis ton adresse e-mail pour continuer.</p>
         </div>
 
-        <div class="form-group">
-          <label for="auth-password">Mot de passe</label>
-          <input type="password" id="auth-password" placeholder="••••••••" required>
+        <div class="mode-switch-bar" role="tablist">
+          <button type="button" class="mode-btn active" id="mode-login-btn" role="tab" aria-selected="true">Connexion</button>
+          <button type="button" class="mode-btn" id="mode-register-btn" role="tab" aria-selected="false">Inscription</button>
         </div>
 
-        <button type="submit" id="auth-submit" class="btn" style="width: 100%; border-radius: 2px;">Connexion</button>
-      </form>
+        <div id="auth-alert" class="alert"></div>
 
-      <div style="margin-top: 0.7rem;">
-        <button type="button" id="toggle-mode-btn" class="btn btn-secondary btn-small" style="width: 100%; border-radius: 2px;">Passer en inscription</button>
+        <!-- ÉTAPE 1 : IDENTIFIANT E-MAIL -->
+        <form id="step-1-form" class="step-stage">
+          <div class="form-group">
+            <label for="step-email">Adresse e-mail</label>
+            <input type="email" id="step-email" placeholder="exemple@mail.com" autocomplete="email" required>
+          </div>
+          <button type="submit" id="step-next-btn" class="btn" style="width: 100%;">Continuer →</button>
+        </form>
+
+        <!-- ÉTAPE 2 : MOT DE PASSE (+ PSEUDO SI INSCRIPTION) -->
+        <form id="step-2-form" class="step-stage" style="display: none;">
+          <div class="identity-pill">
+            <div class="identity-pill-left">
+              <div class="mini-badge" id="step-mini-initials">JS</div>
+              <div class="identity-mail" id="step-confirmed-email">exemple@mail.com</div>
+            </div>
+            <button type="button" id="step-back-btn" class="btn btn-secondary btn-small">Modifier</button>
+          </div>
+
+          <div class="form-group" id="step-pseudo-group" style="display: none;">
+            <label for="step-pseudo">Pseudo JSP / Membre</label>
+            <input type="text" id="step-pseudo" placeholder="Ex. : Léo_JSP" maxlength="32">
+          </div>
+
+          <div class="form-group">
+            <label for="step-password">Mot de passe</label>
+            <div class="pwd-field-box">
+              <input type="password" id="step-password" placeholder="••••••••" autocomplete="current-password" required>
+              <button type="button" class="pwd-vis-btn" id="step-eye-btn" aria-label="Afficher ou masquer le mot de passe">👁️</button>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="submit" id="step-submit-btn" class="btn" style="flex: 1;">Se connecter</button>
+          </div>
+        </form>
+
+        <div class="step-foot">
+          <a href="contester.html">Compte suspendu ? Contester</a>
+          <a href="a-propos.html">Besoin d'aide ?</a>
+        </div>
       </div>
     </div>
   </main>
@@ -145,7 +369,8 @@
       onAuthStateChanged,
       signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
-      updateProfile
+      updateProfile,
+      signOut
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
       doc,
@@ -155,24 +380,128 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    const headingEl = document.getElementById('auth-heading');
-    const subEl = document.getElementById('auth-sub');
+    const profileBox = document.getElementById('drawer-profile-box');
+    const profileAvatar = document.getElementById('drawer-profile-avatar');
+    const profileName = document.getElementById('drawer-profile-name');
+    const profileRole = document.getElementById('drawer-profile-role');
+    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
+    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
+    const drawerAdminLink = document.getElementById('drawer-admin-link');
+
+    const dotStep1 = document.getElementById('dot-step-1');
+    const dotStep2 = document.getElementById('dot-step-2');
+    const titleStage = document.getElementById('title-stage');
+    const headingEl = document.getElementById('step-heading');
+    const subtitleEl = document.getElementById('step-subtitle');
+
+    const modeLoginBtn = document.getElementById('mode-login-btn');
+    const modeRegisterBtn = document.getElementById('mode-register-btn');
     const alertEl = document.getElementById('auth-alert');
-    const formEl = document.getElementById('auth-form');
-    const pseudoGroup = document.getElementById('pseudo-group');
-    const pseudoInput = document.getElementById('auth-pseudo');
-    const emailInput = document.getElementById('auth-email');
-    const passwordInput = document.getElementById('auth-password');
-    const submitBtn = document.getElementById('auth-submit');
-    const toggleBtn = document.getElementById('toggle-mode-btn');
+
+    const step1Form = document.getElementById('step-1-form');
+    const stepEmailInput = document.getElementById('step-email');
+
+    const step2Form = document.getElementById('step-2-form');
+    const miniInitialsEl = document.getElementById('step-mini-initials');
+    const confirmedEmailEl = document.getElementById('step-confirmed-email');
+    const stepBackBtn = document.getElementById('step-back-btn');
+    const stepPseudoGroup = document.getElementById('step-pseudo-group');
+    const stepPseudoInput = document.getElementById('step-pseudo');
+    const stepPasswordInput = document.getElementById('step-password');
+    const stepEyeBtn = document.getElementById('step-eye-btn');
+    const stepSubmitBtn = document.getElementById('step-submit-btn');
 
     let isRegisterMode = false;
+    let currentStep = 1;
     let userUnsubscribe = null;
+
+    function triggerStageAnim(el, animClass) {
+      if (!el) return;
+      el.classList.remove('anim-forward', 'anim-backward');
+      void el.offsetWidth;
+      el.classList.add(animClass);
+    }
 
     function showAlert(msg, isSuccess = false) {
       alertEl.style.display = 'block';
       alertEl.className = isSuccess ? 'alert success' : 'alert';
       alertEl.textContent = msg;
+    }
+
+    function getInitials(label) {
+      const clean = (label || 'JS').trim();
+      const parts = clean.split(/[\s._-]+/).filter(Boolean);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return clean.slice(0, 2).toUpperCase();
+    }
+
+    function formatAuthError(err) {
+      const code = err && err.code ? err.code : '';
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+        return 'Adresse e-mail ou mot de passe incorrect.';
+      }
+      if (code === 'auth/email-already-in-use') {
+        return 'Cette adresse e-mail est déjà utilisée.';
+      }
+      if (code === 'auth/weak-password') {
+        return 'Le mot de passe doit contenir au moins 6 caractères.';
+      }
+      return 'Erreur : ' + (code || (err && err.message) || 'inconnue');
+    }
+
+    function goToStep(stepNum, direction = 'forward') {
+      const animClass = direction === 'backward' ? 'anim-backward' : 'anim-forward';
+      currentStep = stepNum;
+      alertEl.style.display = 'none';
+      triggerStageAnim(titleStage, animClass);
+
+      if (stepNum === 1) {
+        dotStep1.classList.add('active');
+        dotStep2.classList.remove('active');
+        step2Form.style.display = 'none';
+        step1Form.style.display = 'block';
+        triggerStageAnim(step1Form, animClass);
+        headingEl.textContent = isRegisterMode ? 'Inscription' : 'Connexion';
+        subtitleEl.textContent = 'Étape 1/2 — Saisis ton adresse e-mail pour continuer.';
+        stepEmailInput.focus();
+      } else {
+        dotStep1.classList.remove('active');
+        dotStep2.classList.add('active');
+        step1Form.style.display = 'none';
+        step2Form.style.display = 'block';
+        triggerStageAnim(step2Form, animClass);
+
+        const em = stepEmailInput.value.trim();
+        const ps = stepPseudoInput.value.trim();
+        confirmedEmailEl.textContent = em;
+        miniInitialsEl.textContent = getInitials(ps || em);
+
+        if (isRegisterMode) {
+          stepPseudoGroup.style.display = 'block';
+          stepPseudoInput.required = true;
+          stepPasswordInput.autocomplete = 'new-password';
+          stepSubmitBtn.textContent = 'Créer mon compte';
+          headingEl.textContent = 'Inscription';
+          subtitleEl.textContent = 'Étape 2/2 — Choisis ton pseudo et ton mot de passe.';
+        } else {
+          stepPseudoGroup.style.display = 'none';
+          stepPseudoInput.required = false;
+          stepPasswordInput.autocomplete = 'current-password';
+          stepSubmitBtn.textContent = 'Se connecter';
+          headingEl.textContent = 'Connexion';
+          subtitleEl.textContent = 'Étape 2/2 — Entre ton mot de passe.';
+        }
+        stepPasswordInput.focus();
+      }
+    }
+
+    function setMode(register) {
+      isRegisterMode = register;
+      modeLoginBtn.classList.toggle('active', !register);
+      modeLoginBtn.setAttribute('aria-selected', String(!register));
+      modeRegisterBtn.classList.toggle('active', register);
+      modeRegisterBtn.setAttribute('aria-selected', String(register));
+      goToStep(currentStep, 'forward');
     }
 
     function sanitizeIpDocId(ip) {
@@ -203,38 +532,65 @@
       return false;
     }
 
-    toggleBtn.addEventListener('click', () => {
-      isRegisterMode = !isRegisterMode;
-      alertEl.style.display = 'none';
-      if (isRegisterMode) {
-        headingEl.textContent = 'Inscription (temp)';
-        subEl.textContent = 'Création de compte temporaire.';
-        pseudoGroup.style.display = 'block';
-        pseudoInput.required = true;
-        submitBtn.textContent = 'Créer le compte';
-        toggleBtn.textContent = 'Passer en connexion';
-      } else {
-        headingEl.textContent = 'Connexion (temp)';
-        subEl.textContent = 'Version simple en attendant la fin des réglages.';
-        pseudoGroup.style.display = 'none';
-        pseudoInput.required = false;
-        submitBtn.textContent = 'Connexion';
-        toggleBtn.textContent = 'Passer en inscription';
-      }
+    modeLoginBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      setMode(false);
     });
 
-    formEl.addEventListener('submit', async (e) => {
+    modeRegisterBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      setMode(true);
+    });
+
+    step1Form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertEl.style.display = 'none';
+      if (await redirectIfIpBanned()) return;
+
+      const em = stepEmailInput.value.trim();
+      if (!em) {
+        showAlert('Saisis une adresse e-mail valide.');
+        stepEmailInput.focus();
+        return;
+      }
+      goToStep(2, 'forward');
+    });
+
+    stepBackBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      goToStep(1, 'backward');
+    });
+
+    stepPseudoInput.addEventListener('input', () => {
+      const ps = stepPseudoInput.value.trim();
+      miniInitialsEl.textContent = getInitials(ps || stepEmailInput.value.trim());
+    });
+
+    stepEyeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const nextType = stepPasswordInput.type === 'password' ? 'text' : 'password';
+      stepPasswordInput.type = nextType;
+      stepEyeBtn.textContent = nextType === 'password' ? '👁️' : '🙈';
+    });
+
+    step2Form.addEventListener('submit', async (e) => {
       e.preventDefault();
       alertEl.style.display = 'none';
 
       if (await redirectIfIpBanned()) return;
 
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-      const pseudo = pseudoInput.value.trim();
+      const email = stepEmailInput.value.trim();
+      const password = stepPasswordInput.value;
+      const pseudo = stepPseudoInput.value.trim();
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = isRegisterMode ? 'Création...' : 'Connexion...';
+      if (!email) {
+        goToStep(1, 'backward');
+        return;
+      }
+
+      stepSubmitBtn.disabled = true;
+      stepBackBtn.disabled = true;
+      stepSubmitBtn.textContent = isRegisterMode ? 'Création...' : 'Connexion...';
 
       try {
         const currentIp = await fetchPublicIp();
@@ -275,10 +631,16 @@
           await setDoc(userRef, patch, { merge: true });
         }
       } catch (err) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = isRegisterMode ? 'Créer le compte' : 'Connexion';
-        showAlert('Erreur : ' + (err.code || err.message));
+        stepSubmitBtn.disabled = false;
+        stepBackBtn.disabled = false;
+        stepSubmitBtn.textContent = isRegisterMode ? 'Créer mon compte' : 'Se connecter';
+        showAlert(formatAuthError(err));
       }
+    });
+
+    drawerLogoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.reload();
     });
 
     onAuthStateChanged(auth, async (user) => {
@@ -288,14 +650,35 @@
       }
 
       if (await redirectIfIpBanned()) return;
-      if (!user) return;
+
+      if (!user) {
+        profileBox.style.display = 'none';
+        drawerLogoutBtn.style.display = 'none';
+        drawerAdminLink.style.display = 'none';
+        drawerAuthBtn.style.display = 'inline-flex';
+        return;
+      }
 
       userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
-        if (snap.exists() && snap.data().banned === true) {
+        const data = snap.exists() ? (snap.data() || {}) : {};
+        if (data.banned === true) {
           window.location.replace('ban.html');
-        } else {
-          window.location.replace('index.html');
+          return;
         }
+
+        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+        const role = data.role || 'membre';
+
+        profileBox.style.display = 'flex';
+        profileAvatar.textContent = getInitials(pseudo);
+        profileName.textContent = pseudo;
+        profileRole.textContent = role;
+        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
+        drawerAuthBtn.style.display = 'none';
+        drawerLogoutBtn.style.display = 'inline-flex';
+        drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
+
+        window.location.replace('index.html');
       });
     });
   </script>

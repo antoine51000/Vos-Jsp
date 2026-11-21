@@ -25,12 +25,18 @@
       background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
       box-shadow: 0 8px 20px rgba(225, 29, 72, 0.22);
       border: 1px solid rgba(255, 255, 255, 0.25);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, outline 0.15s ease;
     }
 
     .admin-pill:hover {
       transform: translateY(-2px);
       box-shadow: 0 12px 24px rgba(225, 29, 72, 0.3);
+    }
+
+    .admin-pill.selected {
+      outline: 3px solid #0284c7;
+      outline-offset: 2px;
     }
 
     .admin-pill::before {
@@ -77,7 +83,7 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html" class="active">À propos</a>
-       <a href="forum.html">Forum</a>
+      <a href="forum.html">Forum</a>
     </nav>
 
     <a href="login.html" class="btn btn-secondary">Connexion</a>
@@ -87,7 +93,7 @@
     <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
       <span class="badge">À propos &amp; Contact • Vos JSP</span>
       <h1>À propos de Vos JSP</h1>
-      <p class="subtitle" style="margin-bottom: 0;">Tout savoir sur la plateforme communautaire indépendante Vos JSP, l'équipe d'administration composée de deux JSP et le formulaire de contact envoyé dans le panel admin.</p>
+      <p class="subtitle" style="margin-bottom: 0;">Tout savoir sur la plateforme communautaire indépendante Vos JSP, l'équipe d'administration composée de deux JSP et le formulaire de contact envoyé dans la messagerie admin.</p>
     </section>
 
     <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.5rem;">
@@ -98,10 +104,10 @@
 
       <div>
         <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">2. Qui sont vos admins ?</h2>
-        <p>La gestion et la modération de la plateforme sont assurées par <strong>deux administrateurs qui sont des JSP</strong> :</p>
+        <p>La gestion et la modération de la plateforme sont assurées par <strong>deux administrateurs qui sont des JSP</strong> (clique sur un pseudo pour sélectionner le destinataire) :</p>
 
         <div id="admins-list" class="admins-pills">
-          <span style="color: var(--muted); font-size: 0.9rem;">Chargement...</span>
+          <span style="color: var(--muted); font-size: 0.9rem;">Chargement depuis Firebase...</span>
         </div>
       </div>
 
@@ -116,7 +122,7 @@
 
       <div>
         <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">4. Contact &amp; demandes pertinentes</h2>
-        <p>Utilise le formulaire ci-dessous pour envoyer ta demande directement dans le panel admin. Si ta demande est pertinente (y compris pour connaître l'éditeur du site, non divulgué publiquement pour des raisons de sécurité), nous te répondrons.</p>
+        <p>Utilise le formulaire ci-dessous pour envoyer ta demande directement dans la messagerie admin. Si ta demande est pertinente (y compris pour connaître l'éditeur du site, non divulgué publiquement pour des raisons de sécurité), nous te répondrons.</p>
       </div>
 
       <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
@@ -129,12 +135,19 @@
 
     <div class="form-box" id="contact-form-section" style="max-width: 100%; margin: 0;">
       <span class="badge">Formulaire de contact</span>
-      <h2 style="margin-top: 0.4rem; margin-bottom: 0.35rem;">Envoyer un message à l'administration</h2>
-      <p class="subtitle" style="margin-bottom: 1.25rem; font-size: 0.92rem;">Remplis les champs ci-dessous : ton message arrive directement dans le panel admin.</p>
+      <h2 style="margin-top: 0.4rem; margin-bottom: 0.35rem;">Envoyer un message à un administrateur</h2>
+      <p class="subtitle" style="margin-bottom: 1.25rem; font-size: 0.92rem;">Remplis les champs ci-dessous : ton message est transmis vers la boîte interne des admins sans exposer leurs adresses e-mail.</p>
 
       <div id="contact-alert" class="alert"></div>
 
       <form id="contact-form">
+        <div class="form-group">
+          <label for="contact-admin">Administrateur destinataire</label>
+          <select id="contact-admin" required>
+            <option value="">Chargement des admins...</option>
+          </select>
+        </div>
+
         <div class="form-group">
           <label for="contact-name">Nom ou pseudo</label>
           <input type="text" id="contact-name" placeholder="Ton nom ou pseudo" required>
@@ -160,7 +173,7 @@
           <textarea id="contact-message" rows="5" placeholder="Écris ton message ici..." required></textarea>
         </div>
 
-        <button type="submit" id="contact-submit" class="btn" style="width: 100%;">Envoyer dans le panel admin</button>
+        <button type="submit" id="contact-submit" class="btn" style="width: 100%;">Envoyer le message</button>
       </form>
     </div>
   </main>
@@ -200,12 +213,11 @@
       collection,
       addDoc,
       getDocs,
-      query,
-      where,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const adminsListEl = document.getElementById('admins-list');
+    const adminSelectEl = document.getElementById('contact-admin');
     const contactForm = document.getElementById('contact-form');
     const nameInput = document.getElementById('contact-name');
     const emailInput = document.getElementById('contact-email');
@@ -214,7 +226,8 @@
     const submitBtn = document.getElementById('contact-submit');
     const alertBox = document.getElementById('contact-alert');
 
-    let currentUser = null;
+    let adminsCache = [];
+    let selectedAdminUid = "";
 
     function showAlert(msg, isSuccess = false) {
       alertBox.style.display = 'block';
@@ -222,61 +235,116 @@
       alertBox.textContent = msg;
     }
 
-    function renderAdminPills(pseudos) {
-      adminsListEl.textContent = '';
-      pseudos.forEach(pseudo => {
-        const pill = document.createElement('span');
-        pill.className = 'admin-pill';
-        pill.textContent = pseudo;
-        adminsListEl.appendChild(pill);
+    function selectAdmin(uid, scrollToForm = false) {
+      selectedAdminUid = uid || "";
+      adminSelectEl.value = selectedAdminUid;
+      adminsListEl.querySelectorAll('.admin-pill').forEach((pill) => {
+        pill.classList.toggle('selected', Boolean(selectedAdminUid) && pill.dataset.uid === selectedAdminUid);
       });
+      if (scrollToForm) {
+        document.getElementById('contact-form-section').scrollIntoView({ behavior: 'smooth' });
+        nameInput.focus();
+      }
     }
 
-    async function loadAdmins() {
-      try {
-        const q = query(collection(db, "users"), where("role", "in", ["admin", "superadmin"]));
-        const snap = await getDocs(q);
-        const pseudos = [];
+    function renderAdmins(admins) {
+      adminsCache = admins;
+      adminsListEl.textContent = '';
+      adminSelectEl.textContent = '';
 
-        snap.forEach(d => {
-          const data = d.data();
+      if (!admins.length) {
+        const emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.textContent = 'Aucun administrateur disponible';
+        adminSelectEl.appendChild(emptyOpt);
+
+        const emptyMsg = document.createElement('span');
+        emptyMsg.style.color = 'var(--muted)';
+        emptyMsg.style.fontSize = '0.9rem';
+        emptyMsg.textContent = 'Aucun administrateur trouvé dans public_admins.';
+        adminsListEl.appendChild(emptyMsg);
+        return;
+      }
+
+      admins.forEach((admin, idx) => {
+        const opt = document.createElement('option');
+        opt.value = admin.uid;
+        opt.textContent = admin.pseudo;
+        adminSelectEl.appendChild(opt);
+
+        const pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'admin-pill';
+        pill.dataset.uid = admin.uid;
+        pill.textContent = admin.pseudo;
+        pill.addEventListener('click', () => selectAdmin(admin.uid, true));
+        adminsListEl.appendChild(pill);
+
+        if (idx === 0 && !selectedAdminUid) {
+          selectedAdminUid = admin.uid;
+        }
+      });
+
+      selectAdmin(selectedAdminUid, false);
+    }
+
+    async function loadPublicAdmins() {
+      try {
+        const snap = await getDocs(collection(db, "public_admins"));
+        const list = [];
+
+        snap.forEach((docSnap) => {
+          const data = docSnap.data() || {};
           if (data.banned === true) return;
-          if (data.pseudo) pseudos.push(data.pseudo);
+          const pseudo = (data.pseudo || data.displayName || data.name || "").trim();
+          if (!pseudo) return;
+          list.push({
+            uid: docSnap.id,
+            pseudo
+          });
         });
 
-        if (pseudos.length > 0) {
-          renderAdminPills(pseudos);
-          return;
-        }
-      } catch (err) {}
-
-      adminsListEl.textContent = '';
-      const fallback = document.createElement('span');
-      fallback.style.color = 'var(--muted)';
-      fallback.style.fontSize = '0.9rem';
-      fallback.textContent = 'Deux administrateurs JSP';
-      adminsListEl.appendChild(fallback);
+        renderAdmins(list);
+      } catch (err) {
+        console.error("Erreur chargement public_admins :", err);
+        adminsListEl.textContent = '';
+        const errMsg = document.createElement('span');
+        errMsg.style.color = 'var(--red-dark)';
+        errMsg.style.fontSize = '0.9rem';
+        errMsg.textContent = 'Impossible de charger la liste des admins depuis Firestore.';
+        adminsListEl.appendChild(errMsg);
+      }
     }
 
+    adminSelectEl.addEventListener('change', () => {
+      selectAdmin(adminSelectEl.value, false);
+    });
+
     onAuthStateChanged(auth, (user) => {
-      currentUser = user;
       if (user) {
         if (!nameInput.value && user.displayName) nameInput.value = user.displayName;
         if (!emailInput.value && user.email) emailInput.value = user.email;
       }
-      loadAdmins();
     });
 
-    loadAdmins();
+    loadPublicAdmins();
 
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = nameInput.value.trim();
-      const email = emailInput.value.trim();
-      const subject = subjectInput.value;
-      const message = messageInput.value.trim();
 
-      if (!name || !email || !message) {
+      const toUid = adminSelectEl.value.trim();
+      const targetAdmin = adminsCache.find((a) => a.uid === toUid);
+      const fromName = nameInput.value.trim();
+      const fromEmail = emailInput.value.trim();
+      const subject = subjectInput.value;
+      const body = messageInput.value.trim();
+
+      if (!toUid) {
+        showAlert('Sélectionne un administrateur destinataire.');
+        return;
+      }
+
+      if (!fromName || !fromEmail || !body) {
         showAlert('Remplis tous les champs avant d\'envoyer.');
         return;
       }
@@ -286,23 +354,27 @@
       alertBox.style.display = 'none';
 
       try {
-        await addDoc(collection(db, "contacts"), {
-          uid: currentUser ? currentUser.uid : null,
-          name,
-          email,
+        await addDoc(collection(db, "admin_mails"), {
+          isExternal: true,
+          fromUid: null,
+          toUid,
+          toPseudo: targetAdmin ? targetAdmin.pseudo : null,
+          fromName,
+          fromEmail,
           subject,
-          message,
-          status: 'non_lu',
+          body,
+          read: false,
           createdAt: serverTimestamp()
         });
 
-        showAlert('Message envoyé dans le panel admin ! Si ta demande est pertinente, nous te répondrons.', true);
+        showAlert(`Message envoyé à ${targetAdmin ? targetAdmin.pseudo : "l'administrateur"} dans la messagerie admin !`, true);
         messageInput.value = '';
       } catch (err) {
+        console.error("Erreur envoi admin_mails :", err);
         showAlert('Impossible d\'envoyer le message (' + (err.code || err.message) + ').');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Envoyer dans le panel admin';
+        submitBtn.textContent = 'Envoyer le message';
       }
     });
   </script>

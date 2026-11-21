@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos JSP — Proposer une actualité</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="brand">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+    </div>
+    <a href="actus.html" class="btn btn-secondary btn-small">Voir les actus</a>
+  </div>
+
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
+    </div>
+
+    <div class="drawer-label">Navigation</div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="actus.html">Actualités</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="proposer.html" class="active">Proposer</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="forum.html">Forum</a>
+      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
+    </nav>
+
+    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
+      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
+      <div class="profile-meta">
+        <strong class="profile-name" id="drawer-profile-name"></strong>
+        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      </div>
+    </div>
+
+    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
+    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
+  </aside>
+
+  <main>
+    <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.75rem;">
+      <span class="badge">Contribution communautaire</span>
+      <h1>Proposer une actualité ou un article</h1>
+      <p class="subtitle" style="margin-bottom: 0;">Partage un retour de manœuvre, une info de section, un sujet lié aux sapeurs-pompiers ou un article complet. Ta proposition sera vérifiée avant publication sur le fil.</p>
+    </section>
+
+    <div class="form-box" style="max-width: 680px; margin: 0 auto;">
+      <h2 style="margin-bottom: 0.4rem;">Nouvelle proposition</h2>
+      <p class="subtitle" style="margin-bottom: 1.35rem; font-size: 0.92rem;">Remplis les champs ci-dessous avec un résumé clair et le texte complet de ta proposition.</p>
+
+      <div id="propose-alert" class="alert"></div>
+
+      <form id="propose-form">
+        <div class="form-group">
+          <label for="prop-title">Titre de l'article</label>
+          <input type="text" id="prop-title" placeholder="Ex: Retour sur la manœuvre incendie du samedi" required>
+        </div>
+
+        <div class="form-group">
+          <label for="prop-category">Catégorie</label>
+          <select id="prop-category" required>
+            <option value="Cursus JSP">Cursus JSP</option>
+            <option value="Secourisme">Secourisme</option>
+            <option value="Sécurité Civile">Sécurité Civile</option>
+            <option value="Blocus & Violences">Blocus &amp; Violences</option>
+            <option value="Vie de section">Vie de section</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="prop-author">Rédacteur / Pseudo</label>
+          <input type="text" id="prop-author" placeholder="Ton pseudo ou nom de rédaction" required>
+        </div>
+
+        <div class="form-group">
+          <label for="prop-source">Lien vers l'article ou source (optionnel)</label>
+          <input type="url" id="prop-source" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+          <label for="prop-summary">Résumé court</label>
+          <textarea id="prop-summary" rows="2" placeholder="En 2-3 phrases : de quoi parle l'article ?" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="prop-content">Texte complet</label>
+          <textarea id="prop-content" rows="7" placeholder="Écris l'article en entier ici (sépare les paragraphes par une ligne vide)..." required></textarea>
+        </div>
+
+        <button type="submit" id="prop-submit" class="btn" style="width: 100%;">Envoyer la proposition</button>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="a-propos.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('nav-backdrop');
+    document.getElementById('menu-open').addEventListener('click', () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    });
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+    document.getElementById('menu-close').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+  </script>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const profileBox = document.getElementById('drawer-profile-box');
+    const profileAvatar = document.getElementById('drawer-profile-avatar');
+    const profileName = document.getElementById('drawer-profile-name');
+    const profileRole = document.getElementById('drawer-profile-role');
+    const authBtn = document.getElementById('drawer-auth-btn');
+    const logoutBtn = document.getElementById('drawer-logout-btn');
+    const adminLink = document.getElementById('drawer-admin-link');
+
+    const form = document.getElementById('propose-form');
+    const authorInput = document.getElementById('prop-author');
+    const submitBtn = document.getElementById('prop-submit');
+    const alertBox = document.getElementById('propose-alert');
+
+    let currentUser = null;
+
+    function getInitials(label) {
+      const clean = (label || 'JS').trim();
+      const parts = clean.split(/[\s._-]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return clean.slice(0, 2).toUpperCase();
+    }
+
+    function showAlert(msg, isSuccess = false) {
+      alertBox.style.display = 'block';
+      alertBox.className = isSuccess ? 'alert success' : 'alert';
+      alertBox.textContent = msg;
+      alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      if (user) {
+        let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+        let role = 'membre';
+
+        profileName.textContent = pseudo;
+        profileAvatar.textContent = getInitials(pseudo);
+        profileRole.textContent = role;
+        profileRole.className = 'profile-tag';
+        if (!authorInput.value.trim()) {
+          authorInput.value = pseudo;
+        }
+
+        profileBox.style.display = 'flex';
+        authBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-flex';
+
+        try {
+          const snap = await getDoc(doc(db, "users", user.uid));
+          if (snap.exists()) {
+            const data = snap.data();
+            if (data.pseudo) {
+              pseudo = data.pseudo;
+              profileName.textContent = pseudo;
+              profileAvatar.textContent = getInitials(pseudo);
+              if (!authorInput.value.trim() || authorInput.value === (user.displayName || user.email.split('@')[0])) {
+                authorInput.value = pseudo;
+              }
+            }
+            if (data.role) {
+              role = data.role;
+              profileRole.textContent = role;
+              const isAdmin = role === 'admin' || role === 'superadmin';
+              profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+              adminLink.style.display = isAdmin ? 'flex' : 'none';
+            }
+          }
+        } catch (e) {}
+      } else {
+        profileBox.style.display = 'none';
+        logoutBtn.style.display = 'none';
+        adminLink.style.display = 'none';
+        authBtn.style.display = 'inline-flex';
+        authBtn.textContent = 'Connexion';
+        authBtn.href = 'login.html';
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('proposer.html');
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('prop-title').value.trim();
+      const category = document.getElementById('prop-category').value;
+      const author = authorInput.value.trim();
+      const sourceUrl = document.getElementById('prop-source').value.trim();
+      const summary = document.getElementById('prop-summary').value.trim();
+      const rawContent = document.getElementById('prop-content').value.trim();
+
+      if (!title || !author || !summary || !rawContent) {
+        showAlert('Remplis tous les champs obligatoires avant d\'envoyer.');
+        return;
+      }
+
+      const paragraphs = rawContent
+        .split(/\n\s*\n/)
+        .map(p => p.trim())
+        .filter(Boolean);
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Envoi en cours...';
+      alertBox.style.display = 'none';
+
+      try {
+        await addDoc(collection(db, "propositions"), {
+          title,
+          category,
+          author,
+          sourceUrl,
+          summary,
+          content: rawContent,
+          fullText: paragraphs.length > 0 ? paragraphs : [rawContent],
+          status: 'en_attente',
+          authorUid: currentUser ? currentUser.uid : null,
+          createdAt: serverTimestamp()
+        });
+
+        showAlert('Proposition envoyée ! Elle est maintenant en attente de validation dans le Panel Admin.', true);
+        form.reset();
+        if (currentUser) {
+          authorInput.value = profileName.textContent || '';
+        }
+      } catch (err) {
+        showAlert('Impossible d\'envoyer la proposition (' + (err.code || err.message) + ').');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Envoyer la proposition';
+      }
+    });
+  </script>
+</body>
+</html>

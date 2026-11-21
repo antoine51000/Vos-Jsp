@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos JSP — Mentions légales</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="brand">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+    </div>
+    <a href="a-propos.html" class="btn btn-secondary btn-small">À propos &amp; Contact</a>
+  </div>
+
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
+    </div>
+
+    <div class="drawer-label">Navigation</div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="actus.html">Actualités</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="proposer.html">Proposer</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="profil.html">Profil</a>
+      <a href="forum.html">Forum</a>
+    </nav>
+
+    <a href="login.html" class="btn btn-secondary">Connexion</a>
+  </aside>
+
+  <main>
+    <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
+      <span class="badge">Cadre juridique • Vos JSP</span>
+      <h1>Mentions légales</h1>
+      <p class="subtitle" style="margin-bottom: 0;">Informations légales, coordonnées des prestataires techniques et conditions d'utilisation de la plateforme communautaire indépendante Vos JSP.</p>
+    </section>
+
+    <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+      <div>
+        <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">1. Éditeur de la plateforme</h2>
+        <p>Le site <strong>Vos JSP</strong> est édité à titre indépendant et communautaire autour de l'univers des Jeunes Sapeurs-Pompiers (JSP). Il ne constitue ni un site officiel d'un Service Départemental d'Incendie et de Secours (SDIS), ni un service public ou étatique.</p>
+        <p style="margin-top: 0.5rem;">Pour des raisons de sécurité, nous ne divulguons pas publiquement le nom de l'éditeur du site. Pour la connaître, envoyez une demande via la page <a href="a-propos.html">À propos</a> : si votre demande est pertinente, nous vous répondrons.</p>
+      </div>
+
+      <div>
+        <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">2. Hébergement et services techniques</h2>
+        <p>La diffusion web, l'authentification et la base de données de la plateforme reposent notamment sur les prestataires suivants :</p>
+        <ul style="margin-top: 0.5rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.45rem;">
+          <li><strong>Hébergement web :</strong> Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis (site : vercel.com).</li>
+          <li><strong>Authentification &amp; base de données :</strong> Google Firebase — Google LLC (1600 Amphitheatre Parkway, Mountain View, CA 94043, États-Unis) et Google Ireland Limited (Gordon House, Barrow Street, Dublin 4, Irlande) pour l'Espace économique européen et la Suisse (site : firebase.google.com).</li>
+          <li><strong>Autres services techniques :</strong> bibliothèques et services tiers nécessaires au fonctionnement technique de l'application web.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">3. Contenus et modération</h2>
+        <p>Les contributions publiées ou proposées sur la plateforme (articles, propositions, photos de galerie, contestations) sont encadrées par les règles d'accès et de modération. L'équipe d'administration peut retirer tout contenu inapproprié et suspendre un compte en cas d'abus.</p>
+      </div>
+
+      <div>
+        <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">4. Propriété intellectuelle</h2>
+        <p>La structure du site, les textes originaux et la charte graphique de Vos JSP sont protégés par le droit de la propriété intellectuelle. Les contenus partagés par les membres restent sous la responsabilité de leur auteur.</p>
+      </div>
+
+      <div>
+        <h2 style="font-size: 1.15rem; margin-bottom: 0.35rem;">5. Données personnelles et contact</h2>
+        <p>Les informations relatives aux données des comptes sont disponibles sur la page <a href="confidentialite.html">Confidentialité</a>. Pour toute demande ou prise de contact, rendez-vous sur la page <a href="a-propos.html">À propos</a>.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="a-propos.html">À propos &amp; Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('nav-backdrop');
+    document.getElementById('menu-open').addEventListener('click', () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    });
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+    document.getElementById('menu-close').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+  </script>
+</body>
+</html>

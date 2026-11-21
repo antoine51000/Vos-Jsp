@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos JSP — Galerie</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.35rem;
+      margin-top: 1.5rem;
+    }
+
+    .gallery-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gallery-media-btn {
+      padding: 0;
+      border: 0;
+      background: var(--surface-2, #0f172a);
+      cursor: zoom-in;
+      display: block;
+      width: 100%;
+    }
+
+    .gallery-media {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .gallery-body {
+      padding: 1rem 1.15rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      flex: 1;
+    }
+
+    .gallery-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .gallery-actions {
+      margin-top: auto;
+      padding-top: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    details.upload-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.75rem;
+      overflow: hidden;
+    }
+
+    details.upload-box > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1.15rem 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    details.upload-box > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.upload-box > summary::after {
+      content: "+";
+      font-size: 1.3rem;
+      color: var(--muted);
+    }
+
+    details.upload-box[open] > summary::after {
+      content: "−";
+    }
+
+    .upload-content {
+      padding: 1.25rem 1.5rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 13, 22, 0.9);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox-inner {
+      position: relative;
+      max-width: 96vw;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 82vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+      background: #0b0f19;
+    }
+
+    .lightbox-caption {
+      color: #f8fafc;
+      font-size: 0.92rem;
+      text-align: center;
+      max-width: 720px;
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(15, 23, 42, 0.85);
+      color: #fff;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="brand">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+    </div>
+    <a href="proposer.html" class="btn btn-secondary btn-small">Proposer</a>
+  </div>
+
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
+    </div>
+
+    <div class="drawer-label">Navigation</div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="actus.html">Actualités</a>
+      <a href="galerie.html" class="active">Galerie</a>
+      <a href="proposer.html">Proposer</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="forum.html">Forum</a>
+      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
+    </nav>
+
+    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
+      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
+      <div class="profile-meta">
+        <strong class="profile-name" id="drawer-profile-name"></strong>
+        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      </div>
+    </div>
+
+    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
+    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
+  </aside>
+
+  <main>
+    <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
+      <span class="badge">Communauté • Photos JSP</span>
+      <h1>Galerie Vos JSP</h1>
+      <p class="subtitle" style="margin-bottom: 0;">Clique sur une image pour l'afficher en taille réelle. Tout membre connecté peut envoyer une photo.</p>
+    </section>
+
+    <div id="gallery-alert" class="alert"></div>
+
+    <details class="upload-box" id="upload-accordion">
+      <summary>Envoyer une photo dans la galerie</summary>
+      <div class="upload-content">
+        <div id="upload-guest-msg" style="display: none;">
+          <p style="margin-bottom: 0.85rem;">Tu dois être connecté avec ton compte pour envoyer une photo dans la galerie.</p>
+          <a href="login.html" class="btn btn-small">Se connecter</a>
+        </div>
+
+        <form id="upload-form" style="display: none;">
+          <div class="form-group">
+            <label for="photo-title">Titre ou légende</label>
+            <input type="text" id="photo-title" placeholder="Ex: Manœuvre du samedi matin" required>
+          </div>
+
+          <div class="form-group">
+            <label for="photo-category">Catégorie</label>
+            <select id="photo-category" required>
+              <option value="Manœuvres">Manœuvres</option>
+              <option value="Vie de section">Vie de section</option>
+              <option value="Matériel & Engins">Matériel &amp; Engins</option>
+              <option value="Cohésion & Cérémonies">Cohésion &amp; Cérémonies</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="photo-file">Choisir une image depuis ton appareil</label>
+            <input type="file" id="photo-file" accept="image/*">
+          </div>
+
+          <div class="form-group">
+            <label for="photo-url">Ou coller un lien d'image (optionnel)</label>
+            <input type="url" id="photo-url" placeholder="https://...">
+          </div>
+
+          <button type="submit" id="upload-submit-btn" class="btn" style="width: 100%;">Publier dans la galerie</button>
+        </form>
+      </div>
+    </details>
+
+    <div id="gallery-list" class="gallery-grid">
+      <p>Chargement de la galerie...</p>
+    </div>
+  </main>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Aperçu en taille réelle">
+    <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Fermer">&times;</button>
+    <div class="lightbox-inner" id="lightbox-inner">
+      <img class="lightbox-img" id="lightbox-img" src="" alt="">
+      <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="a-propos.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('nav-backdrop');
+    document.getElementById('menu-open').addEventListener('click', () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    });
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+    document.getElementById('menu-close').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const lightboxClose = document.getElementById('lightbox-close');
+
+    function openLightbox(src, title, meta) {
+      if (!src) return;
+      lightboxImg.src = src;
+      lightboxImg.alt = title || 'Photo JSP';
+      lightboxCaption.textContent = (title || 'Sans titre') + (meta ? ' • ' + meta : '');
+      lightbox.classList.add('open');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      lightboxImg.src = '';
+    }
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+        closeLightbox();
+      }
+    });
+  </script>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      collection,
+      query,
+      orderBy,
+      getDocs,
+      addDoc,
+      deleteDoc,
+      doc,
+      getDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const profileBox = document.getElementById('drawer-profile-box');
+    const profileAvatar = document.getElementById('drawer-profile-avatar');
+    const profileName = document.getElementById('drawer-profile-name');
+    const profileRole = document.getElementById('drawer-profile-role');
+    const authBtn = document.getElementById('drawer-auth-btn');
+    const logoutBtn = document.getElementById('drawer-logout-btn');
+    const adminLink = document.getElementById('drawer-admin-link');
+
+    const alertBox = document.getElementById('gallery-alert');
+    const guestMsg = document.getElementById('upload-guest-msg');
+    const uploadForm = document.getElementById('upload-form');
+    const uploadSubmitBtn = document.getElementById('upload-submit-btn');
+    const galleryListEl = document.getElementById('gallery-list');
+
+    let currentUser = null;
+    let currentPseudo = 'Membre';
+    let isAdmin = false;
+    let isBanned = false;
+
+    function getInitials(label) {
+      const clean = (label || 'JS').trim();
+      const parts = clean.split(/[\s._-]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return clean.slice(0, 2).toUpperCase();
+    }
+
+    function showAlert(msg, isSuccess = false) {
+      alertBox.style.display = 'block';
+      alertBox.className = isSuccess ? 'alert success' : 'alert';
+      alertBox.textContent = msg;
+    }
+
+    function compressImageToDataUrl(file, maxWidth = 1400, quality = 0.85) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const scale = Math.min(1, maxWidth / img.width);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(img.width * scale));
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            if (dataUrl.length > 780000) {
+              reject(new Error('Image trop lourde après compression. Choisis une image plus petite ou un lien d\'image.'));
+              return;
+            }
+            resolve(dataUrl);
+          };
+          img.onerror = () => reject(new Error('Fichier image invalide.'));
+          img.src = reader.result;
+        };
+        reader.onerror = () => reject(new Error('Lecture du fichier impossible.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function loadGallery() {
+      galleryListEl.textContent = '';
+      const loadingP = document.createElement('p');
+      loadingP.textContent = 'Chargement de la galerie...';
+      galleryListEl.appendChild(loadingP);
+
+      try {
+        const q = query(collection(db, "galerie"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        galleryListEl.textContent = '';
+
+        if (snap.empty) {
+          const emptyP = document.createElement('p');
+          emptyP.textContent = 'Aucune photo dans la galerie pour le moment. Sois le premier à en publier une !';
+          galleryListEl.appendChild(emptyP);
+          return;
+        }
+
+        snap.forEach(d => {
+          const item = d.data();
+          const card = document.createElement('article');
+          card.className = 'gallery-card';
+
+          const mediaBtn = document.createElement('button');
+          mediaBtn.type = 'button';
+          mediaBtn.className = 'gallery-media-btn';
+          mediaBtn.title = 'Afficher en taille réelle';
+
+          const img = document.createElement('img');
+          img.className = 'gallery-media';
+          img.src = item.imageUrl || '';
+          img.alt = item.title || 'Photo JSP';
+          img.loading = 'lazy';
+
+          const metaText = (item.category || 'Galerie') + ' • Par ' + (item.author || 'Membre');
+          mediaBtn.addEventListener('click', () => {
+            openLightbox(item.imageUrl || '', item.title || 'Sans titre', metaText);
+          });
+          mediaBtn.appendChild(img);
+
+          const body = document.createElement('div');
+          body.className = 'gallery-body';
+
+          const title = document.createElement('h3');
+          title.style.fontSize = '1.02rem';
+          title.textContent = item.title || 'Sans titre';
+
+          const meta = document.createElement('div');
+          meta.className = 'gallery-meta';
+          meta.textContent = metaText;
+
+          body.appendChild(title);
+          body.appendChild(meta);
+
+          const actions = document.createElement('div');
+          actions.className = 'gallery-actions';
+
+          const viewBtn = document.createElement('button');
+          viewBtn.type = 'button';
+          viewBtn.className = 'btn btn-secondary btn-small';
+          viewBtn.textContent = 'Taille réelle';
+          viewBtn.addEventListener('click', () => {
+            openLightbox(item.imageUrl || '', item.title || 'Sans titre', metaText);
+          });
+          actions.appendChild(viewBtn);
+
+          const canDelete = Boolean(currentUser) && (isAdmin || item.authorUid === currentUser.uid);
+          if (canDelete) {
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'btn btn-secondary btn-small';
+            delBtn.textContent = 'Supprimer';
+            delBtn.addEventListener('click', async () => {
+              delBtn.disabled = true;
+              try {
+                await deleteDoc(doc(db, "galerie", d.id));
+                showAlert('Photo supprimée.', true);
+                await loadGallery();
+              } catch (err) {
+                delBtn.disabled = false;
+                showAlert('Suppression impossible (' + (err.code || err.message) + ').');
+              }
+            });
+            actions.appendChild(delBtn);
+          }
+
+          body.appendChild(actions);
+          card.appendChild(mediaBtn);
+          card.appendChild(body);
+          galleryListEl.appendChild(card);
+        });
+      } catch (err) {
+        galleryListEl.textContent = '';
+        const errP = document.createElement('p');
+        errP.textContent = 'Impossible de charger la galerie (' + (err.code || err.message) + ').';
+        galleryListEl.appendChild(errP);
+      }
+    }
+
+    uploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) {
+        showAlert('Connecte-toi pour envoyer une photo.');
+        return;
+      }
+      if (isBanned) {
+        showAlert('Ton compte est banni : tu ne peux pas envoyer de photo.');
+        return;
+      }
+
+      const title = document.getElementById('photo-title').value.trim();
+      const category = document.getElementById('photo-category').value;
+      const fileInput = document.getElementById('photo-file');
+      const urlInput = document.getElementById('photo-url').value.trim();
+      const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+      if (!file && !urlInput) {
+        showAlert('Choisis une image ou renseigne un lien d\'image.');
+        return;
+      }
+
+      uploadSubmitBtn.disabled = true;
+      uploadSubmitBtn.textContent = 'Envoi en cours...';
+      alertBox.style.display = 'none';
+
+      try {
+        let latestPseudo = currentPseudo;
+        try {
+          const freshSnap = await getDoc(doc(db, "users", currentUser.uid));
+          if (freshSnap.exists() && freshSnap.data().pseudo) {
+            latestPseudo = freshSnap.data().pseudo;
+            currentPseudo = latestPseudo;
+          } else if (currentUser.displayName) {
+            latestPseudo = currentUser.displayName;
+          }
+        } catch (err) {}
+
+        let finalImageUrl = urlInput;
+        if (file) {
+          finalImageUrl = await compressImageToDataUrl(file);
+        }
+
+        await addDoc(collection(db, "galerie"), {
+          title,
+          category,
+          imageUrl: finalImageUrl,
+          author: latestPseudo,
+          authorUid: currentUser.uid,
+          createdAt: serverTimestamp()
+        });
+
+        uploadForm.reset();
+        showAlert('Photo ajoutée à la galerie (' + latestPseudo + ') !', true);
+        await loadGallery();
+      } catch (err) {
+        showAlert(err.message || ('Erreur d\'envoi (' + (err.code || 'firestore') + ').'));
+      } finally {
+        uploadSubmitBtn.disabled = false;
+        uploadSubmitBtn.textContent = 'Publier dans la galerie';
+      }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      isAdmin = false;
+      isBanned = false;
+
+      if (!user) {
+        profileBox.style.display = 'none';
+        logoutBtn.style.display = 'none';
+        adminLink.style.display = 'none';
+        authBtn.style.display = 'inline-flex';
+        uploadForm.style.display = 'none';
+        guestMsg.style.display = 'block';
+        await loadGallery();
+        return;
+      }
+
+      let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      let role = 'membre';
+
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.pseudo) pseudo = data.pseudo;
+          if (data.role) role = data.role;
+          isBanned = data.banned === true;
+        }
+      } catch (e) {}
+
+      currentPseudo = pseudo;
+      isAdmin = !isBanned && (role === 'admin' || role === 'superadmin');
+
+      profileName.textContent = pseudo;
+      profileAvatar.textContent = getInitials(pseudo);
+      profileRole.textContent = isBanned ? 'banni' : role;
+      profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+      adminLink.style.display = isAdmin ? 'flex' : 'none';
+
+      profileBox.style.display = 'flex';
+      authBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-flex';
+
+      if (isBanned) {
+        uploadForm.style.display = 'none';
+        guestMsg.style.display = 'block';
+        guestMsg.innerHTML = '<p style="margin-bottom:0.85rem;">Ton compte est suspendu.</p><a href="contester.html" class="btn btn-small">Contester le bannissement</a>';
+      } else {
+        guestMsg.style.display = 'none';
+        uploadForm.style.display = 'block';
+      }
+
+      await loadGallery();
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('galerie.html');
+    });
+  </script>
+</body>
+</html>

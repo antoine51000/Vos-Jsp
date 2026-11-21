@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos JSP — Accueil</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="brand">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
+    </div>
+
+    <div class="drawer-label">Navigation</div>
+    <nav>
+      <a href="index.html" class="active">Accueil</a>
+      <a href="actus.html">Actualités</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="proposer.html">Proposer</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="forum.html">Forum</a>
+      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
+    </nav>
+
+    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
+      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
+      <div class="profile-meta">
+        <strong class="profile-name" id="drawer-profile-name"></strong>
+        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      </div>
+    </div>
+
+    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
+    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <span class="badge">Vos JSP • Communauté</span>
+      <h1>L'actualité, le matériel et la cohésion des JSP.</h1>
+      <p class="subtitle">Un espace clair et moderne dédié aux Jeunes Sapeurs-Pompiers : retours de manœuvres, repères de formation, infos vérifiées et propositions de la communauté.</p>
+      <div class="actions">
+        <a href="actus.html" class="btn">Voir les actualités</a>
+        <a href="galerie.html" class="btn btn-secondary">Galerie</a>
+        <a href="proposer.html" class="btn btn-secondary">Proposer une actu</a>
+      </div>
+    </section>
+
+    <div id="latest-actus-section" style="display: none; margin-bottom: 2.5rem;">
+      <h2>Publications de la communauté</h2>
+      <div id="latest-actus" class="grid"></div>
+    </div>
+
+    <h2>À la une : JSP, secourisme &amp; sécurité civile</h2>
+    <div class="grid" style="margin-bottom: 2.5rem;">
+      <article class="card">
+        <span class="card-meta">Secourisme • 2026</span>
+        <h3>Programme de formation continue 2027 (PSE &amp; PSC)</h3>
+        <p>Une circulaire du 4 juin 2026 encadre le programme de formation continue pour les unités d'enseignement aux premiers secours des filières de sécurité civile, avec des fiches techniques mises à jour (obstruction des voies aériennes, arrêt cardiaque, hémorragies).</p>
+        <p style="font-size: 0.8rem;">Source : <a href="https://www.secourisme.net/spip.php?article923&lang=fr" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Secourisme.net (Circulaire du 4 juin 2026)</a></p>
+      </article>
+
+      <article class="card">
+        <span class="card-meta">Volontariat • 2026</span>
+        <h3>Plan d'actions 2026-2028 pour les sapeurs-pompiers volontaires</h3>
+        <p>Lancée en avril 2026 par la Sécurité civile, cette feuille de route vise à faciliter l'engagement, associer davantage les employeurs et sensibiliser le public, notamment les jeunes, au volontariat.</p>
+        <p style="font-size: 0.8rem;">Source : <a href="https://www.securite-civile.interieur.gouv.fr/actualites/actualites/lancement-du-plan-dactions-2026-2028-pour-sapeurs-pompiers-volontaires" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Sécurité Civile — Ministère de l'Intérieur</a></p>
+      </article>
+
+      <article class="card">
+        <span class="card-meta">Événement • 2026</span>
+        <h3>Mondial Secours et Protection 2026 à La Roche-sur-Foron</h3>
+        <p>Le rendez-vous national et international des acteurs du secours et de la sécurité civile a réuni conférences, tables rondes sur l'avenir des missions, innovations techniques et animations grand public.</p>
+        <p style="font-size: 0.8rem;">Source : <a href="https://www.pompiers.fr/mondial-secours-protection-2026-programme/" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Pompiers.fr (FNSPF)</a></p>
+      </article>
+    </div>
+
+    <h2>Repères utiles : le cursus JSP</h2>
+    <div class="grid">
+      <article class="card">
+        <span class="card-meta">Cursus • 4 cycles</span>
+        <h3>De JSP 1 à JSP 4</h3>
+        <p>La formation s'articule sur quatre cycles annuels autour du prompt secours, de la lutte contre les incendies, de la protection des biens et de l'environnement, de l'engagement citoyen et du sport.</p>
+        <p style="font-size: 0.8rem;">Source : <a href="https://www.pompiers.fr/jeune-sapeur-pompier/" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Pompiers.fr — Jeune sapeur-pompier</a></p>
+      </article>
+
+      <article class="card">
+        <span class="card-meta">Examen • BNJSP</span>
+        <h3>Le Brevet National de Jeune Sapeur-Pompier</h3>
+        <p>En fin de parcours (à partir de 16 ans selon les conditions prévues), le BNJSP évalue les connaissances théoriques, les épreuves pratiques (ARI, lances, échelles, sauvetage) et les épreuves sportives.</p>
+        <p style="font-size: 0.8rem;">Source : <a href="https://www.pompiers.fr/jeune-sapeur-pompier/" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">Pompiers.fr — Brevet national</a></p>
+      </article>
+
+      <article class="card">
+        <span class="card-meta">Vie de section</span>
+        <h3>Manœuvres, sport &amp; cérémonies</h3>
+        <p>Tout au long de l'année, les sections rythment leur formation par les manœuvres, le cross, les épreuves sportives, les cérémonies commémoratives et la Sainte-Barbe.</p>
+        <p style="font-size: 0.8rem;">Source : <a href="https://ebrigade.app/articles/formation-jsp-jeune-sapeur-pompier/" target="_blank" rel="noopener noreferrer" style="color: var(--cyber); font-weight: 700;">eBrigade — Formation JSP</a></p>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="a-propos.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('nav-backdrop');
+    document.getElementById('menu-open').addEventListener('click', () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    });
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+    document.getElementById('menu-close').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+  </script>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { collection, query, orderBy, limit, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const profileBox = document.getElementById('drawer-profile-box');
+    const profileAvatar = document.getElementById('drawer-profile-avatar');
+    const profileName = document.getElementById('drawer-profile-name');
+    const profileRole = document.getElementById('drawer-profile-role');
+    const authBtn = document.getElementById('drawer-auth-btn');
+    const logoutBtn = document.getElementById('drawer-logout-btn');
+    const adminLink = document.getElementById('drawer-admin-link');
+    const latestSection = document.getElementById('latest-actus-section');
+    const container = document.getElementById('latest-actus');
+
+    function getInitials(label) {
+      const clean = (label || 'JS').trim();
+      const parts = clean.split(/[\s._-]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return clean.slice(0, 2).toUpperCase();
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+        let role = 'membre';
+
+        profileName.textContent = pseudo;
+        profileAvatar.textContent = getInitials(pseudo);
+        profileRole.textContent = role;
+        profileRole.className = 'profile-tag';
+
+        profileBox.style.display = 'flex';
+        authBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-flex';
+
+        try {
+          const snap = await getDoc(doc(db, "users", user.uid));
+          if (snap.exists()) {
+            const data = snap.data();
+            if (data.pseudo) {
+              pseudo = data.pseudo;
+              profileName.textContent = pseudo;
+              profileAvatar.textContent = getInitials(pseudo);
+            }
+            if (data.role) {
+              role = data.role;
+              profileRole.textContent = role;
+              const isAdmin = role === 'admin' || role === 'superadmin';
+              profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+              adminLink.style.display = isAdmin ? 'flex' : 'none';
+            }
+          }
+        } catch (e) {}
+      } else {
+        profileBox.style.display = 'none';
+        logoutBtn.style.display = 'none';
+        adminLink.style.display = 'none';
+        authBtn.style.display = 'inline-flex';
+        authBtn.textContent = 'Connexion';
+        authBtn.href = 'login.html';
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('index.html');
+    });
+
+    async function loadLatest() {
+      try {
+        const q = query(collection(db, "actus"), orderBy("createdAt", "desc"), limit(3));
+        const snap = await getDocs(q);
+        if (snap.empty) return;
+        container.innerHTML = '';
+        snap.forEach(d => {
+          const item = d.data();
+          container.innerHTML += '<article class="card"><span class="card-meta">' + (item.category || 'Info JSP') + '</span><h3>' + item.title + '</h3><p>' + item.content + '</p></article>';
+        });
+        latestSection.style.display = 'block';
+      } catch (e) {}
+    }
+    loadLatest();
+  </script>
+</body>
+</html>

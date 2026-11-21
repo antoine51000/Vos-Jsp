@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos JSP — Panel Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .accordion-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    details.panel-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    details.panel-box > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-weight: 700;
+      font-size: 1.08rem;
+      user-select: none;
+    }
+
+    details.panel-box > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.panel-box > summary::after {
+      content: "+";
+      font-size: 1.35rem;
+      color: var(--muted);
+      line-height: 1;
+    }
+
+    details.panel-box[open] > summary::after {
+      content: "−";
+    }
+
+    .panel-content {
+      padding: 1.25rem 1.5rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="brand">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+    </div>
+    <a href="actus.html" class="btn btn-secondary btn-small">Voir le fil</a>
+  </div>
+
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
+    </div>
+
+    <div class="drawer-label">Navigation</div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="actus.html">Actualités</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="proposer.html">Proposer</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="contester.html">Contester</a>
+       <a href="forum.html">Forum</a>
+      <a href="admin.html" id="drawer-admin-link" class="active" style="display: none;">Panel Admin</a>
+    </nav>
+
+    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
+      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
+      <div class="profile-meta">
+        <strong class="profile-name" id="drawer-profile-name"></strong>
+        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      </div>
+    </div>
+
+    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
+    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
+  </aside>
+
+  <main>
+    <div id="admin-gate" class="card" style="max-width: 560px; margin: 2rem auto; text-align: center;">
+      <span class="card-meta" style="margin: 0 auto;">Contrôle d'accès</span>
+      <h1 id="gate-title" style="font-size: 1.65rem; margin: 0.4rem 0;">Vérification des droits...</h1>
+      <p id="gate-desc">Contrôle de ta session et de ton rôle en cours.</p>
+      <div id="gate-actions" style="display: none; justify-content: center; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
+        <a href="index.html" class="btn btn-small">Retour à l'accueil</a>
+        <a href="login.html" class="btn btn-secondary btn-small">Connexion</a>
+      </div>
+    </div>
+
+    <div id="admin-panel" style="display: none;">
+      <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
+        <span class="badge">Administration • Accès restreint</span>
+        <h1>Poste de commandement Vos JSP</h1>
+        <p class="subtitle" style="margin-bottom: 0;">Clique sur une section pour la déployer ou la replier : contestations de ban, propositions, publication, actualités, messages de contact et membres.</p>
+      </section>
+
+      <div id="admin-alert" class="alert"></div>
+
+      <div class="accordion-list">
+        <details class="panel-box" open>
+          <summary>Contestations de ban</summary>
+          <div class="panel-content" id="appeals-list">
+            <p>Chargement des contestations...</p>
+          </div>
+        </details>
+
+        <details class="panel-box">
+          <summary>Propositions en attente de validation</summary>
+          <div class="panel-content" id="propositions-list">
+            <p>Chargement des propositions...</p>
+          </div>
+        </details>
+
+        <details class="panel-box">
+          <summary>Messages de contact</summary>
+          <div class="panel-content" id="contacts-list">
+            <p>Chargement des messages...</p>
+          </div>
+        </details>
+
+        <details class="panel-box">
+          <summary>Publier une actualité</summary>
+          <div class="panel-content">
+            <form id="publish-actu-form">
+              <div class="form-group">
+                <label for="actu-title">Titre</label>
+                <input type="text" id="actu-title" placeholder="Titre de l'article" required>
+              </div>
+              <div class="form-group">
+                <label for="actu-category">Catégorie</label>
+                <select id="actu-category" required>
+                  <option value="Blocus & Violences">Blocus &amp; Violences</option>
+                  <option value="Sécurité Civile">Sécurité Civile</option>
+                  <option value="Cursus JSP">Cursus JSP</option>
+                  <option value="Secourisme">Secourisme</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="actu-author">Rédacteur</label>
+                <input type="text" id="actu-author" placeholder="Nom ou pseudo du rédacteur" required>
+              </div>
+              <div class="form-group">
+                <label for="actu-source">Lien source (discret, optionnel)</label>
+                <input type="url" id="actu-source" placeholder="https://...">
+              </div>
+              <div class="form-group">
+                <label for="actu-summary">Résumé</label>
+                <textarea id="actu-summary" rows="2" placeholder="Court résumé affiché sur la carte" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="actu-content">Texte complet</label>
+                <textarea id="actu-content" rows="5" placeholder="Texte complet (sépare les paragraphes par une ligne vide)" required></textarea>
+              </div>
+              <button type="submit" id="publish-actu-btn" class="btn" style="width: 100%;">Publier sur le fil</button>
+            </form>
+          </div>
+        </details>
+
+        <details class="panel-box">
+          <summary>Actualités publiées (Firestore)</summary>
+          <div class="panel-content" id="published-actus-list">
+            <p>Chargement des actualités...</p>
+          </div>
+        </details>
+
+        <details class="panel-box">
+          <summary>Gestion des comptes, rôles &amp; bannissements</summary>
+          <div class="panel-content">
+            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong>. Les comptes bannis sont bloqués dès leur connexion.</p>
+            <div id="users-list">
+              <p>Chargement des utilisateurs...</p>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="a-propos.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('nav-backdrop');
+    document.getElementById('menu-open').addEventListener('click', () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    });
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+    document.getElementById('menu-close').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+  </script>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      collection,
+      query,
+      orderBy,
+      getDocs,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc,
+      addDoc,
+      deleteDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const profileBox = document.getElementById('drawer-profile-box');
+    const profileAvatar = document.getElementById('drawer-profile-avatar');
+    const profileName = document.getElementById('drawer-profile-name');
+    const profileRole = document.getElementById('drawer-profile-role');
+    const authBtn = document.getElementById('drawer-auth-btn');
+    const logoutBtn = document.getElementById('drawer-logout-btn');
+    const adminLink = document.getElementById('drawer-admin-link');
+
+    const gateEl = document.getElementById('admin-gate');
+    const gateTitle = document.getElementById('gate-title');
+    const gateDesc = document.getElementById('gate-desc');
+    const gateActions = document.getElementById('gate-actions');
+    const panelEl = document.getElementById('admin-panel');
+    const alertEl = document.getElementById('admin-alert');
+
+    const appealsListEl = document.getElementById('appeals-list');
+    const propsListEl = document.getElementById('propositions-list');
+    const contactsListEl = document.getElementById('contacts-list');
+    const pubListEl = document.getElementById('published-actus-list');
+    const usersListEl = document.getElementById('users-list');
+    const publishForm = document.getElementById('publish-actu-form');
+    const publishBtn = document.getElementById('publish-actu-btn');
+
+    let currentUser = null;
+    let currentRole = 'membre';
+    let currentPseudo = 'Membre';
+
+    function getInitials(label) {
+      const clean = (label || 'JS').trim();
+      const parts = clean.split(/[\s._-]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return clean.slice(0, 2).toUpperCase();
+    }
+
+    function showAlert(msg, isSuccess = false) {
+      alertEl.style.display = 'block';
+      alertEl.className = isSuccess ? 'alert success' : 'alert';
+      alertEl.textContent = msg;
+      alertEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function denyAccess(title, desc) {
+      panelEl.style.display = 'none';
+      gateEl.style.display = 'flex';
+      gateTitle.textContent = title;
+      gateDesc.textContent = desc;
+      gateActions.style.display = 'flex';
+    }
+
+    function parseParagraphs(text, fallback) {
+      const clean = (text || '').trim();
+      if (!clean) return fallback ? [fallback] : [];
+      const parts = clean.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+      return parts.length > 0 ? parts : [clean];
+    }
+
+    async function loadAppeals() {
+      appealsListEl.textContent = 'Chargement...';
+      try {
+        const q = query(collection(db, "contestations"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        const pending = [];
+        snap.forEach(d => {
+          const data = d.data();
+          if (!data.status || data.status === 'en_attente') {
+            pending.push({ id: d.id, ...data });
+          }
+        });
+
+        appealsListEl.textContent = '';
+        if (pending.length === 0) {
+          const p = document.createElement('p');
+          p.textContent = 'Aucune contestation de ban en attente.';
+          appealsListEl.appendChild(p);
+          return;
+        }
+
+        pending.forEach(item => {
+          const box = document.createElement('div');
+          box.className = 'list-item';
+          box.style.flexDirection = 'column';
+          box.style.alignItems = 'stretch';
+
+          const top = document.createElement('div');
+          top.style.cssText = 'display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;';
+
+          const info = document.createElement('div');
+          const titleEl = document.createElement('strong');
+          titleEl.textContent = (item.pseudo || 'Membre') + ' (' + (item.email || 'sans e-mail') + ')';
+          const reasonEl = document.createElement('p');
+          reasonEl.style.cssText = 'font-size: 0.9rem; color: var(--text); margin-top: 0.35rem; white-space: pre-line;';
+          reasonEl.textContent = item.reason || '';
+
+          info.appendChild(titleEl);
+          info.appendChild(reasonEl);
+
+          const btns = document.createElement('div');
+          btns.style.cssText = 'display: flex; gap: 0.5rem; flex-shrink: 0;';
+
+          const unbanBtn = document.createElement('button');
+          unbanBtn.type = 'button';
+          unbanBtn.className = 'btn btn-small';
+          unbanBtn.textContent = 'Débannir';
+          unbanBtn.addEventListener('click', async () => {
+            unbanBtn.disabled = true;
+            try {
+              if (item.uid) {
+                await setDoc(doc(db, "users", item.uid), { banned: false }, { merge: true });
+              }
+              await updateDoc(doc(db, "contestations", item.id), {
+                status: 'acceptee',
+                reviewedBy: currentUser.uid,
+                reviewedAt: serverTimestamp()
+              });
+              showAlert('Contestation acceptée et compte débanni.', true);
+              await Promise.all([loadAppeals(), loadUsers()]);
+            } catch (err) {
+              unbanBtn.disabled = false;
+              showAlert('Erreur : ' + (err.code || err.message));
+            }
+          });
+
+          const denyBtn = document.createElement('button');
+          denyBtn.type = 'button';
+          denyBtn.className = 'btn btn-secondary btn-small';
+          denyBtn.textContent = 'Refuser';
+          denyBtn.addEventListener('click', async () => {
+            denyBtn.disabled = true;
+            try {
+              await updateDoc(doc(db, "contestations", item.id), {
+                status: 'refusee',
+                reviewedBy: currentUser.uid,
+                reviewedAt: serverTimestamp()
+              });
+              showAlert('Contestation refusée.', true);
+              await loadAppeals();
+            } catch (err) {
+              denyBtn.disabled = false;
+              showAlert('Erreur : ' + (err.code || err.message));
+            }
+          });
+
+          btns.appendChild(unbanBtn);
+          btns.appendChild(denyBtn);
+          top.appendChild(info);
+          top.appendChild(btns);
+          box.appendChild(top);
+          appealsListEl.appendChild(box);
+        });
+      } catch (err) {
+        appealsListEl.textContent = 'Impossible de charger les contestations (' + (err.code || err.message) + ').';
+      }
+    }
+
+    async function loadPropositions() {
+      propsListEl.textContent = 'Chargement...';
+      try {
+        const q = query(collection(db, "propositions"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        const pending = [];
+        snap.forEach(d => {
+          const data = d.data();
+          if (!data.status || data.status === 'en_attente') {
+            pending.push({ id: d.id, ...data });
+          }
+        });
+
+        propsListEl.textContent = '';
+        if (pending.length === 0) {
+          const p = document.createElement('p');
+          p.textContent = 'Aucune proposition en attente.';
+          propsListEl.appendChild(p);
+          return;
+        }
+
+        pending.forEach(item => {
+          const box = document.createElement('div');
+          box.className = 'list-item';
+          box.style.flexDirection = 'column';
+          box.style.alignItems = 'stretch';
+
+          const top = document.createElement('div');
+          top.style.cssText = 'display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;';
+
+          const info = document.createElement('div');
+          const titleEl = document.createElement('strong');
+          titleEl.textContent = item.title || 'Sans titre';
+          const metaEl = document.createElement('div');
+          metaEl.style.cssText = 'font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem;';
+          metaEl.textContent = (item.category || 'Infos') + ' • Par ' + (item.author || 'Anonyme');
+          const sumEl = document.createElement('p');
+          sumEl.style.cssText = 'font-size: 0.88rem; color: var(--muted); margin-top: 0.35rem;';
+          sumEl.textContent = item.summary || item.content || '';
+
+          info.appendChild(titleEl);
+          info.appendChild(metaEl);
+          info.appendChild(sumEl);
+
+          const btns = document.createElement('div');
+          btns.style.cssText = 'display: flex; gap: 0.5rem; flex-shrink: 0;';
+
+          const approveBtn = document.createElement('button');
+          approveBtn.type = 'button';
+          approveBtn.className = 'btn btn-small';
+          approveBtn.textContent = 'Valider';
+          approveBtn.addEventListener('click', async () => {
+            approveBtn.disabled = true;
+            try {
+              const fullText = Array.isArray(item.fullText) && item.fullText.length > 0
+                ? item.fullText
+                : parseParagraphs(item.content, item.summary);
+
+              await addDoc(collection(db, "actus"), {
+                title: item.title || 'Sans titre',
+                category: item.category || 'Cursus JSP',
+                author: item.author || currentPseudo,
+                sourceUrl: item.sourceUrl || '',
+                summary: item.summary || '',
+                content: item.content || item.summary || '',
+                fullText,
+                createdAt: serverTimestamp(),
+                publishedBy: currentUser.uid
+              });
+
+              await updateDoc(doc(db, "propositions", item.id), {
+                status: 'validee',
+                reviewedBy: currentUser.uid,
+                reviewedAt: serverTimestamp()
+              });
+
+              showAlert('Proposition publiée dans les actualités.', true);
+              await Promise.all([loadPropositions(), loadPublishedActus()]);
+            } catch (err) {
+              approveBtn.disabled = false;
+              showAlert('Erreur lors de la validation : ' + (err.code || err.message));
+            }
+          });
+
+          const rejectBtn = document.createElement('button');
+          rejectBtn.type = 'button';
+          rejectBtn.className = 'btn btn-secondary btn-small';
+          rejectBtn.textContent = 'Refuser';
+          rejectBtn.addEventListener('click', async () => {
+            rejectBtn.disabled = true;
+            try {
+              await updateDoc(doc(db, "propositions", item.id), {
+                status: 'refusee',
+                reviewedBy: currentUser.uid,
+                reviewedAt: serverTimestamp()
+              });
+              showAlert('Proposition refusée.', true);
+              await loadPropositions();
+            } catch (err) {
+              rejectBtn.disabled = false;
+              showAlert('Erreur lors du refus : ' + (err.code || err.message));
+            }
+          });
+
+          btns.appendChild(approveBtn);
+          btns.appendChild(rejectBtn);
+          top.appendChild(info);
+          top.appendChild(btns);
+          box.appendChild(top);
+          propsListEl.appendChild(box);
+        });
+      } catch (err) {
+        propsListEl.textContent = 'Impossible de charger les propositions (' + (err.code || err.message) + ').';
+      }
+    }
+
+    async function loadContacts() {
+      contactsListEl.textContent = 'Chargement...';
+      try {
+        const q = query(collection(db, "contacts"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        contactsListEl.textContent = '';
+
+        if (snap.empty) {
+          const p = document.createElement('p');
+          p.textContent = 'Aucun message de contact pour le moment.';
+          contactsListEl.appendChild(p);
+          return;
+        }
+
+        snap.forEach(d => {
+          const item = d.data();
+          const box = document.createElement('div');
+          box.className = 'list-item';
+          box.style.flexDirection = 'column';
+          box.style.alignItems = 'stretch';
+
+          const top = document.createElement('div');
+          top.style.cssText = 'display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;';
+
+          const info = document.createElement('div');
+          const titleEl = document.createElement('strong');
+          titleEl.textContent = (item.subject || 'Contact') + ' — ' + (item.name || 'Visiteur') + ' (' + (item.email || 'sans e-mail') + ')';
+          const msgEl = document.createElement('p');
+          msgEl.style.cssText = 'font-size: 0.9rem; color: var(--text); margin-top: 0.35rem; white-space: pre-line;';
+          msgEl.textContent = item.message || '';
+
+          info.appendChild(titleEl);
+          info.appendChild(msgEl);
+
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Supprimer';
+          delBtn.addEventListener('click', async () => {
+            delBtn.disabled = true;
+            try {
+              await deleteDoc(doc(db, "contacts", d.id));
+              showAlert('Message supprimé.', true);
+              await loadContacts();
+            } catch (err) {
+              delBtn.disabled = false;
+              showAlert('Erreur : ' + (err.code || err.message));
+            }
+          });
+
+          top.appendChild(info);
+          top.appendChild(delBtn);
+          box.appendChild(top);
+          contactsListEl.appendChild(box);
+        });
+      } catch (err) {
+        contactsListEl.textContent = 'Impossible de charger les messages (' + (err.code || err.message) + ').';
+      }
+    }
+
+    async function loadPublishedActus() {
+      pubListEl.textContent = 'Chargement...';
+      try {
+        const q = query(collection(db, "actus"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        pubListEl.textContent = '';
+
+        if (snap.empty) {
+          const p = document.createElement('p');
+          p.textContent = 'Aucune actualité personnalisée dans Firestore pour le moment.';
+          pubListEl.appendChild(p);
+          return;
+        }
+
+        snap.forEach(d => {
+          const item = d.data();
+          const row = document.createElement('div');
+          row.className = 'list-item';
+
+          const left = document.createElement('div');
+          const strong = document.createElement('strong');
+          strong.textContent = item.title || 'Sans titre';
+          const sub = document.createElement('div');
+          sub.style.cssText = 'font-size: 0.78rem; color: var(--muted);';
+          sub.textContent = (item.category || 'Infos') + (item.author ? ' • Par ' + item.author : '');
+          left.appendChild(strong);
+          left.appendChild(sub);
+
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Supprimer';
+          delBtn.addEventListener('click', async () => {
+            delBtn.disabled = true;
+            try {
+              await deleteDoc(doc(db, "actus", d.id));
+              showAlert('Actualité supprimée.', true);
+              await loadPublishedActus();
+            } catch (err) {
+              delBtn.disabled = false;
+              showAlert('Suppression impossible : ' + (err.code || err.message));
+            }
+          });
+
+          row.appendChild(left);
+          row.appendChild(delBtn);
+          pubListEl.appendChild(row);
+        });
+      } catch (err) {
+        pubListEl.textContent = 'Impossible de charger les actualités (' + (err.code || err.message) + ').';
+      }
+    }
+
+    async function loadUsers() {
+      usersListEl.textContent = 'Chargement...';
+      try {
+        const snap = await getDocs(collection(db, "users"));
+        usersListEl.textContent = '';
+
+        if (snap.empty) {
+          const p = document.createElement('p');
+          p.textContent = 'Aucun utilisateur enregistré dans Firestore.';
+          usersListEl.appendChild(p);
+          return;
+        }
+
+        snap.forEach(d => {
+          const u = d.data();
+          const uid = d.id;
+          const role = u.role || 'membre';
+          const banned = Boolean(u.banned);
+          const display = u.pseudo || u.email || uid;
+          const isSelf = currentUser && uid === currentUser.uid;
+          const targetIsPrivileged = role === 'admin' || role === 'superadmin';
+          const canManageRole = !isSelf && (currentRole === 'superadmin' || !targetIsPrivileged);
+          const canBan = !isSelf && (currentRole === 'superadmin' || !targetIsPrivileged);
+
+          const row = document.createElement('div');
+          row.className = 'list-item';
+
+          const info = document.createElement('div');
+          const nameLine = document.createElement('strong');
+          nameLine.textContent = display;
+
+          const statusTag = document.createElement('span');
+          statusTag.className = 'profile-tag' + (targetIsPrivileged ? ' admin' : '');
+          statusTag.style.marginLeft = '0.5rem';
+          statusTag.textContent = banned ? 'banni' : role;
+
+          const mailLine = document.createElement('div');
+          mailLine.style.cssText = 'font-size: 0.78rem; color: var(--muted);';
+          mailLine.textContent = (u.email || 'Aucun email') + ' • UID : ' + uid.slice(0, 10) + '...';
+
+          info.appendChild(nameLine);
+          info.appendChild(statusTag);
+          info.appendChild(mailLine);
+
+          const actions = document.createElement('div');
+          actions.style.cssText = 'display: flex; gap: 0.45rem; flex-wrap: wrap;';
+
+          if (role !== 'superadmin' && canManageRole) {
+            const roleBtn = document.createElement('button');
+            roleBtn.type = 'button';
+            roleBtn.className = 'btn btn-secondary btn-small';
+            roleBtn.textContent = role === 'admin' ? 'Rétrograder membre' : 'Mettre admin';
+            roleBtn.addEventListener('click', async () => {
+              roleBtn.disabled = true;
+              const nextRole = role === 'admin' ? 'membre' : 'admin';
+              try {
+                await setDoc(doc(db, "users", uid), { role: nextRole }, { merge: true });
+                showAlert('Rôle de ' + display + ' mis à jour : ' + nextRole + '.', true);
+                await loadUsers();
+              } catch (err) {
+                roleBtn.disabled = false;
+                showAlert('Action refusée : ' + (err.code || err.message));
+              }
+            });
+            actions.appendChild(roleBtn);
+          }
+
+          if (role !== 'superadmin' && canBan) {
+            const banBtn = document.createElement('button');
+            banBtn.type = 'button';
+            banBtn.className = banned ? 'btn btn-secondary btn-small' : 'btn btn-small';
+            banBtn.textContent = banned ? 'Débannir' : 'Bannir';
+            banBtn.addEventListener('click', async () => {
+              banBtn.disabled = true;
+              try {
+                await setDoc(doc(db, "users", uid), { banned: !banned }, { merge: true });
+                showAlert((!banned ? 'Compte banni : ' : 'Compte débanni : ') + display, true);
+                await loadUsers();
+              } catch (err) {
+                banBtn.disabled = false;
+                showAlert('Action refusée : ' + (err.code || err.message));
+              }
+            });
+            actions.appendChild(banBtn);
+          }
+
+          row.appendChild(info);
+          row.appendChild(actions);
+          usersListEl.appendChild(row);
+        });
+      } catch (err) {
+        usersListEl.textContent = 'Impossible de charger les membres (' + (err.code || err.message) + ').';
+      }
+    }
+
+    publishForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser || (currentRole !== 'admin' && currentRole !== 'superadmin')) {
+        showAlert('Accès refusé.');
+        return;
+      }
+
+      const title = document.getElementById('actu-title').value.trim();
+      const category = document.getElementById('actu-category').value;
+      const author = document.getElementById('actu-author').value.trim();
+      const sourceUrl = document.getElementById('actu-source').value.trim();
+      const summary = document.getElementById('actu-summary').value.trim();
+      const rawContent = document.getElementById('actu-content').value.trim();
+
+      publishBtn.disabled = true;
+      publishBtn.textContent = 'Publication...';
+
+      try {
+        await addDoc(collection(db, "actus"), {
+          title,
+          category,
+          author,
+          sourceUrl,
+          summary,
+          content: rawContent,
+          fullText: parseParagraphs(rawContent, summary),
+          createdAt: serverTimestamp(),
+          publishedBy: currentUser.uid
+        });
+
+        publishForm.reset();
+        document.getElementById('actu-author').value = currentPseudo;
+        showAlert('Actualité publiée sur le site.', true);
+        await loadPublishedActus();
+      } catch (err) {
+        showAlert('Erreur de publication : ' + (err.code || err.message));
+      } finally {
+        publishBtn.disabled = false;
+        publishBtn.textContent = 'Publier sur le fil';
+      }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      if (!user) {
+        profileBox.style.display = 'none';
+        logoutBtn.style.display = 'none';
+        adminLink.style.display = 'none';
+        authBtn.style.display = 'inline-flex';
+        authBtn.textContent = 'Connexion';
+        authBtn.href = 'login.html';
+        denyAccess('Connexion requise', 'Connecte-toi avec un compte administrateur pour accéder à cette page.');
+        return;
+      }
+
+      let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      let role = 'membre';
+      let banned = false;
+
+      try {
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.pseudo) pseudo = data.pseudo;
+          if (data.role) role = data.role;
+          banned = Boolean(data.banned);
+
+          const patch = {};
+          if (!data.email && user.email) patch.email = user.email;
+          if (!data.pseudo && pseudo) patch.pseudo = pseudo;
+          if (Object.keys(patch).length > 0) {
+            await setDoc(userRef, patch, { merge: true });
+          }
+        } else {
+          await setDoc(userRef, {
+            email: user.email || '',
+            pseudo,
+            role: 'membre',
+            banned: false
+          }, { merge: true });
+        }
+      } catch (err) {
+        denyAccess('Erreur de vérification', 'Impossible de vérifier ton profil dans Firestore.');
+        return;
+      }
+
+      currentPseudo = pseudo;
+      currentRole = role;
+
+      profileName.textContent = pseudo;
+      profileAvatar.textContent = getInitials(pseudo);
+      profileRole.textContent = banned ? 'banni' : role;
+      const isAdmin = !banned && (role === 'admin' || role === 'superadmin');
+      profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+      adminLink.style.display = isAdmin ? 'flex' : 'none';
+
+      profileBox.style.display = 'flex';
+      authBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-flex';
+
+      if (banned) {
+        await signOut(auth);
+        denyAccess('Compte suspendu', 'Ce compte a été banni de la plateforme.');
+        return;
+      }
+
+      if (!isAdmin) {
+        denyAccess('Accès réservé', 'Ton compte (' + role + ') n\'a pas les droits d\'administration.');
+        return;
+      }
+
+      document.getElementById('actu-author').value = pseudo;
+      gateEl.style.display = 'none';
+      panelEl.style.display = 'block';
+      await Promise.all([loadAppeals(), loadPropositions(), loadContacts(), loadPublishedActus(), loadUsers()]);
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('index.html');
+    });
+  </script>
+</body>
+</html>

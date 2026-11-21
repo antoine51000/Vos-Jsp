@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos JSP — 404</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .error-wrap {
+      text-align: center;
+      padding: 3rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .error-code {
+      font-size: clamp(3.5rem, 10vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: var(--primary, #e11d48);
+    }
+
+    .error-grade-pill {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      background: var(--surface-2, #f1f5f9);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .error-text {
+      max-width: 460px;
+      color: var(--muted);
+      font-size: 0.98rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="brand">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+    </div>
+    <a href="index.html" class="btn btn-secondary btn-small">Accueil</a>
+  </div>
+
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
+    </div>
+
+    <div class="drawer-label">Navigation</div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="actus.html">Actualités</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="proposer.html">Proposer</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="forum.html">Forum</a>
+      <a href="profil.html">Profil</a>
+      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
+    </nav>
+
+    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
+      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
+      <div class="profile-meta">
+        <strong class="profile-name" id="drawer-profile-name"></strong>
+        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      </div>
+    </div>
+
+    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
+    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
+  </aside>
+
+  <main>
+    <div class="card error-wrap">
+      <div class="error-code">404</div>
+      <span id="error-grade-badge" class="error-grade-pill" style="display: none;"></span>
+      <h1 id="error-title" style="font-size: 1.5rem; margin: 0;">Page introuvable</h1>
+      <p id="error-text" class="error-text"></p>
+      <a href="index.html" class="btn btn-small" style="margin-top: 0.5rem;">Accueil</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="a-propos.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('nav-backdrop');
+    document.getElementById('menu-open').addEventListener('click', () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    });
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+    document.getElementById('menu-close').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+  </script>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const profileBox = document.getElementById('drawer-profile-box');
+    const profileAvatar = document.getElementById('drawer-profile-avatar');
+    const profileName = document.getElementById('drawer-profile-name');
+    const profileRole = document.getElementById('drawer-profile-role');
+    const authBtn = document.getElementById('drawer-auth-btn');
+    const logoutBtn = document.getElementById('drawer-logout-btn');
+    const adminLink = document.getElementById('drawer-admin-link');
+
+    const gradeBadge = document.getElementById('error-grade-badge');
+    const errorTitle = document.getElementById('error-title');
+    const errorText = document.getElementById('error-text');
+
+    const PHRASES_BY_CATEGORY = {
+      jsp: [
+        "Halte JSP ! Cette page est hors périmètre, fais demi-tour avant le rassemblement.",
+        "T'as déroulé le tuyau dans le mauvais sens JSP, y'a rien au bout de cette adresse.",
+        "Fausse alerte sur ce lien JSP, la page n'existe pas ou a été déplacée.",
+        "Retour au rang JSP : cette page s'est évaporée avant la manœuvre."
+      ],
+      sapeur: [
+        "Sapeur, mauvaise rue sur le secteur : cette page n'est pas répertoriée.",
+        "Ligne coupée sur cette adresse Sapeur, impossible de trouver la page.",
+        "T'as pris un virage trop serré Sapeur, y'a rien sur ce chemin.",
+        "Secteur vide Sapeur : la page demandée n'existe plus."
+      ],
+      sous_off: [
+        "Rapport négatif sur ce lien : cette page est introuvable dans le secteur.",
+        "Même avec l'œil du chef d'agrès, y'a strictement rien sur cette page.",
+        "Adresse non conforme : cette page a disparu du tableau.",
+        "Faux départ sur cette URL, la page n'est pas là."
+      ],
+      officier: [
+        "Zone non cartographiée : cette page n'existe pas sur la plateforme.",
+        "Point de situation : page introuvable à cette adresse.",
+        "Aucun élément signalé sur ce lien, la page a été retirée ou déplacée.",
+        "Cap erroné sur cette URL : cette page ne répond pas."
+      ],
+      default: [
+        "Halte là : cette page n'existe pas ou a été déplacée.",
+        "Rien ici, t'as dû te tromper d'adresse.",
+        "Fausse piste sur ce lien, page introuvable.",
+        "Cette page a pris la poudre d'escampette."
+      ]
+    };
+
+    function detectGradeCategory(rawGrade) {
+      const g = (rawGrade || '').toLowerCase().trim();
+      if (!g) return 'default';
+      if (g.includes('jsp') || g.includes('jeune')) return 'jsp';
+      if (g.includes('caporal') || g.includes('sergent') || g.includes('adjudant') || g.includes('major')) return 'sous_off';
+      if (g.includes('lieutenant') || g.includes('capitaine') || g.includes('commandant') || g.includes('colonel') || g.includes('officier')) return 'officier';
+      if (g.includes('sapeur') || g.includes('pompier') || g.includes('spv') || g.includes('spp')) return 'sapeur';
+      return 'default';
+    }
+
+    function pickRandomPhrase(category) {
+      const list = PHRASES_BY_CATEGORY[category] || PHRASES_BY_CATEGORY.default;
+      const storageKey = 'vos_jsp_404_last_' + category;
+      let lastIdx = -1;
+      try {
+        const saved = sessionStorage.getItem(storageKey);
+        if (saved !== null) lastIdx = Number(saved);
+      } catch (e) {}
+
+      let idx = Math.floor(Math.random() * list.length);
+      if (list.length > 1 && idx === lastIdx) {
+        idx = (idx + 1) % list.length;
+      }
+
+      try {
+        sessionStorage.setItem(storageKey, String(idx));
+      } catch (e) {}
+
+      return list[idx];
+    }
+
+    function apply404Message(rawGrade) {
+      const cleanGrade = (rawGrade || '').trim();
+      const category = detectGradeCategory(cleanGrade);
+      const phrase = pickRandomPhrase(category);
+
+      errorTitle.textContent = cleanGrade ? ('Page introuvable • ' + cleanGrade) : 'Page introuvable';
+      errorText.textContent = phrase;
+
+      if (cleanGrade) {
+        gradeBadge.textContent = cleanGrade;
+        gradeBadge.style.display = 'inline-block';
+      } else {
+        gradeBadge.style.display = 'none';
+      }
+    }
+
+    function getInitials(label) {
+      const clean = (label || 'JS').trim();
+      const parts = clean.split(/[\s._-]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return clean.slice(0, 2).toUpperCase();
+    }
+
+    apply404Message('');
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        profileBox.style.display = 'none';
+        logoutBtn.style.display = 'none';
+        adminLink.style.display = 'none';
+        authBtn.style.display = 'inline-flex';
+        apply404Message('');
+        return;
+      }
+
+      let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      let role = 'membre';
+      let grade = '';
+      let isBanned = false;
+
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.pseudo) pseudo = data.pseudo;
+          if (data.role) role = data.role;
+          if (data.grade) grade = data.grade;
+          isBanned = data.banned === true;
+        }
+      } catch (e) {}
+
+      const isAdmin = !isBanned && (role === 'admin' || role === 'superadmin');
+
+      profileName.textContent = pseudo;
+      profileAvatar.textContent = getInitials(pseudo);
+      profileRole.textContent = isBanned ? 'banni' : role;
+      profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+      adminLink.style.display = isAdmin ? 'flex' : 'none';
+      profileBox.style.display = 'flex';
+      authBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-flex';
+
+      apply404Message(grade);
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('index.html');
+    });
+  </script>
+</body>
+</html>

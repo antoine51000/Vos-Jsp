@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos JSP — Messagerie Admin</title>
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --surface: #ffffff;
+      --surface-alt: #eef2f8;
+      --red: #e11d2a;
+      --red-dark: #b91c1c;
+      --red-soft: rgba(225, 29, 42, 0.09);
+      --red-glow: rgba(225, 29, 42, 0.24);
+      --cyber: #0284c7;
+      --cyber-soft: rgba(2, 132, 199, 0.1);
+      --green: #059669;
+      --text: #0b1120;
+      --muted: #526075;
+      --border: #dfe6f0;
+      --radius: 20px;
+      --shadow: 0 12px 32px -14px rgba(11, 17, 32, 0.09);
+      --shadow-hover: 0 22px 46px -16px rgba(11, 17, 32, 0.15);
+    }
+
+    @keyframes pulseDot {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(225, 29, 42, 0.55);
+      }
+      50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 7px rgba(225, 29, 42, 0);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Bloqué tant que la vérification admin n'est pas validée */
+    body.locked {
+      overflow: hidden;
+    }
+
+    body.locked .topbar,
+    body.locked .nav-backdrop,
+    body.locked .drawer,
+    body.locked main,
+    body.locked footer,
+    body.locked .modal-overlay {
+      display: none !important;
+    }
+
+    .auth-gate {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    body.locked .auth-gate {
+      display: flex;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1.5rem;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .menu-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4.5px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .menu-btn:hover {
+      border-color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .menu-btn span {
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--text);
+      display: block;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 900;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+      padding: 0.35rem 0.7rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .brand span {
+      color: var(--red);
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulseDot 2.2s infinite;
+      flex-shrink: 0;
+    }
+
+    .nav-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 17, 32, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 60;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+    }
+
+    .nav-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(320px, 88vw);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      box-shadow: 20px 0 50px rgba(11, 17, 32, 0.18);
+      z-index: 70;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      font-size: 1.3rem;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-btn:hover {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .drawer-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 0 0.35rem;
+    }
+
+    .drawer nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .drawer nav a {
+      padding: 0.65rem 0.85rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .drawer nav a:hover {
+      background: var(--surface-alt);
+    }
+
+    .drawer nav a.active {
+      background: var(--red-soft);
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .profile-widget {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 16px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      margin-top: auto;
+    }
+
+    .profile-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .profile-meta {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .profile-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-tag {
+      display: inline-block;
+      width: fit-content;
+      margin-top: 0.15rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem 1.8rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.65rem, 4vw, 2.3rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 900;
+      margin: 0.6rem 0 0.75rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.98rem;
+      max-width: 680px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid rgba(225, 29, 42, 0.18);
+    }
+
+    .actu-cat {
+      display: inline-block;
+      padding: 0.24rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: var(--cyber-soft);
+      color: var(--cyber);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.72rem 1.3rem;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      background: var(--red);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px -8px var(--red-glow);
+      transition: background 0.18s ease, transform 0.15s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--red-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--surface-alt);
+    }
+
+    .btn-small {
+      padding: 0.48rem 0.9rem;
+      font-size: 0.84rem;
+      border-radius: 11px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      box-shadow: var(--shadow);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.15rem;
+    }
+
+    .mail-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-btn.active {
+      background: var(--red);
+      color: #ffffff;
+      border-color: var(--red);
+      box-shadow: 0 6px 16px -6px var(--red-glow);
+    }
+
+    .mail-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .mail-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .mail-item {
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .mail-item:hover {
+      border-color: var(--red);
+      transform: translateY(-1px);
+    }
+
+    .mail-item.active {
+      border-color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .mail-item.unread {
+      border-left: 4px solid var(--red);
+      font-weight: 700;
+    }
+
+    .mail-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .mail-reader-body {
+      white-space: pre-wrap;
+      line-height: 1.65;
+      padding-top: 0.9rem;
+      margin-top: 0.9rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.96rem;
+    }
+
+    .mailbox-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.32rem 0.75rem;
+      border-radius: 999px;
+      background: var(--cyber-soft);
+      color: var(--cyber);
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.72rem 0.9rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 0.95rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px var(--red-soft);
+    }
+
+    .alert {
+      display: none;
+      padding: 0.85rem 1.05rem;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: var(--red-soft);
+      color: var(--red-dark);
+      border: 1px solid rgba(225, 29, 42, 0.25);
+      margin-bottom: 1rem;
+    }
+
+    .alert.success {
+      background: rgba(5, 150, 105, 0.1);
+      color: var(--green);
+      border-color: rgba(5, 150, 105, 0.25);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 17, 32, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1.35rem 1.5rem;
+      margin-top: auto;
+    }
+
+    .footer-container {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.15rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 900px) {
+      .mail-layout,
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 0.75rem 1rem;
+      }
+      main {
+        padding: 1.25rem 0.9rem 2.25rem;
+      }
+      .hero {
+        padding: 1.5rem 1.2rem;
+      }
+      .card {
+        padding: 1.15rem;
+        border-radius: 16px;
+      }
+    }
+  </style>
+</head>
+<body class="locked">
+  <div class="auth-gate" id="auth-gate">
+    <div class="card" style="max-width: 440px;">
+      <span class="badge" style="margin-bottom: 0.65rem;">Accès Restreint</span>
+      <h1 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Vérification des droits admin...</h1>
+      <p id="gate-msg" style="color: var(--muted); font-size: 0.92rem; margin-bottom: 1rem;">Cette page est strictement réservée aux administrateurs.</p>
+      <a href="index.html" class="btn" id="gate-back-btn" style="display: none;">Retour à l'accueil</a>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="brand">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+    </div>
+    <button type="button" class="btn btn-small" id="open-compose-btn">Nouveau mail</button>
+  </div>
+
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </a>
+      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
+    </div>
+
+    <div class="drawer-label">Navigation</div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="actus.html">Actualités</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="proposer.html">Proposer</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="forum.html">Forum</a>
+      <a href="admin.html">Panel Admin</a>
+      <a href="mail.html" class="active">Messagerie Admin</a>
+    </nav>
+
+    <div class="profile-widget" id="drawer-profile">
+      <div class="profile-avatar" id="drawer-avatar">A</div>
+      <div class="profile-meta">
+        <span class="profile-name" id="drawer-name">Chargement...</span>
+        <span class="profile-tag" id="drawer-role">ADMIN</span>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <span class="badge">Messagerie Interne Sécurisée</span>
+      <h1>Boîte mail équipe Vos JSP</h1>
+      <p class="subtitle" style="margin-bottom: 0.9rem;">Échange entre administrateurs et réception directe des messages envoyés depuis la page contact, sans exposer les adresses au public.</p>
+      <div id="my-mailbox-display">
+        <span class="mailbox-pill">Chargement de ta boîte...</span>
+      </div>
+    </section>
+
+    <div class="alert" id="global-alert"></div>
+
+    <div class="mail-tabs">
+      <button type="button" class="filter-btn active" data-tab="inbox">Boîte de réception</button>
+      <button type="button" class="filter-btn" data-tab="sent">Messages envoyés</button>
+      <button type="button" class="filter-btn" data-tab="manage">Créer / Gérer les adresses</button>
+    </div>
+
+    <section id="view-messages" class="mail-layout">
+      <div class="card" style="padding: 1rem;">
+        <div class="mail-list" id="mail-list">
+          <p style="color: var(--muted); font-size: 0.9rem;">Chargement des messages...</p>
+        </div>
+      </div>
+
+      <div class="card" id="mail-reader">
+        <p style="color: var(--muted);">Sélectionne un message à gauche pour le lire.</p>
+      </div>
+    </section>
+
+    <section id="view-manage" style="display: none;">
+      <div class="grid-2">
+        <div class="card">
+          <h2 style="font-size: 1.2rem; margin-bottom: 0.4rem;">Créer une adresse @vos-jsp.com</h2>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Attribue une adresse interne à un compte administrateur existant.</p>
+          <form id="create-mailbox-form">
+            <div class="form-group">
+              <label for="mb-uid">UID Firebase de l'admin</label>
+              <input type="text" id="mb-uid" placeholder="Ex: xK92mPq..." required>
+            </div>
+            <div class="form-group">
+              <label for="mb-pseudo">Pseudo public affiché dans Contact</label>
+              <input type="text" id="mb-pseudo" placeholder="Ex: Léo" required>
+            </div>
+            <div class="form-group">
+              <label for="mb-prenom">Prénom (sans accent)</label>
+              <input type="text" id="mb-prenom" placeholder="Ex: leo" required>
+            </div>
+            <div class="form-group">
+              <label for="mb-nom">Nom (sans accent)</label>
+              <input type="text" id="mb-nom" placeholder="Ex: pujolas" required>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem;">
+              Aperçu : <strong id="mb-preview" style="color: var(--cyber);">prenom.nom@vos-jsp.com</strong>
+            </p>
+            <button type="submit" class="btn">Créer l'adresse mail</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size: 1.2rem; margin-bottom: 0.4rem;">Adresses actives de l'équipe</h2>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Visible uniquement par les administrateurs connectés.</p>
+          <div id="mailboxes-list" style="display: flex; flex-direction: column; gap: 0.65rem;">
+            <p style="color: var(--muted); font-size: 0.9rem;">Chargement...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="compose-modal">
+    <div class="card modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="font-size: 1.2rem;">Nouveau message interne</h2>
+        <button type="button" class="close-btn" id="close-compose-btn">&times;</button>
+      </div>
+      <form id="compose-form">
+        <div class="form-group">
+          <label for="compose-to">Destinataire (@vos-jsp.com)</label>
+          <select id="compose-to" required>
+            <option value="">Choisir un admin...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="compose-subject">Objet</label>
+          <input type="text" id="compose-subject" placeholder="Objet du message" required>
+        </div>
+        <div class="form-group">
+          <label for="compose-body">Message</label>
+          <textarea id="compose-body" rows="6" placeholder="Écris ton message ici..." required></textarea>
+        </div>
+        <div style="display: flex; gap: 0.65rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" id="cancel-compose-btn">Annuler</button>
+          <button type="submit" class="btn">Envoyer le mail</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-container">
+      <div><strong>Vos JSP</strong> — Messagerie interne réservée à l'administration.</div>
+      <div class="footer-links">
+        <a href="admin.html">Panel Admin</a>
+        <a href="a-propos.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('nav-backdrop');
+    document.getElementById('menu-open').addEventListener('click', () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    });
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+    document.getElementById('menu-close').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+  </script>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      collection,
+      doc,
+      getDoc,
+      getDocs,
+      setDoc,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      query,
+      where,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const gateMsg = document.getElementById('gate-msg');
+    const gateBackBtn = document.getElementById('gate-back-btn');
+    const alertBox = document.getElementById('global-alert');
+    const mailListEl = document.getElementById('mail-list');
+    const mailReaderEl = document.getElementById('mail-reader');
+    const composeModal = document.getElementById('compose-modal');
+    const composeToSelect = document.getElementById('compose-to');
+    const mailboxesListEl = document.getElementById('mailboxes-list');
+
+    let currentUser = null;
+    let currentRole = '';
+    let myMailbox = null;
+    let allMailboxes = [];
+    let currentTab = 'inbox';
+    let currentMessages = [];
+    let selectedMailId = null;
+
+    function denyAccess(message, redirectTo) {
+      document.body.classList.add('locked');
+      gateMsg.textContent = message;
+      gateBackBtn.style.display = 'inline-flex';
+      setTimeout(() => {
+        window.location.replace(redirectTo);
+      }, 900);
+    }
+
+    function showAlert(msg, success = false) {
+      alertBox.textContent = msg;
+      alertBox.className = success ? 'alert success' : 'alert';
+      alertBox.style.display = 'block';
+      setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+    }
+
+    function slugifyPart(str) {
+      return String(str || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '')
+        .trim();
+    }
+
+    const prenomInput = document.getElementById('mb-prenom');
+    const nomInput = document.getElementById('mb-nom');
+    const previewEl = document.getElementById('mb-preview');
+
+    function updatePreview() {
+      const p = slugifyPart(prenomInput.value) || 'prenom';
+      const n = slugifyPart(nomInput.value) || 'nom';
+      previewEl.textContent = `${p}.${n}@vos-jsp.com`;
+    }
+    prenomInput.addEventListener('input', updatePreview);
+    nomInput.addEventListener('input', updatePreview);
+
+    document.getElementById('open-compose-btn').addEventListener('click', () => {
+      if (!myMailbox) {
+        showAlert("Crée d'abord ton adresse @vos-jsp.com dans l'onglet Créer / Gérer les adresses.");
+        return;
+      }
+      composeModal.classList.add('open');
+    });
+    document.getElementById('close-compose-btn').addEventListener('click', () => composeModal.classList.remove('open'));
+    document.getElementById('cancel-compose-btn').addEventListener('click', () => composeModal.classList.remove('open'));
+
+    document.querySelectorAll('.mail-tabs .filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mail-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTab = btn.dataset.tab;
+        if (currentTab === 'manage') {
+          document.getElementById('view-messages').style.display = 'none';
+          document.getElementById('view-manage').style.display = 'block';
+        } else {
+          document.getElementById('view-manage').style.display = 'none';
+          document.getElementById('view-messages').style.display = 'grid';
+          selectedMailId = null;
+          mailReaderEl.innerHTML = '<p style="color: var(--muted);">Sélectionne un message à gauche pour le lire.</p>';
+          loadMessages();
+        }
+      });
+    });
+
+    async function loadMailboxes() {
+      const snap = await getDocs(collection(db, 'admin_mailboxes'));
+      allMailboxes = [];
+      snap.forEach(d => allMailboxes.push({ id: d.id, ...d.data() }));
+
+      myMailbox = allMailboxes.find(m => m.uid === currentUser.uid) || null;
+      const badgeEl = document.getElementById('my-mailbox-display');
+      if (myMailbox) {
+        badgeEl.innerHTML = `<span class="mailbox-pill">Ton adresse : ${myMailbox.email}</span>`;
+      } else {
+        badgeEl.innerHTML = `<span class="mailbox-pill" style="background:var(--red-soft);color:var(--red);">Aucune adresse @vos-jsp.com attribuée — crée-la dans l'onglet dédié</span>`;
+      }
+
+      composeToSelect.innerHTML = '<option value="">Choisir un admin...</option>' +
+        allMailboxes.map(m => `<option value="${m.uid}">${m.pseudo} (${m.email})</option>`).join('');
+
+      mailboxesListEl.innerHTML = allMailboxes.length
+        ? allMailboxes.map(m => `
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; padding:0.75rem; border:1px solid var(--border); border-radius:14px;">
+              <div>
+                <strong>${m.pseudo}</strong>
+                <div style="font-size:0.84rem; color:var(--cyber); font-weight:700;">${m.email}</div>
+                <div style="font-size:0.74rem; color:var(--muted);">UID : ${m.uid}</div>
+              </div>
+              <button type="button" class="btn btn-secondary btn-small" data-del-uid="${m.uid}">Supprimer</button>
+            </div>
+          `).join('')
+        : '<p style="color:var(--muted); font-size:0.9rem;">Aucune adresse créée pour le moment.</p>';
+
+      mailboxesListEl.querySelectorAll('[data-del-uid]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm("Supprimer cette adresse mail interne ?")) return;
+          await deleteDoc(doc(db, 'admin_mailboxes', btn.dataset.delUid));
+          showAlert("Adresse supprimée.", true);
+          await loadMailboxes();
+        });
+      });
+    }
+
+    async function loadMessages() {
+      mailListEl.innerHTML = '<p style="color: var(--muted); font-size: 0.9rem;">Chargement...</p>';
+      const field = currentTab === 'sent' ? 'fromUid' : 'toUid';
+      const q = query(collection(db, 'admin_mails'), where(field, '==', currentUser.uid));
+      const snap = await getDocs(q);
+
+      currentMessages = [];
+      snap.forEach(d => currentMessages.push({ id: d.id, ...d.data() }));
+      currentMessages.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+      renderMailList();
+    }
+
+    function formatDate(ts) {
+      if (!ts || !ts.seconds) return "À l'instant";
+      return new Date(ts.seconds * 1000).toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function renderMailList() {
+      if (!currentMessages.length) {
+        mailListEl.innerHTML = '<p style="color: var(--muted); font-size: 0.9rem;">Aucun message dans ce dossier.</p>';
+        return;
+      }
+
+      mailListEl.innerHTML = currentMessages.map(m => {
+        const isUnread = currentTab === 'inbox' && !m.read;
+        const isActive = m.id === selectedMailId;
+        const label = currentTab === 'sent'
+          ? `À : ${escapeHtml(m.toPseudo || m.toEmail)}`
+          : `De : ${escapeHtml(m.fromName)} ${m.isExternal ? '(Contact)' : ''}`;
+
+        return `
+          <div class="mail-item ${isUnread ? 'unread' : ''} ${isActive ? 'active' : ''}" data-mail-id="${m.id}">
+            <div class="mail-meta-row">
+              <span>${label}</span>
+              <span>${formatDate(m.createdAt)}</span>
+            </div>
+            <div style="font-size: 0.93rem;">${escapeHtml(m.subject)}</div>
+          </div>
+        `;
+      }).join('');
+
+      mailListEl.querySelectorAll('.mail-item').forEach(el => {
+        el.addEventListener('click', () => openMail(el.dataset.mailId));
+      });
+    }
+
+    async function openMail(id) {
+      const mail = currentMessages.find(m => m.id === id);
+      if (!mail) return;
+      selectedMailId = id;
+
+      if (currentTab === 'inbox' && !mail.read) {
+        mail.read = true;
+        await updateDoc(doc(db, 'admin_mails', id), { read: true });
+      }
+      renderMailList();
+
+      const replyBtn = (!mail.isExternal && mail.fromUid)
+        ? `<button type="button" class="btn btn-small" id="reply-mail-btn">Répondre en interne</button>`
+        : '';
+
+      mailReaderEl.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.75rem; flex-wrap:wrap;">
+          <div>
+            <span class="actu-cat">${mail.isExternal ? 'Formulaire Contact Public' : 'Mail Interne Admin'}</span>
+            <h2 style="font-size:1.3rem; margin-top:0.5rem;">${escapeHtml(mail.subject)}</h2>
+          </div>
+          <div style="display:flex; gap:0.5rem;">
+            ${replyBtn}
+            <button type="button" class="btn btn-secondary btn-small" id="delete-mail-btn">Supprimer</button>
+          </div>
+        </div>
+        <div style="margin-top:0.75rem; font-size:0.86rem; color:var(--muted);">
+          <div><strong>Expéditeur :</strong> ${escapeHtml(mail.fromName)} (${escapeHtml(mail.fromEmail)})</div>
+          <div><strong>Destinataire :</strong> ${escapeHtml(mail.toPseudo)} (${escapeHtml(mail.toEmail)})</div>
+          <div><strong>Date :</strong> ${formatDate(mail.createdAt)}</div>
+        </div>
+        <div class="mail-reader-body">${escapeHtml(mail.body)}</div>
+      `;
+
+      const rBtn = document.getElementById('reply-mail-btn');
+      if (rBtn) {
+        rBtn.addEventListener('click', () => {
+          composeToSelect.value = mail.fromUid;
+          document.getElementById('compose-subject').value = mail.subject.startsWith('Re:') ? mail.subject : `Re: ${mail.subject}`;
+          composeModal.classList.add('open');
+        });
+      }
+
+      document.getElementById('delete-mail-btn').addEventListener('click', async () => {
+        if (!confirm("Supprimer ce message ?")) return;
+        await deleteDoc(doc(db, 'admin_mails', id));
+        selectedMailId = null;
+        mailReaderEl.innerHTML = '<p style="color: var(--muted);">Message supprimé.</p>';
+        await loadMessages();
+      });
+    }
+
+    document.getElementById('create-mailbox-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const uid = document.getElementById('mb-uid').value.trim();
+      const pseudo = document.getElementById('mb-pseudo').value.trim();
+      const prenom = slugifyPart(prenomInput.value);
+      const nom = slugifyPart(nomInput.value);
+
+      if (!uid || !pseudo || !prenom || !nom) {
+        showAlert("Remplis tous les champs correctement.");
+        return;
+      }
+
+      const email = `${prenom}.${nom}@vos-jsp.com`;
+      const duplicate = allMailboxes.find(m => m.email === email && m.uid !== uid);
+      if (duplicate) {
+        showAlert("Cette adresse @vos-jsp.com existe déjà !");
+        return;
+      }
+
+      await setDoc(doc(db, 'admin_mailboxes', uid), {
+        uid,
+        pseudo,
+        email,
+        active: true,
+        createdAt: serverTimestamp()
+      });
+
+      await setDoc(doc(db, 'public_admins', uid), {
+        uid,
+        pseudo,
+        active: true
+      });
+
+      e.target.reset();
+      updatePreview();
+      showAlert(`Adresse ${email} créée et ajoutée à la liste Contact !`, true);
+      await loadMailboxes();
+    });
+
+    document.getElementById('compose-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const toUid = composeToSelect.value;
+      const target = allMailboxes.find(m => m.uid === toUid);
+      if (!target || !myMailbox) return;
+
+      await addDoc(collection(db, 'admin_mails'), {
+        fromUid: currentUser.uid,
+        fromName: myMailbox.pseudo,
+        fromEmail: myMailbox.email,
+        toUid: target.uid,
+        toPseudo: target.pseudo,
+        toEmail: target.email,
+        subject: document.getElementById('compose-subject').value.trim(),
+        body: document.getElementById('compose-body').value.trim(),
+        isExternal: false,
+        read: false,
+        createdAt: serverTimestamp()
+      });
+
+      e.target.reset();
+      composeModal.classList.remove('open');
+      showAlert("Mail interne envoyé !", true);
+      if (currentTab === 'sent') await loadMessages();
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        denyAccess("Connexion admin obligatoire. Redirection...", "login.html");
+        return;
+      }
+
+      currentUser = user;
+      const userSnap = await getDoc(doc(db, 'users', user.uid));
+      const userData = userSnap.exists() ? userSnap.data() : {};
+      currentRole = String(userData.role || userData.grade || '').toLowerCase();
+
+      if (!currentRole.includes('admin')) {
+        denyAccess("Accès refusé : tu n'as pas les droits administrateur.", "index.html");
+        return;
+      }
+
+      const displayName = userData.pseudo || userData.username || 'Admin';
+      document.getElementById('drawer-name').textContent = displayName;
+      document.getElementById('drawer-avatar').textContent = displayName.charAt(0).toUpperCase();
+      document.getElementById('drawer-role').textContent = currentRole.toUpperCase();
+
+      document.body.classList.remove('locked');
+      await loadMailboxes();
+      await loadMessages();
+    });
+  </script>
+</body>
+</html>

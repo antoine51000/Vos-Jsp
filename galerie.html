@@ -581,7 +581,11 @@
       <a href="galerie.html" class="active">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
+      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="recrutement.html">Recrutement</a>
+      <a href="profil.html">Profil</a>
+      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
       <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -757,6 +761,9 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('nav a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
   </script>
 
   <script type="module">
@@ -787,6 +794,7 @@
     const drawerAuthBtn = document.getElementById('drawer-auth-btn');
     const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
     const drawerAdminLink = document.getElementById('drawer-admin-link');
+    const drawerMailLink = document.getElementById('drawer-mail-link');
 
     const totalPhotosEl = document.getElementById('gal-total-photos');
     const totalLikesEl = document.getElementById('gal-total-likes');
@@ -860,6 +868,13 @@
       return clean.slice(0, 2).toUpperCase();
     }
 
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
+    }
+
     function isSafeHttpUrl(str) {
       try {
         const u = new URL(String(str || '').trim());
@@ -868,6 +883,33 @@
         return false;
       }
     }
+
+    function isSafeImageSrc(src) {
+      const s = String(src || '').trim();
+      if (!s) return false;
+      if (/^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=]+$/i.test(s)) return true;
+      return isSafeHttpUrl(s);
+    }
+
+    function openLightbox(item) {
+      if (!isSafeImageSrc(item.imageUrl)) return;
+      lbImg.src = item.imageUrl;
+      lbTitle.textContent = item.title || 'Photo';
+      lbMeta.textContent = `${item.category || 'Autre'} • Par ${item.authorPseudo || 'Membre'}`;
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      lbImg.removeAttribute('src');
+    }
+
+    lbCloseBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
 
     function triggerStageAnim(el, cls) {
       if (!el) return;
@@ -1044,105 +1086,47 @@
       goToStep(1, 'backward');
     });
 
-    purgeAllBtn.addEventListener('click', async () => {
-      hideAlert();
-      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
-      if (!currentUser || !isUserAdmin) {
-        showAlert('Action réservée aux administrateurs.');
-        return;
-      }
-      if (allItems.length === 0) {
-        showAlert('La galerie est déjà vide.', true);
-        return;
-      }
-      purgeAllBtn.disabled = true;
-      const labelSpan = purgeAllBtn.querySelector('span');
-      if (labelSpan) labelSpan.textContent = 'Suppression...';
-      try {
-        for (const item of allItems) {
-          await deleteDoc(doc(db, "galerie", item.id));
-        }
-        showAlert('Toutes les photos ont été supprimées.', true);
-      } catch (err) {
-        showAlert('Suppression complète impossible : ' + (err.code || err.message));
-      } finally {
-        purgeAllBtn.disabled = false;
-        if (labelSpan) labelSpan.textContent = 'Tout supprimer';
-      }
-    });
-
-    function openLightbox(item) {
-      const src = item.imageDataUrl || item.imageUrl || '';
-      if (!src) return;
-      lbImg.src = src;
-      lbTitle.textContent = item.title || 'Photo Vos JSP';
-      lbMeta.textContent = `Par ${item.authorPseudo || 'Membre'} • ${item.category || 'Autre'}`;
-      lightbox.classList.add('open');
-      lightbox.setAttribute('aria-hidden', 'false');
-    }
-
-    function closeLightbox() {
-      lightbox.classList.remove('open');
-      lightbox.setAttribute('aria-hidden', 'true');
-      lbImg.removeAttribute('src');
-    }
-
-    lbCloseBtn.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-
-    filterButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        activeCat = btn.dataset.cat || 'all';
-        filterButtons.forEach((b) => b.classList.toggle('active', b === btn));
-        renderGallery();
+    function updateStats() {
+      totalPhotosEl.textContent = String(allItems.length);
+      let sumLikes = 0;
+      allItems.forEach((it) => {
+        sumLikes += Number(it.likes || 0);
       });
-    });
-
-    searchInput.addEventListener('input', () => {
-      searchQuery = searchInput.value.trim().toLowerCase();
-      renderGallery();
-    });
+      totalLikesEl.textContent = String(sumLikes);
+    }
 
     function renderGallery() {
-      let totalLikes = 0;
-      allItems.forEach((it) => {
-        totalLikes += Number(it.likes || 0);
-      });
-      totalPhotosEl.textContent = String(allItems.length);
-      totalLikesEl.textContent = String(totalLikes);
+      updateStats();
 
-      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
-      purgeAllBtn.style.display = (currentUser && isUserAdmin && allItems.length > 0) ? 'inline-flex' : 'none';
-
+      const qText = searchQuery.trim().toLowerCase();
       const filtered = allItems.filter((it) => {
-        const matchCat = activeCat === 'all' || String(it.category || 'Autre') === activeCat;
-        if (!matchCat) return false;
-        if (!searchQuery) return true;
-        const hay = `${it.title || ''} ${it.description || ''} ${it.category || ''} ${it.authorPseudo || ''}`.toLowerCase();
-        return hay.includes(searchQuery);
+        const catOk = activeCat === 'all' || String(it.category || 'Autre') === activeCat;
+        if (!catOk) return false;
+        if (!qText) return true;
+        const hay = `${it.title || ''} ${it.description || ''} ${it.authorPseudo || ''} ${it.category || ''}`.toLowerCase();
+        return hay.includes(qText);
       });
 
       if (filtered.length === 0) {
-        gridEl.innerHTML = '<div class="gal-empty">Aucune photo dans la galerie pour le moment.</div>';
+        gridEl.innerHTML = '<div class="gal-empty">Aucune photo ne correspond aux filtres sélectionnés.</div>';
         return;
       }
 
+      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
       gridEl.innerHTML = '';
 
       filtered.forEach((item) => {
-        const imgSrc = item.imageDataUrl || (isSafeHttpUrl(item.imageUrl) ? item.imageUrl : '');
-        if (!imgSrc) return;
+        if (!isSafeImageSrc(item.imageUrl)) return;
 
         const card = document.createElement('article');
         card.className = 'gal-card';
 
         const thumbWrap = document.createElement('div');
         thumbWrap.className = 'gal-thumb-wrap';
+        thumbWrap.addEventListener('click', () => openLightbox(item));
 
         const img = document.createElement('img');
-        img.src = imgSrc;
+        img.src = item.imageUrl;
         img.alt = item.title || 'Photo galerie';
         img.loading = 'lazy';
 
@@ -1152,7 +1136,6 @@
 
         thumbWrap.appendChild(img);
         thumbWrap.appendChild(chip);
-        thumbWrap.addEventListener('click', () => openLightbox(item));
 
         const body = document.createElement('div');
         body.className = 'gal-card-body';
@@ -1162,17 +1145,17 @@
         h3.textContent = item.title || 'Sans titre';
         body.appendChild(h3);
 
-        if (item.description || item.caption) {
+        if (item.description) {
           const p = document.createElement('p');
           p.className = 'gal-card-desc';
-          p.textContent = item.description || item.caption;
+          p.textContent = item.description;
           body.appendChild(p);
         }
 
-        const authorRow = document.createElement('div');
-        authorRow.className = 'gal-card-author';
-        authorRow.textContent = `Par ${item.authorPseudo || 'Membre'}`;
-        body.appendChild(authorRow);
+        const authorDiv = document.createElement('div');
+        authorDiv.className = 'gal-card-author';
+        authorDiv.textContent = `Par ${item.authorPseudo || 'Membre'}`;
+        body.appendChild(authorDiv);
 
         const actions = document.createElement('div');
         actions.className = 'gal-card-actions';
@@ -1219,6 +1202,99 @@
       });
     }
 
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeCat = btn.dataset.cat || 'all';
+        filterButtons.forEach((b) => b.classList.toggle('active', b === btn));
+        renderGallery();
+      });
+    });
+
+    searchInput.addEventListener('input', () => {
+      searchQuery = searchInput.value || '';
+      renderGallery();
+    });
+
+    purgeAllBtn.addEventListener('click', async () => {
+      hideAlert();
+      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
+      if (!currentUser || !isUserAdmin) {
+        showAlert('Action réservée aux administrateurs.');
+        return;
+      }
+      if (!window.confirm('Supprimer définitivement toutes les photos de la galerie ?')) return;
+
+      purgeAllBtn.disabled = true;
+      try {
+        for (const it of allItems) {
+          await deleteDoc(doc(db, "galerie", it.id));
+        }
+        showAlert('Toutes les photos ont été supprimées.', true);
+      } catch (err) {
+        showAlert('Suppression partielle ou impossible : ' + (err.code || err.message));
+      } finally {
+        purgeAllBtn.disabled = false;
+      }
+    });
+
+    step2Form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      if (!currentUser) {
+        showAlert('Connecte-toi pour publier une photo.');
+        return;
+      }
+
+      const finalImage = compressedDataUrl || urlInput.value.trim();
+      if (!isSafeImageSrc(finalImage)) {
+        showAlert('Image invalide. Reviens à l’étape 1.');
+        return;
+      }
+
+      const titleVal = titleInput.value.trim();
+      const catVal = categorySelect.value || 'Autre';
+      const descVal = descInput.value.trim();
+
+      if (!titleVal) {
+        showAlert('Ajoute un titre à ta photo.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Publication...';
+
+      try {
+        await addDoc(collection(db, "galerie"), {
+          authorUid: currentUser.uid,
+          authorPseudo: currentProfile.pseudo,
+          authorRole: currentProfile.role,
+          title: titleVal,
+          category: catVal,
+          description: descVal,
+          imageUrl: finalImage,
+          likes: 0,
+          createdAt: serverTimestamp()
+        });
+
+        titleInput.value = '';
+        descInput.value = '';
+        urlInput.value = '';
+        fileInput.value = '';
+        compressedDataUrl = '';
+        filePill.textContent = '';
+        filePill.classList.remove('visible');
+        syncStep1Preview();
+        goToStep(1, 'backward');
+        showAlert('Photo publiée dans la galerie.', true);
+      } catch (err) {
+        showAlert('Publication impossible : ' + (err.code || err.message));
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publier la photo';
+      }
+    });
+
     function sanitizeIpDocId(ip) {
       return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
     }
@@ -1248,7 +1324,7 @@
 
     function startGalleryListener() {
       stopGalleryListener();
-      const q = query(collection(db, "galerie"), orderBy("createdAt", "desc"), limit(80));
+      const q = query(collection(db, "galerie"), orderBy("createdAt", "desc"), limit(120));
 
       galleryUnsubscribe = onSnapshot(q, (snap) => {
         hideAlert();
@@ -1263,67 +1339,6 @@
         showAlert('Erreur Firestore : ' + (err.code || err.message));
       });
     }
-
-    step2Form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      hideAlert();
-
-      if (!currentUser) {
-        showAlert('Connecte-toi pour publier une photo.');
-        return;
-      }
-
-      const titleVal = titleInput.value.trim();
-      const catVal = categorySelect.value || 'Autre';
-      const urlVal = urlInput.value.trim();
-      const descVal = descInput.value.trim();
-
-      if (!titleVal) {
-        showAlert('Renseigne un titre pour la photo.');
-        return;
-      }
-
-      if (!compressedDataUrl && !isSafeHttpUrl(urlVal)) {
-        goToStep(1, 'backward');
-        showAlert('Image manquante ou invalide.');
-        return;
-      }
-
-      submitBtn.disabled = true;
-      backBtn.disabled = true;
-      submitBtn.textContent = 'Publication...';
-
-      try {
-        await addDoc(collection(db, "galerie"), {
-          authorUid: currentUser.uid,
-          authorPseudo: currentProfile.pseudo,
-          title: titleVal,
-          category: catVal,
-          description: descVal,
-          imageUrl: isSafeHttpUrl(urlVal) ? urlVal : '',
-          imageDataUrl: compressedDataUrl || '',
-          likes: 0,
-          createdAt: serverTimestamp()
-        });
-
-        titleInput.value = '';
-        urlInput.value = '';
-        fileInput.value = '';
-        filePill.textContent = '';
-        filePill.classList.remove('visible');
-        descInput.value = '';
-        compressedDataUrl = '';
-        syncStep1Preview();
-        goToStep(1, 'backward');
-        showAlert('Photo publiée dans la galerie.', true);
-      } catch (err) {
-        showAlert('Publication impossible : ' + (err.code || err.message));
-      } finally {
-        submitBtn.disabled = false;
-        backBtn.disabled = false;
-        submitBtn.textContent = 'Publier la photo';
-      }
-    });
 
     drawerLogoutBtn.addEventListener('click', async () => {
       stopGalleryListener();
@@ -1348,14 +1363,17 @@
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
+        drawerMailLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
-        startGalleryListener();
+        gridEl.innerHTML = '<div class="gal-empty">Connecte-toi pour accéder à la galerie. <a href="login.html">Se connecter</a></div>';
         return;
       }
 
       composerBox.style.display = 'block';
       drawerAuthBtn.style.display = 'none';
       drawerLogoutBtn.style.display = 'inline-flex';
+
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
 
       userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
         const data = snap.exists() ? (snap.data() || {}) : {};
@@ -1365,21 +1383,38 @@
           return;
         }
 
-        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-        const role = data.role || 'membre';
-        currentProfile = { pseudo, role };
+        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
+        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        const pseudo = isAdmin
+          ? formatAdminPseudo(data, fallbackName)
+          : (data.pseudo || fallbackName);
+
+        currentProfile = { pseudo, role: roleLabel };
 
         profileBox.style.display = 'flex';
         profileAvatar.textContent = getInitials(pseudo);
         profileName.textContent = pseudo;
-        profileRole.textContent = role;
-        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
-        drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
+        profileRole.textContent = roleLabel;
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+        drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
+        drawerMailLink.style.display = isAdmin ? 'block' : 'none';
+        purgeAllBtn.style.display = isAdmin ? 'inline-flex' : 'none';
 
         if (!galleryUnsubscribe) {
           startGalleryListener();
         }
       }, () => {
+        currentProfile = { pseudo: fallbackName, role: 'membre' };
+        purgeAllBtn.style.display = 'none';
+        profileBox.style.display = 'flex';
+        profileAvatar.textContent = getInitials(fallbackName);
+        profileName.textContent = fallbackName;
+        profileRole.textContent = 'membre';
+        profileRole.className = 'profile-tag';
+        drawerAdminLink.style.display = 'none';
+        drawerMailLink.style.display = 'none';
+
         if (!galleryUnsubscribe) {
           startGalleryListener();
         }

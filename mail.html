@@ -6,20 +6,97 @@
   <title>Vos JSP — Messagerie Admin</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .mail-nav-tabs {
+    .gmail-shell {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 820px) {
+      .gmail-shell {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gmail-sidebar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1rem 0.75rem;
+      box-shadow: var(--shadow);
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.55rem;
-      margin-bottom: 1.25rem;
+      flex-direction: column;
+      gap: 0.25rem;
     }
 
-    .mail-nav-tabs .btn.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
+    .compose-trigger {
+      width: 100%;
+      margin-bottom: 0.75rem;
+      justify-content: center;
     }
 
-    .mail-section-card {
+    .folder-btn {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      padding: 0.62rem 0.85rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .folder-btn:hover {
+      background: var(--bg);
+    }
+
+    .folder-btn.active {
+      background: rgba(225, 29, 42, 0.12);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .folder-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .folder-count {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .folder-btn.active .folder-count {
+      color: var(--primary);
+    }
+
+    .gmail-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.65rem 0.5rem;
+    }
+
+    .labels-heading {
+      padding: 0.25rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .gmail-main-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
@@ -28,7 +105,75 @@
       display: flex;
       flex-direction: column;
       gap: 0.9rem;
-      margin-bottom: 1.5rem;
+      min-height: 360px;
+    }
+
+    .gmail-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .gmail-toolbar h2 {
+      margin: 0;
+      font-size: 1.22rem;
+    }
+
+    .mail-row {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.9rem 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .mail-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .mail-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .mail-body {
+      margin: 0.25rem 0 0;
+      white-space: pre-line;
+      font-size: 0.92rem;
+    }
+
+    .mail-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .star-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1;
+    }
+
+    .star-btn.starred {
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.45);
     }
 
     .questions-grid {
@@ -46,36 +191,6 @@
       flex-wrap: wrap;
       gap: 0.6rem;
       align-items: center;
-    }
-
-    .mail-item {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 0.95rem 1.1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-      margin-bottom: 0.7rem;
-    }
-
-    .mail-item-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .mail-meta {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .mail-body {
-      margin: 0.25rem 0 0;
-      white-space: pre-line;
-      font-size: 0.92rem;
     }
 
     .confirm-inline {
@@ -151,88 +266,129 @@
 
       <div id="mail-alert" class="alert"></div>
 
-      <div class="mail-nav-tabs" role="tablist">
-        <button type="button" id="nav-tab-inbox" class="btn btn-secondary btn-small active">Réception</button>
-        <button type="button" id="nav-tab-sent" class="btn btn-secondary btn-small">Envoyés</button>
-        <button type="button" id="nav-tab-drafts" class="btn btn-secondary btn-small">Brouillons</button>
-        <button type="button" id="nav-tab-create" class="btn btn-secondary btn-small">Création de mail</button>
-      </div>
+      <div class="gmail-shell">
+        <aside class="gmail-sidebar">
+          <button type="button" id="btn-compose" class="btn btn-small compose-trigger">+ Nouveau mail</button>
 
-      <!-- VUE : RÉCEPTION -->
-      <section id="view-inbox" class="mail-section-card">
-        <h2 style="font-size: 1.2rem; margin: 0;">Réception</h2>
-        <div id="inbox-list"><p>Chargement...</p></div>
-      </section>
+          <button type="button" class="folder-btn active" data-folder="inbox">
+            <span class="folder-left"><span>📥</span><span>Boîte de réception</span></span>
+            <span class="folder-count" id="count-inbox">0</span>
+          </button>
 
-      <!-- VUE : ENVOYÉS -->
-      <section id="view-sent" class="mail-section-card" style="display: none;">
-        <h2 style="font-size: 1.2rem; margin: 0;">Envoyés</h2>
-        <div id="sent-list"><p>Chargement...</p></div>
-      </section>
+          <button type="button" class="folder-btn" data-folder="starred">
+            <span class="folder-left"><span>☆</span><span>Messages suivis</span></span>
+          </button>
 
-      <!-- VUE : BROUILLONS -->
-      <section id="view-drafts" class="mail-section-card" style="display: none;">
-        <h2 style="font-size: 1.2rem; margin: 0;">Brouillons</h2>
-        <div id="drafts-list"><p>Chargement...</p></div>
-      </section>
+          <button type="button" class="folder-btn" data-folder="snoozed">
+            <span class="folder-left"><span>🕒</span><span>En attente</span></span>
+          </button>
 
-      <!-- VUE : CRÉATION DE MAIL -->
-      <section id="view-create" class="mail-section-card" style="display: none;">
-        <div>
-          <span class="badge" id="composer-badge">Création de mail</span>
-          <h2 id="composer-title" style="font-size: 1.25rem; margin: 0.4rem 0 0.2rem;">Rédiger un mail</h2>
-          <p id="composer-subtitle" style="margin: 0; color: var(--muted); font-size: 0.88rem;"></p>
-        </div>
+          <button type="button" class="folder-btn" data-folder="sent">
+            <span class="folder-left"><span>➤</span><span>Messages envoyés</span></span>
+          </button>
 
-        <form id="mail-composer-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
-          <div class="form-group" style="margin: 0;">
-            <label for="mail-to">Destinataire</label>
-            <input type="text" id="mail-to" required>
+          <button type="button" class="folder-btn" data-folder="drafts">
+            <span class="folder-left"><span>📄</span><span>Brouillons</span></span>
+            <span class="folder-count" id="count-drafts">0</span>
+          </button>
+
+          <button type="button" class="folder-btn" data-folder="trash">
+            <span class="folder-left"><span>🗑️</span><span>Corbeille</span></span>
+          </button>
+
+          <div class="gmail-divider"></div>
+          <div class="labels-heading">Libellés</div>
+
+          <button type="button" class="folder-btn" data-label="Notes">
+            <span class="folder-left"><span>🏷️</span><span>Notes</span></span>
+          </button>
+
+          <button type="button" class="folder-btn" data-label="Demandes mail">
+            <span class="folder-left"><span>🏷️</span><span>Demandes mail</span></span>
+          </button>
+
+          <button type="button" class="folder-btn" data-label="Urgent">
+            <span class="folder-left"><span>🏷️</span><span>Urgent</span></span>
+          </button>
+        </aside>
+
+        <section id="view-folder" class="gmail-main-card">
+          <div class="gmail-toolbar">
+            <h2 id="folder-view-title">Boîte de réception</h2>
+            <button type="button" id="refresh-folder-btn" class="btn btn-secondary btn-small">Actualiser</button>
           </div>
+          <div id="folder-items-list"><p>Chargement...</p></div>
+        </section>
 
-          <div class="form-group" style="margin: 0;">
-            <label for="mail-subject">Objet</label>
-            <input type="text" id="mail-subject" required>
-          </div>
-
-          <div class="form-group" style="margin: 0;">
-            <label for="mail-body">Rédaction du mail</label>
-            <textarea id="mail-body" rows="4" required></textarea>
-          </div>
-
-          <div id="two-questions-box" class="questions-grid" style="display: none;">
-            <div class="form-group" style="margin: 0;">
-              <label for="question-nom">Question 1 : Quel est votre nom ?</label>
-              <input type="text" id="question-nom" placeholder="Votre nom">
+        <section id="view-compose" class="gmail-main-card" style="display: none;">
+          <div class="gmail-toolbar">
+            <div>
+              <span class="badge" id="composer-badge">Création de mail</span>
+              <h2 id="composer-title" style="margin-top: 0.35rem;">Nouveau message</h2>
+              <p id="composer-subtitle" style="margin: 0.2rem 0 0; color: var(--muted); font-size: 0.88rem;"></p>
             </div>
-            <div class="form-group" style="margin: 0;">
-              <label for="question-prenom">Question 2 : Quel est votre prénom ?</label>
-              <input type="text" id="question-prenom" placeholder="Votre prénom">
-            </div>
+            <button type="button" id="back-to-inbox-btn" class="btn btn-secondary btn-small">Retour réception</button>
           </div>
 
-          <div class="composer-actions">
-            <button type="submit" id="send-mail-btn" class="btn btn-small">Envoyer</button>
-            <button type="button" id="save-draft-btn" class="btn btn-secondary btn-small">Enregistrer en brouillon</button>
-          </div>
-        </form>
+          <form id="mail-composer-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div class="form-group" style="margin: 0;">
+              <label for="mail-to">Destinataire</label>
+              <input type="text" id="mail-to" required>
+            </div>
 
-        <div id="superadmin-create-box" style="display: none; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.35rem;">
-          <span class="badge">Superadmin</span>
-          <h3 style="font-size: 1.08rem; margin: 0.4rem 0 0.25rem;">Créer une boîte mail interne (prenom.nom@vos-jsp.com)</h3>
-          <form id="create-mailbox-form" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
             <div class="form-group" style="margin: 0;">
-              <label for="target-admin-uid">UID du compte admin</label>
-              <input type="text" id="target-admin-uid" placeholder="UID Firebase du compte admin" required>
+              <label for="mail-subject">Objet</label>
+              <input type="text" id="mail-subject" required>
             </div>
+
             <div class="form-group" style="margin: 0;">
-              <label for="target-admin-email">Adresse mail interne</label>
-              <input type="email" id="target-admin-email" placeholder="prenom.nom@vos-jsp.com" required>
+              <label for="mail-label">Libellé</label>
+              <select id="mail-label">
+                <option value="Notes">Notes</option>
+                <option value="Demandes mail">Demandes mail</option>
+                <option value="Urgent">Urgent</option>
+              </select>
             </div>
-            <button type="submit" class="btn btn-secondary btn-small" style="align-self: flex-start;">Enregistrer l'adresse</button>
+
+            <div class="form-group" style="margin: 0;">
+              <label for="mail-body">Rédaction du mail</label>
+              <textarea id="mail-body" rows="4" required></textarea>
+            </div>
+
+            <div id="two-questions-box" class="questions-grid" style="display: none;">
+              <div class="form-group" style="margin: 0;">
+                <label for="question-nom">Question 1 : Quel est votre nom ?</label>
+                <input type="text" id="question-nom" placeholder="Votre nom">
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="question-prenom">Question 2 : Quel est votre prénom ?</label>
+                <input type="text" id="question-prenom" placeholder="Votre prénom">
+              </div>
+            </div>
+
+            <div class="composer-actions">
+              <button type="submit" id="send-mail-btn" class="btn btn-small">Envoyer</button>
+              <button type="button" id="save-draft-btn" class="btn btn-secondary btn-small">Enregistrer en brouillon</button>
+            </div>
           </form>
-        </div>
-      </section>
+
+          <div id="superadmin-create-box" style="display: none; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.35rem;">
+            <span class="badge">Superadmin</span>
+            <h3 style="font-size: 1.08rem; margin: 0.4rem 0 0.25rem;">Créer une boîte mail interne (prenom.nom@vos-jsp.com)</h3>
+            <form id="create-mailbox-form" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+              <div class="form-group" style="margin: 0;">
+                <label for="target-admin-uid">UID du compte admin</label>
+                <input type="text" id="target-admin-uid" placeholder="UID Firebase du compte admin" required>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="target-admin-email">Adresse mail interne</label>
+                <input type="email" id="target-admin-email" placeholder="prenom.nom@vos-jsp.com" required>
+              </div>
+              <button type="submit" class="btn btn-secondary btn-small" style="align-self: flex-start;">Enregistrer l'adresse</button>
+            </form>
+          </div>
+        </section>
+      </div>
     </div>
   </main>
 
@@ -278,19 +434,15 @@
     const alertEl = document.getElementById('mail-alert');
     const statusEl = document.getElementById('mailbox-status');
 
-    const tabInboxBtn = document.getElementById('nav-tab-inbox');
-    const tabSentBtn = document.getElementById('nav-tab-sent');
-    const tabDraftsBtn = document.getElementById('nav-tab-drafts');
-    const tabCreateBtn = document.getElementById('nav-tab-create');
-
-    const viewInbox = document.getElementById('view-inbox');
-    const viewSent = document.getElementById('view-sent');
-    const viewDrafts = document.getElementById('view-drafts');
-    const viewCreate = document.getElementById('view-create');
-
-    const inboxListEl = document.getElementById('inbox-list');
-    const sentListEl = document.getElementById('sent-list');
-    const draftsListEl = document.getElementById('drafts-list');
+    const composeBtn = document.getElementById('btn-compose');
+    const backToInboxBtn = document.getElementById('back-to-inbox-btn');
+    const refreshFolderBtn = document.getElementById('refresh-folder-btn');
+    const viewFolder = document.getElementById('view-folder');
+    const viewCompose = document.getElementById('view-compose');
+    const folderViewTitle = document.getElementById('folder-view-title');
+    const folderItemsList = document.getElementById('folder-items-list');
+    const countInboxEl = document.getElementById('count-inbox');
+    const countDraftsEl = document.getElementById('count-drafts');
 
     const composerBadge = document.getElementById('composer-badge');
     const composerTitle = document.getElementById('composer-title');
@@ -298,6 +450,7 @@
     const composerForm = document.getElementById('mail-composer-form');
     const toInput = document.getElementById('mail-to');
     const subjectInput = document.getElementById('mail-subject');
+    const labelSelect = document.getElementById('mail-label');
     const bodyInput = document.getElementById('mail-body');
     const questionsBox = document.getElementById('two-questions-box');
     const nomInput = document.getElementById('question-nom');
@@ -313,6 +466,9 @@
     let currentRole = 'membre';
     let currentMailboxAddress = '';
     let hasMailbox = false;
+    let activeMode = 'folder';
+    let activeFolder = 'inbox';
+    let activeLabel = '';
     let editingDraftId = null;
 
     function showAlert(msg, isSuccess = false) {
@@ -329,15 +485,17 @@
         toInput.value = CREATION_MAIL_ADDRESS;
         toInput.readOnly = true;
         subjectInput.value = `Demande de création d'adresse mail — ${currentPseudo}`;
+        labelSelect.value = 'Demandes mail';
         bodyInput.value = `Bonjour,\nMon adresse mail interne Vos JSP n'a pas encore été créée. Merci de créer mon adresse mail.`;
         questionsBox.style.display = 'grid';
       } else {
         composerBadge.textContent = 'Création de mail';
-        composerTitle.textContent = 'Rédiger un mail';
+        composerTitle.textContent = 'Nouveau message';
         composerSubtitle.textContent = 'Rédige ton message et clique sur Envoyer ou Enregistrer en brouillon.';
         toInput.value = '';
         toInput.readOnly = false;
         subjectInput.value = '';
+        labelSelect.value = 'Notes';
         bodyInput.value = '';
         questionsBox.style.display = 'none';
         nomInput.value = '';
@@ -345,69 +503,160 @@
       }
     }
 
-    function switchView(viewName) {
-      tabInboxBtn.classList.toggle('active', viewName === 'inbox');
-      tabSentBtn.classList.toggle('active', viewName === 'sent');
-      tabDraftsBtn.classList.toggle('active', viewName === 'drafts');
-      tabCreateBtn.classList.toggle('active', viewName === 'create');
-
-      viewInbox.style.display = viewName === 'inbox' ? 'flex' : 'none';
-      viewSent.style.display = viewName === 'sent' ? 'flex' : 'none';
-      viewDrafts.style.display = viewName === 'drafts' ? 'flex' : 'none';
-      viewCreate.style.display = viewName === 'create' ? 'flex' : 'none';
-
-      if (viewName === 'inbox') loadInbox();
-      if (viewName === 'sent') loadSent();
-      if (viewName === 'drafts') loadDrafts();
+    function highlightSidebarButton(targetFolder, targetLabel) {
+      document.querySelectorAll('.folder-btn').forEach(btn => {
+        const f = btn.getAttribute('data-folder');
+        const l = btn.getAttribute('data-label');
+        const isMatch = activeMode === 'folder' && (
+          (targetLabel && l === targetLabel) ||
+          (!targetLabel && f === targetFolder)
+        );
+        btn.classList.toggle('active', Boolean(isMatch));
+      });
     }
 
-    function buildMailCard(id, m, folderName) {
-      const card = document.createElement('div');
-      card.className = 'mail-item';
+    async function fetchAllUserMails() {
+      const docsMap = new Map();
+      const byUid = await getDocs(
+        query(collection(db, "admin_mails"), where("toUid", "==", currentUser.uid))
+      );
+      byUid.forEach(d => docsMap.set(d.id, d.data()));
+
+      const byFrom = await getDocs(
+        query(collection(db, "admin_mails"), where("fromUid", "==", currentUser.uid))
+      );
+      byFrom.forEach(d => docsMap.set(d.id, d.data()));
+
+      const addrs = [currentMailboxAddress];
+      if (currentRole === 'superadmin') addrs.push(CREATION_MAIL_ADDRESS);
+      for (const addr of addrs) {
+        if (!addr) continue;
+        const byAddr = await getDocs(
+          query(collection(db, "admin_mails"), where("toEmail", "==", addr))
+        );
+        byAddr.forEach(d => docsMap.set(d.id, d.data()));
+      }
+
+      return Array.from(docsMap.entries()).map(([id, data]) => ({ id, ...data }));
+    }
+
+    function filterMailsForView(allMails) {
+      if (activeLabel) {
+        return allMails.filter(m => !m.trashed && !m.isDraft && m.label === activeLabel);
+      }
+      if (activeFolder === 'inbox') {
+        return allMails.filter(m => !m.trashed && !m.isDraft && (
+          m.toUid === currentUser.uid ||
+          (currentMailboxAddress && m.toEmail === currentMailboxAddress) ||
+          (currentRole === 'superadmin' && m.toEmail === CREATION_MAIL_ADDRESS)
+        ));
+      }
+      if (activeFolder === 'starred') {
+        return allMails.filter(m => !m.trashed && !m.isDraft && m.starred === true);
+      }
+      if (activeFolder === 'snoozed') {
+        return allMails.filter(m => !m.trashed && !m.isDraft && m.snoozed === true);
+      }
+      if (activeFolder === 'sent') {
+        return allMails.filter(m => !m.trashed && !m.isDraft && m.fromUid === currentUser.uid);
+      }
+      if (activeFolder === 'drafts') {
+        return allMails.filter(m => !m.trashed && m.isDraft === true && m.fromUid === currentUser.uid);
+      }
+      if (activeFolder === 'trash') {
+        return allMails.filter(m => m.trashed === true);
+      }
+      return [];
+    }
+
+    function buildMailRow(item) {
+      const row = document.createElement('div');
+      row.className = 'mail-row';
 
       const top = document.createElement('div');
-      top.className = 'mail-item-top';
+      top.className = 'mail-row-top';
 
       const info = document.createElement('div');
       const subj = document.createElement('strong');
-      subj.textContent = m.subject || 'Sans objet';
+      subj.textContent = item.subject || 'Sans objet';
+
       const meta = document.createElement('div');
       meta.className = 'mail-meta';
-      meta.textContent = `De : ${m.fromPseudo || 'Admin'} (${m.fromEmail || ''}) • À : ${m.toEmail || ''}`;
+      const labelTxt = item.label ? ` • Libellé : ${item.label}` : '';
+      meta.textContent = `De : ${item.fromPseudo || 'Admin'} (${item.fromEmail || ''}) • À : ${item.toEmail || ''}${labelTxt}`;
+
       info.appendChild(subj);
       info.appendChild(meta);
 
-      const btns = document.createElement('div');
-      btns.style.cssText = 'display: flex; gap: 0.45rem; flex-wrap: wrap;';
+      const actions = document.createElement('div');
+      actions.className = 'mail-row-actions';
 
-      if (folderName === 'drafts') {
+      const starBtn = document.createElement('button');
+      starBtn.type = 'button';
+      starBtn.className = 'star-btn' + (item.starred ? ' starred' : '');
+      starBtn.textContent = item.starred ? '★' : '☆';
+      starBtn.title = 'Suivre ce message';
+      starBtn.addEventListener('click', async () => {
+        await updateDoc(doc(db, "admin_mails", item.id), { starred: !item.starred });
+        await renderCurrentView();
+      });
+
+      const snoozeBtn = document.createElement('button');
+      snoozeBtn.type = 'button';
+      snoozeBtn.className = 'btn btn-secondary btn-small';
+      snoozeBtn.textContent = item.snoozed ? 'Retirer attente' : 'En attente';
+      snoozeBtn.addEventListener('click', async () => {
+        await updateDoc(doc(db, "admin_mails", item.id), { snoozed: !item.snoozed });
+        await renderCurrentView();
+      });
+
+      actions.appendChild(starBtn);
+      actions.appendChild(snoozeBtn);
+
+      if (activeFolder === 'drafts') {
         const resumeBtn = document.createElement('button');
         resumeBtn.type = 'button';
         resumeBtn.className = 'btn btn-secondary btn-small';
         resumeBtn.textContent = 'Reprendre';
         resumeBtn.addEventListener('click', () => {
-          editingDraftId = id;
-          switchView('create');
-          toInput.value = m.toEmail || '';
-          subjectInput.value = m.subject || '';
-          bodyInput.value = m.body || '';
-          if (m.answerNom) nomInput.value = m.answerNom;
-          if (m.answerPrenom) prenomInput.value = m.answerPrenom;
+          editingDraftId = item.id;
+          openComposeView();
+          toInput.value = item.toEmail || '';
+          subjectInput.value = item.subject || '';
+          if (item.label) labelSelect.value = item.label;
+          bodyInput.value = item.body || '';
+          if (item.answerNom) nomInput.value = item.answerNom;
+          if (item.answerPrenom) prenomInput.value = item.answerPrenom;
         });
-        btns.appendChild(resumeBtn);
+        actions.appendChild(resumeBtn);
+      }
+
+      if (activeFolder === 'trash') {
+        const restoreBtn = document.createElement('button');
+        restoreBtn.type = 'button';
+        restoreBtn.className = 'btn btn-secondary btn-small';
+        restoreBtn.textContent = 'Restaurer';
+        restoreBtn.addEventListener('click', async () => {
+          await updateDoc(doc(db, "admin_mails", item.id), { trashed: false });
+          showAlert('Message restauré.', true);
+          await renderCurrentView();
+        });
+        actions.appendChild(restoreBtn);
       }
 
       const delBtn = document.createElement('button');
       delBtn.type = 'button';
       delBtn.className = 'btn btn-secondary btn-small';
-      delBtn.textContent = 'Supprimer';
+      delBtn.textContent = activeFolder === 'trash' ? 'Supprimer définitivement' : 'Supprimer';
 
-      const confirmRow = document.createElement('div');
-      confirmRow.className = 'confirm-inline';
-      confirmRow.style.display = 'none';
+      const confirmBox = document.createElement('div');
+      confirmBox.className = 'confirm-inline';
+      confirmBox.style.display = 'none';
 
-      const confirmTxt = document.createElement('span');
-      confirmTxt.textContent = 'Confirmer la suppression de ce mail ?';
+      const confirmMsg = document.createElement('span');
+      confirmMsg.textContent = activeFolder === 'trash'
+        ? 'Supprimer définitivement ce message ?'
+        : 'Déplacer ce message vers la corbeille ?';
 
       const yesBtn = document.createElement('button');
       yesBtn.type = 'button';
@@ -420,127 +669,104 @@
       noBtn.textContent = 'Annuler';
 
       delBtn.addEventListener('click', () => {
-        confirmRow.style.display = confirmRow.style.display === 'none' ? 'flex' : 'none';
+        confirmBox.style.display = confirmBox.style.display === 'none' ? 'flex' : 'none';
       });
 
       noBtn.addEventListener('click', () => {
-        confirmRow.style.display = 'none';
+        confirmBox.style.display = 'none';
       });
 
       yesBtn.addEventListener('click', async () => {
         yesBtn.disabled = true;
         try {
-          await deleteDoc(doc(db, "admin_mails", id));
-          showAlert('Mail supprimé.', true);
-          switchView(folderName);
+          if (activeFolder === 'trash') {
+            await deleteDoc(doc(db, "admin_mails", item.id));
+            showAlert('Message supprimé définitivement.', true);
+          } else {
+            await updateDoc(doc(db, "admin_mails", item.id), { trashed: true });
+            showAlert('Message déplacé dans la corbeille.', true);
+          }
+          await renderCurrentView();
         } catch (err) {
           yesBtn.disabled = false;
-          showAlert('Suppression impossible : ' + (err.code || err.message));
+          showAlert('Action impossible : ' + (err.code || err.message));
         }
       });
 
-      confirmRow.appendChild(confirmTxt);
-      confirmRow.appendChild(yesBtn);
-      confirmRow.appendChild(noBtn);
+      confirmBox.appendChild(confirmMsg);
+      confirmBox.appendChild(yesBtn);
+      confirmBox.appendChild(noBtn);
+      actions.appendChild(delBtn);
 
-      btns.appendChild(delBtn);
       top.appendChild(info);
-      top.appendChild(btns);
+      top.appendChild(actions);
 
-      const bodyP = document.createElement('p');
-      bodyP.className = 'mail-body';
-      bodyP.textContent = m.body || '';
+      const bodyEl = document.createElement('p');
+      bodyEl.className = 'mail-body';
+      bodyEl.textContent = item.body || '';
 
-      card.appendChild(top);
-      card.appendChild(bodyP);
-      card.appendChild(confirmRow);
-      return card;
+      row.appendChild(top);
+      row.appendChild(bodyEl);
+      row.appendChild(confirmBox);
+      return row;
     }
 
-    async function loadInbox() {
-      inboxListEl.textContent = 'Chargement...';
-      try {
-        const docsMap = new Map();
-        const byUid = await getDocs(
-          query(collection(db, "admin_mails"), where("toUid", "==", currentUser.uid))
-        );
-        byUid.forEach(d => {
-          const data = d.data();
-          if (!data.isDraft) docsMap.set(d.id, data);
-        });
+    async function renderCurrentView() {
+      const allMails = await fetchAllUserMails();
 
-        const addrs = [currentMailboxAddress];
-        if (currentRole === 'superadmin') addrs.push(CREATION_MAIL_ADDRESS);
-        for (const addr of addrs) {
-          if (!addr) continue;
-          const byAddr = await getDocs(
-            query(collection(db, "admin_mails"), where("toEmail", "==", addr))
-          );
-          byAddr.forEach(d => {
-            const data = d.data();
-            if (!data.isDraft) docsMap.set(d.id, data);
-          });
-        }
+      const inboxCount = allMails.filter(m => !m.trashed && !m.isDraft && (
+        m.toUid === currentUser.uid ||
+        (currentMailboxAddress && m.toEmail === currentMailboxAddress) ||
+        (currentRole === 'superadmin' && m.toEmail === CREATION_MAIL_ADDRESS)
+      )).length;
+      const draftsCount = allMails.filter(m => !m.trashed && m.isDraft === true && m.fromUid === currentUser.uid).length;
 
-        inboxListEl.textContent = '';
-        if (docsMap.size === 0) {
-          inboxListEl.innerHTML = '<p>Aucun message dans la réception.</p>';
-          return;
-        }
-        docsMap.forEach((m, id) => {
-          inboxListEl.appendChild(buildMailCard(id, m, 'inbox'));
-        });
-      } catch (err) {
-        inboxListEl.textContent = 'Erreur de chargement (' + (err.code || err.message) + ').';
+      countInboxEl.textContent = String(inboxCount);
+      countDraftsEl.textContent = String(draftsCount);
+
+      if (activeMode !== 'folder') return;
+
+      const titles = {
+        inbox: 'Boîte de réception',
+        starred: 'Messages suivis',
+        snoozed: 'En attente',
+        sent: 'Messages envoyés',
+        drafts: 'Brouillons',
+        trash: 'Corbeille'
+      };
+      folderViewTitle.textContent = activeLabel ? `Libellé : ${activeLabel}` : (titles[activeFolder] || 'Boîte de réception');
+
+      const items = filterMailsForView(allMails);
+      folderItemsList.textContent = '';
+
+      if (items.length === 0) {
+        const p = document.createElement('p');
+        p.textContent = 'Aucun message dans cette section.';
+        folderItemsList.appendChild(p);
+        return;
       }
+
+      items.forEach(item => {
+        folderItemsList.appendChild(buildMailRow(item));
+      });
     }
 
-    async function loadSent() {
-      sentListEl.textContent = 'Chargement...';
-      try {
-        const snap = await getDocs(
-          query(collection(db, "admin_mails"), where("fromUid", "==", currentUser.uid))
-        );
-        sentListEl.textContent = '';
-        const items = [];
-        snap.forEach(d => {
-          const data = d.data();
-          if (!data.isDraft) items.push([d.id, data]);
-        });
-        if (items.length === 0) {
-          sentListEl.innerHTML = '<p>Aucun message envoyé.</p>';
-          return;
-        }
-        items.forEach(([id, m]) => {
-          sentListEl.appendChild(buildMailCard(id, m, 'sent'));
-        });
-      } catch (err) {
-        sentListEl.textContent = 'Erreur de chargement (' + (err.code || err.message) + ').';
-      }
+    function openFolderView(folderName, labelName = '') {
+      activeMode = 'folder';
+      activeFolder = folderName;
+      activeLabel = labelName;
+      viewCompose.style.display = 'none';
+      viewFolder.style.display = 'flex';
+      highlightSidebarButton(folderName, labelName);
+      renderCurrentView();
     }
 
-    async function loadDrafts() {
-      draftsListEl.textContent = 'Chargement...';
-      try {
-        const snap = await getDocs(
-          query(collection(db, "admin_mails"), where("fromUid", "==", currentUser.uid))
-        );
-        draftsListEl.textContent = '';
-        const items = [];
-        snap.forEach(d => {
-          const data = d.data();
-          if (data.isDraft) items.push([d.id, data]);
-        });
-        if (items.length === 0) {
-          draftsListEl.innerHTML = '<p>Aucun brouillon enregistré.</p>';
-          return;
-        }
-        items.forEach(([id, m]) => {
-          draftsListEl.appendChild(buildMailCard(id, m, 'drafts'));
-        });
-      } catch (err) {
-        draftsListEl.textContent = 'Erreur de chargement (' + (err.code || err.message) + ').';
-      }
+    function openComposeView() {
+      activeMode = 'compose';
+      viewFolder.style.display = 'none';
+      viewCompose.style.display = 'flex';
+      highlightSidebarButton('', '');
+      configureComposerState();
     }
 
     async function findSuperAdminUid() {
@@ -577,6 +803,7 @@
       const toAddr = toInput.value.trim();
       const subject = subjectInput.value.trim();
       const body = buildFinalMessageText();
+      const label = labelSelect.value;
 
       if (!toAddr || !subject || !body) {
         showAlert('Remplis le destinataire, l’objet et la rédaction du mail.');
@@ -601,10 +828,12 @@
         toUid: targetUid,
         toEmail: toAddr,
         subject,
+        label,
         body,
         answerNom: nomInput.value.trim(),
         answerPrenom: prenomInput.value.trim(),
         isDraft,
+        trashed: false,
         read: false,
         updatedAt: serverTimestamp()
       };
@@ -627,18 +856,24 @@
 
       if (!isDraft) {
         showAlert(`Mail envoyé à ${toAddr}.`, true);
-        configureComposerState();
-        switchView('sent');
+        openFolderView('sent');
       } else {
         showAlert('Brouillon enregistré.', true);
-        switchView('drafts');
+        openFolderView('drafts');
       }
     }
 
-    tabInboxBtn.addEventListener('click', () => switchView('inbox'));
-    tabSentBtn.addEventListener('click', () => switchView('sent'));
-    tabDraftsBtn.addEventListener('click', () => switchView('drafts'));
-    tabCreateBtn.addEventListener('click', () => switchView('create'));
+    document.querySelectorAll('.folder-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const f = btn.getAttribute('data-folder');
+        const l = btn.getAttribute('data-label') || '';
+        openFolderView(f || 'inbox', l);
+      });
+    });
+
+    composeBtn.addEventListener('click', openComposeView);
+    backToInboxBtn.addEventListener('click', () => openFolderView('inbox'));
+    refreshFolderBtn.addEventListener('click', renderCurrentView);
 
     composerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -738,7 +973,7 @@
       }
 
       configureComposerState();
-      switchView('inbox');
+      openFolderView('inbox');
     });
   </script>
 </body>

@@ -64,6 +64,35 @@
       margin-bottom: 1.35rem;
     }
 
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .resource-card {
+      padding: 1rem 1.1rem;
+      border-radius: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .resource-card strong {
+      font-size: 0.98rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .resource-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
     .actu-row,
     .user-row {
       display: flex;
@@ -116,7 +145,7 @@
         <div>VOS <span>JSP</span></div>
       </a>
     </div>
-    <a href="actus.html" class="btn btn-secondary btn-small">Voir le fil</a>
+    <a href="mail.html" class="btn btn-secondary btn-small">Boîte mail admin</a>
   </div>
 
   <div class="nav-backdrop" id="nav-backdrop"></div>
@@ -139,6 +168,7 @@
       <a href="a-propos.html">À propos</a>
       <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
       <a href="admin.html" id="drawer-admin-link" class="active" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -169,19 +199,67 @@
       <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.25rem;">
         <span class="badge">Administration • Accès restreint</span>
         <h1>Poste de commandement Vos JSP</h1>
-        <p class="subtitle" style="margin-bottom: 0;">Déploie une section pour gérer les contestations, propositions, actualités, messages et membres.</p>
+        <p class="subtitle" style="margin-bottom: 0;">Déploie une section pour accéder à vos ressources, gérer les contestations, propositions, actualités, messages et membres.</p>
       </section>
 
       <div class="quick-bar">
+        <a href="mail.html" class="btn btn-small">Ouvrir mail.html</a>
         <a href="actus.html" class="btn btn-secondary btn-small">Fil actualités</a>
         <a href="galerie.html" class="btn btn-secondary btn-small">Galerie</a>
         <a href="forum.html" class="btn btn-secondary btn-small">Forum</a>
-        <a href="a-propos.html" class="btn btn-secondary btn-small">Page À propos</a>
       </div>
 
       <div id="admin-alert" class="alert"></div>
 
       <div class="accordion-list">
+        <details class="panel-box" open>
+          <summary>Vos ressources</summary>
+          <div class="panel-content">
+            <div class="resources-grid">
+              <div class="resource-card">
+                <div>
+                  <strong>Messagerie Admin (mail.html)</strong>
+                  <p>Lire et envoyer des mails internes entre admins ainsi que les messages ciblés depuis À propos.</p>
+                </div>
+                <div>
+                  <a href="mail.html" class="btn btn-small">Accéder à mail.html</a>
+                </div>
+              </div>
+
+              <div class="resource-card">
+                <div>
+                  <strong>Fil d'actualités (actus.html)</strong>
+                  <p>Consulter le rendu public des articles et propositions validées sur le site.</p>
+                </div>
+                <div>
+                  <a href="actus.html" class="btn btn-secondary btn-small">Voir actus.html</a>
+                </div>
+              </div>
+
+              <div class="resource-card">
+                <div>
+                  <strong>Galerie &amp; Forum</strong>
+                  <p>Vérifier les publications photos des membres et les discussions de la communauté.</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <a href="galerie.html" class="btn btn-secondary btn-small">Galerie</a>
+                  <a href="forum.html" class="btn btn-secondary btn-small">Forum</a>
+                </div>
+              </div>
+
+              <div class="resource-card">
+                <div>
+                  <strong>Firebase Console</strong>
+                  <p>Gérer l'authentification, les collections Firestore et les règles de sécurité.</p>
+                </div>
+                <div>
+                  <a href="https://console.firebase.google.com/project/vos-jsp" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-small">Ouvrir Firebase</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+
         <details class="panel-box" open>
           <summary>Contestations de ban</summary>
           <div class="panel-content" id="appeals-list">
@@ -321,6 +399,7 @@
     const authBtn = document.getElementById('drawer-auth-btn');
     const logoutBtn = document.getElementById('drawer-logout-btn');
     const adminLink = document.getElementById('drawer-admin-link');
+    const mailLink = document.getElementById('drawer-mail-link');
 
     const gateEl = document.getElementById('admin-gate');
     const gateTitle = document.getElementById('gate-title');
@@ -1048,6 +1127,7 @@
         profileBox.style.display = 'none';
         logoutBtn.style.display = 'none';
         adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
         authBtn.style.display = 'inline-flex';
         authBtn.textContent = 'Connexion';
         authBtn.href = 'login.html';
@@ -1093,17 +1173,20 @@
 
       if (banned) {
         adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
         denyAccess('Compte suspendu', 'Ton compte a été banni. Tu peux contacter l\'administration ou contester depuis la page dédiée.');
         return;
       }
 
       if (role !== 'admin' && role !== 'superadmin') {
         adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
         denyAccess('Accès réservé aux administrateurs', 'Ton compte (' + pseudo + ') a le rôle "' + role + '". Seuls les admins et superadmins peuvent ouvrir ce panel.');
         return;
       }
 
       adminLink.style.display = 'block';
+      mailLink.style.display = 'block';
       gateEl.style.display = 'none';
       panelEl.style.display = 'block';
 

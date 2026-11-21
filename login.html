@@ -264,7 +264,11 @@
       <a href="galerie.html">Galerie</a>
       <a href="proposer.html">Proposer</a>
       <a href="a-propos.html">À propos</a>
+      <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="recrutement.html">Recrutement</a>
+      <a href="profil.html">Profil</a>
+      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
       <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
@@ -377,6 +381,9 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('nav a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
   </script>
 
   <script type="module">
@@ -408,6 +415,7 @@
     const drawerAuthBtn = document.getElementById('drawer-auth-btn');
     const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
     const drawerAdminLink = document.getElementById('drawer-admin-link');
+    const drawerMailLink = document.getElementById('drawer-mail-link');
 
     const dotStep1 = document.getElementById('dot-step-1');
     const dotStep2 = document.getElementById('dot-step-2');
@@ -462,6 +470,13 @@
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
+    }
+
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
     }
 
     function formatAuthError(err) {
@@ -738,9 +753,12 @@
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
+        drawerMailLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
         return;
       }
+
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
 
       userUnsubscribe = onSnapshot(doc(db, "users", user.uid), async (snap) => {
         const data = snap.exists() ? (snap.data() || {}) : {};
@@ -749,20 +767,26 @@
           return;
         }
 
-        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-        const role = data.role || 'membre';
+        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
+        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        const pseudo = isAdmin
+          ? formatAdminPseudo(data, fallbackName)
+          : (data.pseudo || fallbackName);
+
         if (user.email) {
-          await syncPublicProfile(user.uid, user.email, pseudo);
+          await syncPublicProfile(user.uid, user.email, stripAdminTag(pseudo) || fallbackName);
         }
 
         profileBox.style.display = 'flex';
         profileAvatar.textContent = getInitials(pseudo);
         profileName.textContent = pseudo;
-        profileRole.textContent = role;
-        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
+        profileRole.textContent = roleLabel;
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
         drawerAuthBtn.style.display = 'none';
         drawerLogoutBtn.style.display = 'inline-flex';
-        drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
+        drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
+        drawerMailLink.style.display = isAdmin ? 'block' : 'none';
 
         window.location.replace('index.html');
       });

@@ -72,12 +72,12 @@
 
     .rec-layout {
       display: grid;
-      grid-template-columns: 1.15fr 0.95fr;
+      grid-template-columns: 1fr 1.15fr;
       gap: 1.35rem;
       align-items: start;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 920px) {
       .rec-layout {
         grid-template-columns: 1fr;
       }
@@ -173,13 +173,61 @@
       box-shadow: var(--shadow);
     }
 
+    .rec-locked-box {
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+      padding: 1.35rem 1.15rem;
+      text-align: center;
+    }
+
+    .rec-locked-box strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .rec-locked-box p {
+      margin: 0 0 1rem;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .rec-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      gap: 0.8rem;
+    }
+
+    @media (max-width: 560px) {
+      .rec-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .rec-form-card textarea {
       width: 100%;
-      min-height: 96px;
+      min-height: 82px;
       resize: vertical;
       border-radius: 14px;
-      padding: 0.78rem 0.9rem;
+      padding: 0.75rem 0.9rem;
       font-family: inherit;
+    }
+
+    .rec-check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.42;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+
+    .rec-check-row input {
+      margin-top: 0.2rem;
+      flex-shrink: 0;
     }
 
     .rec-my-apps {
@@ -297,7 +345,7 @@
         <div>
           <span class="badge">Équipe &amp; Bénévolat • Vos JSP</span>
           <h1>Rejoins l'équipe Vos JSP</h1>
-          <p>Consulte les postes ouverts, sélectionne un rôle et envoie ta candidature. L'état des recrutements est géré en direct depuis le Panel Admin.</p>
+          <p>Une connexion au compte est obligatoire pour envoyer une candidature. Remplis toutes les questions ci-dessous avec sérieux.</p>
         </div>
         <div class="rec-stats">
           <div class="rec-stat-box">
@@ -322,35 +370,67 @@
         </div>
 
         <div class="rec-form-card">
-          <span class="badge">Candidature</span>
-          <h2 style="margin: 0.5rem 0 0.25rem; font-size: 1.3rem;">Envoyer ta candidature</h2>
-          <p style="margin: 0 0 1.1rem; color: var(--muted); font-size: 0.86rem;">Réponds simplement et honnêtement, l'équipe étudie chaque demande.</p>
+          <span class="badge">Questionnaire de candidature</span>
+          <h2 style="margin: 0.5rem 0 0.25rem; font-size: 1.3rem;">Déposer une demande</h2>
+          <p style="margin: 0 0 1.1rem; color: var(--muted); font-size: 0.86rem;">Réponds à l'ensemble des questions pour que ta candidature soit étudiée.</p>
 
-          <form id="rec-apply-form">
+          <div id="rec-auth-lock" class="rec-locked-box">
+            <strong>Connexion obligatoire</strong>
+            <p>Tu dois être connecté à ton compte Vos JSP pour envoyer une demande de recrutement.</p>
+            <a href="login.html" class="btn btn-small">Se connecter</a>
+          </div>
+
+          <form id="rec-apply-form" style="display: none;">
             <div class="form-group">
-              <label for="rec-role-select">Poste souhaité</label>
+              <label for="rec-role-select">1. Quel poste souhaites-tu rejoindre ?</label>
               <select id="rec-role-select" required></select>
             </div>
 
-            <div class="form-group">
-              <label for="rec-name-input">Ton pseudo ou prénom</label>
-              <input type="text" id="rec-name-input" maxlength="80" placeholder="Ex. : Léo" required>
+            <div class="rec-grid-2">
+              <div class="form-group">
+                <label for="rec-name-input">2. Ton pseudo ou prénom</label>
+                <input type="text" id="rec-name-input" maxlength="80" placeholder="Ex. : Léo" required>
+              </div>
+              <div class="form-group">
+                <label for="rec-age-input">3. Ton âge</label>
+                <input type="number" id="rec-age-input" min="11" max="99" placeholder="Ex. : 14" required>
+              </div>
             </div>
 
             <div class="form-group">
-              <label for="rec-contact-input">Contact (Discord, e-mail ou autre)</label>
+              <label for="rec-jsp-status-select">4. Quel est ton lien avec l'univers JSP / pompiers ?</label>
+              <select id="rec-jsp-status-select" required>
+                <option value="JSP en formation">JSP en formation</option>
+                <option value="Ancien JSP">Ancien JSP</option>
+                <option value="Sapeur-Pompier / Encadrant">Sapeur-Pompier / Encadrant</option>
+                <option value="Passionné / Futur JSP">Passionné / Futur JSP</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="rec-contact-input">5. Moyen de contact (Discord, e-mail...)</label>
               <input type="text" id="rec-contact-input" maxlength="100" placeholder="Ex. : @pseudo_discord ou mail@exemple.fr" required>
             </div>
 
             <div class="form-group">
-              <label for="rec-avail-input">Disponibilités</label>
-              <input type="text" id="rec-avail-input" maxlength="120" placeholder="Ex. : Soirs de semaine et week-ends" required>
+              <label for="rec-avail-input">6. Quelles sont tes disponibilités dans la semaine ?</label>
+              <input type="text" id="rec-avail-input" maxlength="140" placeholder="Ex. : Mercredi après-midi, soirs et week-ends" required>
             </div>
 
             <div class="form-group">
-              <label for="rec-motivation-input">Motivation &amp; expérience</label>
-              <textarea id="rec-motivation-input" maxlength="800" placeholder="Pourquoi tu veux rejoindre l'équipe et ce que tu peux apporter..." required></textarea>
+              <label for="rec-exp-input">7. As-tu déjà eu une expérience (modération, staff, animation, rédaction...) ?</label>
+              <textarea id="rec-exp-input" maxlength="600" placeholder="Décris tes éventuelles expériences ou précise si c'est une première fois..." required></textarea>
             </div>
+
+            <div class="form-group">
+              <label for="rec-motivation-input">8. Pourquoi veux-tu rejoindre l'équipe et qu'apporteras-tu ?</label>
+              <textarea id="rec-motivation-input" maxlength="800" placeholder="Explique ta motivation et comment tu comptes aider la communauté..." required></textarea>
+            </div>
+
+            <label class="rec-check-row">
+              <input type="checkbox" id="rec-rules-check" required>
+              <span>9. Je m'engage à respecter les règles de la communauté, le cadre JSP et les décisions de la direction.</span>
+            </label>
 
             <button type="submit" id="rec-submit-btn" class="btn" style="width: 100%;">Envoyer ma candidature</button>
           </form>
@@ -426,11 +506,16 @@
     const rolesListEl = document.getElementById('rec-roles-list');
     const roleSelectEl = document.getElementById('rec-role-select');
 
+    const authLockEl = document.getElementById('rec-auth-lock');
     const applyForm = document.getElementById('rec-apply-form');
     const nameInput = document.getElementById('rec-name-input');
+    const ageInput = document.getElementById('rec-age-input');
+    const jspStatusSelect = document.getElementById('rec-jsp-status-select');
     const contactInput = document.getElementById('rec-contact-input');
     const availInput = document.getElementById('rec-avail-input');
+    const expInput = document.getElementById('rec-exp-input');
     const motivationInput = document.getElementById('rec-motivation-input');
+    const rulesCheck = document.getElementById('rec-rules-check');
     const submitBtn = document.getElementById('rec-submit-btn');
 
     const myAppsBox = document.getElementById('rec-my-apps-box');
@@ -582,7 +667,7 @@
             selectedRoleTitle = roleItem.title;
             roleSelectEl.value = roleItem.title;
             renderRolesAndSelect();
-            nameInput.focus();
+            if (currentUser) nameInput.focus();
           });
           foot.appendChild(pickBtn);
         }
@@ -657,7 +742,7 @@
             const subEl = document.createElement('span');
             subEl.style.fontSize = '0.8rem';
             subEl.style.color = 'var(--muted)';
-            subEl.textContent = `Dispo : ${app.availability || '—'}`;
+            subEl.textContent = `Âge : ${app.age || '—'} ans • Dispo : ${app.availability || '—'}`;
 
             left.appendChild(titleEl);
             left.appendChild(subEl);
@@ -688,11 +773,20 @@
       e.preventDefault();
       hideAlert();
 
+      if (!currentUser) {
+        showAlert('Tu dois être connecté pour envoyer une candidature.');
+        return;
+      }
+
       const chosenRole = roleSelectEl.value.trim();
       const applicantName = nameInput.value.trim();
+      const ageVal = Number(ageInput.value);
+      const jspStatusVal = jspStatusSelect.value || '';
       const contactVal = contactInput.value.trim();
       const availVal = availInput.value.trim();
+      const expVal = expInput.value.trim();
       const motivationVal = motivationInput.value.trim();
+      const acceptedRules = Boolean(rulesCheck.checked);
 
       const roleObj = rolesData.find((r) => r.title === chosenRole);
       if (!chosenRole || (roleObj && roleObj.open === false)) {
@@ -700,8 +794,13 @@
         return;
       }
 
-      if (!applicantName || !contactVal || !availVal || !motivationVal) {
-        showAlert('Remplis tous les champs de ta candidature.');
+      if (!applicantName || !Number.isInteger(ageVal) || ageVal < 11 || ageVal > 99) {
+        showAlert('Renseigne ton nom/pseudo et un âge valide.');
+        return;
+      }
+
+      if (!jspStatusVal || !contactVal || !availVal || !expVal || !motivationVal || !acceptedRules) {
+        showAlert('Réponds à toutes les questions et accepte les règles pour envoyer.');
         return;
       }
 
@@ -710,20 +809,27 @@
 
       try {
         await addDoc(collection(db, "candidatures"), {
-          applicantUid: currentUser ? currentUser.uid : null,
+          applicantUid: currentUser.uid,
           applicantPseudo: currentProfile.pseudo || applicantName,
           applicantName: applicantName,
+          age: ageVal,
+          jspStatus: jspStatusVal,
           contact: contactVal,
           roleTitle: chosenRole,
           availability: availVal,
+          experience: expVal,
           motivation: motivationVal,
+          acceptedRules: true,
           status: 'en_attente',
           createdAt: serverTimestamp()
         });
 
+        ageInput.value = '';
         contactInput.value = '';
         availInput.value = '';
+        expInput.value = '';
         motivationInput.value = '';
+        rulesCheck.checked = false;
         showAlert('Candidature envoyée avec succès.', true);
       } catch (err) {
         showAlert('Envoi impossible : ' + (err.code || err.message));
@@ -774,6 +880,8 @@
 
       if (!user) {
         currentProfile = { pseudo: '', role: 'membre' };
+        authLockEl.style.display = 'block';
+        applyForm.style.display = 'none';
         myAppsBox.style.display = 'none';
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
@@ -782,6 +890,8 @@
         return;
       }
 
+      authLockEl.style.display = 'none';
+      applyForm.style.display = 'block';
       myAppsBox.style.display = 'block';
       drawerAuthBtn.style.display = 'none';
       drawerLogoutBtn.style.display = 'inline-flex';

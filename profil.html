@@ -6,73 +6,86 @@
   <title>Vos JSP — Profil</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .maint-wrap {
-      max-width: 680px;
-      margin: 2.6rem auto 3.8rem;
+    .profil-maint-wrap {
+      max-width: 740px;
+      margin: 2.3rem auto 3.8rem;
     }
 
-    .maint-card {
-      background: var(--surface);
+    .profil-maint-card {
+      background: linear-gradient(155deg, var(--surface) 0%, var(--bg) 100%);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 2rem 1.85rem;
+      border-radius: 26px;
+      padding: 2.1rem 1.85rem;
       box-shadow: var(--shadow);
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    .maint-icon {
-      width: 54px;
-      height: 54px;
-      border-radius: 16px;
-      margin: 0 auto 1rem;
-      background: rgba(225, 29, 42, 0.12);
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .profil-maint-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), rgba(225, 29, 42, 0.25));
     }
 
-    .maint-card h1 {
-      margin: 0.45rem 0 0.6rem;
-      font-size: 1.75rem;
+    .profil-greeting {
+      margin: 0.7rem 0 0.35rem;
+      font-size: 1.85rem;
+      line-height: 1.18;
       letter-spacing: -0.02em;
     }
 
-    .maint-card p {
-      margin: 0 auto 1.25rem;
-      max-width: 520px;
+    .profil-status-line {
+      margin: 0 auto 1.55rem;
+      max-width: 540px;
       color: var(--muted);
       font-size: 0.96rem;
-      line-height: 1.58;
+      line-height: 1.55;
     }
 
-    .maint-wait-pill {
-      display: inline-block;
-      background: var(--bg);
+    .timer-panel {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.48rem 1rem;
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 1.4rem;
+      border-radius: 22px;
+      padding: 1.35rem 1.2rem;
+      max-width: 460px;
+      margin: 0 auto 1.45rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
     }
 
-    .maint-actions {
+    .timer-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 0.65rem;
+    }
+
+    .timer-clock {
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(2.1rem, 6vw, 3rem);
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: var(--primary);
+      line-height: 1.05;
+    }
+
+    .timer-sub {
+      display: block;
+      margin-top: 0.55rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .profil-actions {
       display: flex;
       justify-content: center;
       gap: 0.65rem;
       flex-wrap: wrap;
-    }
-
-    .maint-svg {
-      width: 26px;
-      height: 26px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
     }
   </style>
 </head>
@@ -128,19 +141,19 @@
   </aside>
 
   <main>
-    <div class="maint-wrap">
-      <section class="maint-card">
-        <div class="maint-icon" aria-hidden="true">
-          <svg class="maint-svg" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9"/>
-            <polyline points="12 7 12 12 15 15"/>
-          </svg>
+    <div class="profil-maint-wrap">
+      <section class="profil-maint-card">
+        <span class="badge">Espace Profil • Maintenance</span>
+        <h1 class="profil-greeting" id="profil-greeting-title">Bonjour membre, la page est temporairement indisponible</h1>
+        <p class="profil-status-line">Des modifications sont en cours sur cette page — 1h d'attente minimum avant réouverture.</p>
+
+        <div class="timer-panel">
+          <span class="timer-label">Minuteur de maintenance (1h)</span>
+          <div class="timer-clock" id="profil-countdown">01:00:00</div>
+          <span class="timer-sub" id="profil-timer-sub">Décompte en cours...</span>
         </div>
-        <span class="badge">Page Profil • Travaux en cours</span>
-        <h1>Page temporairement indisponible</h1>
-        <p>Des modifications sont en cours sur cette page.</p>
-        <div class="maint-wait-pill">1h d'attente minimum</div>
-        <div class="maint-actions">
+
+        <div class="profil-actions">
           <a href="index.html" class="btn">Retour à l'accueil</a>
           <a href="forum.html" class="btn btn-secondary">Aller au forum</a>
         </div>
@@ -174,6 +187,44 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+
+    const countdownEl = document.getElementById('profil-countdown');
+    const timerSubEl = document.getElementById('profil-timer-sub');
+    const ONE_HOUR_MS = 60 * 60 * 1000;
+    const STORAGE_KEY = 'vosjsp_profil_maint_end_v1';
+
+    function getTargetEndTime() {
+      const saved = Number(localStorage.getItem(STORAGE_KEY) || 0);
+      const now = Date.now();
+      if (saved && saved > now) return saved;
+      const nextEnd = now + ONE_HOUR_MS;
+      localStorage.setItem(STORAGE_KEY, String(nextEnd));
+      return nextEnd;
+    }
+
+    let targetEnd = getTargetEndTime();
+
+    function formatHms(msLeft) {
+      const totalSec = Math.max(0, Math.ceil(msLeft / 1000));
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':');
+    }
+
+    function updateCountdown() {
+      const diff = targetEnd - Date.now();
+      if (diff <= 0) {
+        countdownEl.textContent = '00:00:00';
+        timerSubEl.textContent = '1h écoulée — modifications toujours susceptibles d’être finalisées.';
+        return;
+      }
+      countdownEl.textContent = formatHms(diff);
+      timerSubEl.textContent = '1h d’attente minimum — merci de patienter.';
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
   </script>
 
   <script type="module">
@@ -188,6 +239,7 @@
       onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
+    const greetingTitleEl = document.getElementById('profil-greeting-title');
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
     const profileName = document.getElementById('drawer-profile-name');
@@ -197,6 +249,11 @@
     const drawerAdminLink = document.getElementById('drawer-admin-link');
 
     let userUnsubscribe = null;
+
+    function setGreetingName(name) {
+      const cleanName = String(name || 'membre').trim() || 'membre';
+      greetingTitleEl.textContent = `Bonjour ${cleanName}, la page est temporairement indisponible`;
+    }
 
     function getInitials(label) {
       const clean = String(label || 'JS')
@@ -241,6 +298,7 @@
       if (await redirectIfIpBanned()) return;
 
       if (!user) {
+        setGreetingName('membre');
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
@@ -258,9 +316,10 @@
           return;
         }
 
-        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'membre');
         const role = data.role || 'membre';
 
+        setGreetingName(pseudo);
         profileBox.style.display = 'flex';
         profileAvatar.textContent = getInitials(pseudo);
         profileName.textContent = pseudo;

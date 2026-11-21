@@ -125,24 +125,24 @@
     .welcome-banner {
       display: none;
       align-items: center;
-      gap: 0.7rem;
-      background: rgba(225, 29, 42, 0.08);
-      border: 1px solid rgba(225, 29, 42, 0.25);
-      border-radius: 15px;
-      padding: 0.75rem 0.95rem;
+      gap: 0.75rem;
+      background: rgba(225, 29, 42, 0.09);
+      border: 1px solid rgba(225, 29, 42, 0.28);
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
       margin-bottom: 1rem;
-      animation: welcomePop 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: welcomePop 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     .welcome-banner strong {
       display: block;
-      font-size: 0.98rem;
+      font-size: 1.02rem;
       color: var(--text);
     }
 
     .welcome-banner span {
       display: block;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       color: var(--muted);
     }
 
@@ -175,13 +175,13 @@
     }
 
     .mini-badge {
-      width: 36px;
-      height: 36px;
-      border-radius: 11px;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
       background: rgba(225, 29, 42, 0.14);
       color: var(--primary);
       font-weight: 800;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -341,7 +341,7 @@
             <div class="mini-badge" id="welcome-initials">JS</div>
             <div>
               <strong id="welcome-heading">Bienvenue !</strong>
-              <span id="welcome-sub">Compte reconnu</span>
+              <span id="welcome-sub">Compte détecté — entre ton mot de passe.</span>
             </div>
           </div>
 
@@ -538,7 +538,9 @@
           }
         } catch (_) {}
       }
-      return { found: false, cleanName: '' };
+
+      const fallbackName = stripAdminTag(cleanEmail.split('@')[0]);
+      return { found: Boolean(fallbackName), cleanName: fallbackName, isFallback: true };
     }
 
     function goToStep(stepNum, direction = 'forward', welcomeInfo = null) {
@@ -571,7 +573,9 @@
         if (!isRegisterMode && welcomeInfo && welcomeInfo.found && welcomeInfo.cleanName) {
           welcomeBanner.style.display = 'flex';
           welcomeHeadingEl.textContent = `Bienvenue ${welcomeInfo.cleanName} !`;
-          welcomeSubEl.textContent = 'Compte détecté — entre ton mot de passe.';
+          welcomeSubEl.textContent = welcomeInfo.isFallback
+            ? 'Entre ton mot de passe pour continuer.'
+            : 'Compte détecté — entre ton mot de passe.';
           welcomeInitialsEl.textContent = getInitials(welcomeInfo.cleanName);
           miniInitialsEl.textContent = getInitials(welcomeInfo.cleanName);
         } else {
@@ -808,4 +812,4 @@
     });
   </script>
 </body>
-</html>
+</html>s

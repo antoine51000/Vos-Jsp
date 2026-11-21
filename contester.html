@@ -75,8 +75,21 @@
       <a href="a-propos.html">À propos</a>
       <a href="contester.html" class="active">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="recrutement.html">Recrutement</a>
+      <a href="profil.html">Profil</a>
+      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
+      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
     </nav>
 
+    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
+      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
+      <div class="profile-meta">
+        <strong class="profile-name" id="drawer-profile-name"></strong>
+        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      </div>
+    </div>
+
+    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
     <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
   </aside>
 
@@ -172,6 +185,9 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('nav a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
   </script>
 
   <script type="module">
@@ -188,6 +204,14 @@
       collection,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const profileBox = document.getElementById('drawer-profile-box');
+    const profileAvatar = document.getElementById('drawer-profile-avatar');
+    const profileName = document.getElementById('drawer-profile-name');
+    const profileRole = document.getElementById('drawer-profile-role');
+    const authBtn = document.getElementById('drawer-auth-btn');
+    const adminLink = document.getElementById('drawer-admin-link');
+    const mailLink = document.getElementById('drawer-mail-link');
 
     const sessionBar = document.getElementById('session-status-bar');
     const sessionStatusText = document.getElementById('session-status-text');
@@ -215,6 +239,24 @@
 
     let currentUser = null;
     let userUnsubscribe = null;
+
+    function getInitials(label) {
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
+      const parts = clean.split(/[\s._-]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return clean.slice(0, 2).toUpperCase();
+    }
+
+    function formatAdminPseudo(userData, fallbackDisplay) {
+      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
+      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
+      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
+      return `[ ADMIN ] ${firstName}`;
+    }
 
     function showAlert(msg, isSuccess = false) {
       alertEl.style.display = 'block';
@@ -299,12 +341,17 @@
       }
 
       if (!user) {
-        sessionBar.style.display = 'none';
+        profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
+        adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
+        authBtn.style.display = 'inline-flex';
+        sessionBar.style.display = 'none';
         inlineLoginBox.style.display = 'block';
         return;
       }
 
+      authBtn.style.display = 'none';
       inlineLoginBox.style.display = 'none';
       sessionBar.style.display = 'flex';
       drawerLogoutBtn.style.display = 'inline-flex';
@@ -314,12 +361,31 @@
         emailInput.value = user.email;
       }
 
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+
       userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
         const data = snap.exists() ? (snap.data() || {}) : {};
+        const isBanned = data.banned === true;
+        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const isAdmin = !isBanned && (rawRole === 'admin' || rawRole === 'superadmin');
+        const roleLabel = isBanned ? 'banni' : (rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre'));
+        const displayPseudo = isAdmin
+          ? formatAdminPseudo(data, fallbackName)
+          : (data.pseudo || fallbackName);
+
+        profileBox.style.display = 'flex';
+        profileName.textContent = displayPseudo;
+        profileAvatar.textContent = getInitials(displayPseudo);
+        profileRole.textContent = roleLabel;
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+        adminLink.style.display = isAdmin ? 'block' : 'none';
+        mailLink.style.display = isAdmin ? 'block' : 'none';
+
         if (data.pseudo && !pseudoInput.value) {
           pseudoInput.value = data.pseudo;
         }
-        if (data.banned === true) {
+
+        if (isBanned) {
           appealHeading.textContent = 'Compte suspendu — Contester le bannissement';
           appealSub.textContent = 'Ton compte est suspendu : consulte le message ci-dessous puis envoie ta contestation.';
           banOfficialBox.style.display = 'block';
@@ -328,6 +394,14 @@
         } else {
           banOfficialBox.style.display = 'none';
         }
+      }, () => {
+        profileBox.style.display = 'flex';
+        profileName.textContent = fallbackName;
+        profileAvatar.textContent = getInitials(fallbackName);
+        profileRole.textContent = 'membre';
+        profileRole.className = 'profile-tag';
+        adminLink.style.display = 'none';
+        mailLink.style.display = 'none';
       });
     });
   </script>

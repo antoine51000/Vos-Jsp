@@ -6,62 +6,91 @@
   <title>Vos JSP — Panel Admin</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .accordion-list {
+    .adm-page {
+      max-width: 1140px;
+      margin: 2rem auto 3.8rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 2rem;
+      gap: 1.3rem;
     }
 
-    details.panel-box {
+    .adm-nav-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      padding: 0.5rem;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
     }
 
-    details.panel-box > summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 1.25rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      font-weight: 700;
-      font-size: 1.08rem;
-      user-select: none;
-    }
-
-    details.panel-box > summary::-webkit-details-marker {
-      display: none;
-    }
-
-    details.panel-box > summary::after {
-      content: "+";
-      font-size: 1.35rem;
+    .adm-tab-btn {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
       color: var(--muted);
-      line-height: 1;
+      font-weight: 700;
+      font-size: 0.84rem;
+      padding: 0.55rem 0.9rem;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
 
-    details.panel-box[open] > summary::after {
-      content: "−";
+    .adm-tab-btn:hover {
+      color: var(--text);
+      background: var(--bg);
     }
 
-    .panel-content {
-      padding: 1.25rem 1.5rem 1.5rem;
-      border-top: 1px solid var(--border);
+    .adm-tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .adm-section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.55rem 1.65rem;
+      box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 0.9rem;
+      gap: 0.95rem;
+    }
+
+    .adm-section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.8rem;
+    }
+
+    .adm-section-head h2 {
+      margin: 0;
+      font-size: 1.22rem;
+    }
+
+    .adm-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    @media (max-width: 720px) {
+      .adm-grid-2 {
+        grid-template-columns: 1fr;
+      }
     }
 
     .quick-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
-      margin-bottom: 1.35rem;
+      gap: 0.55rem;
     }
 
     .resources-grid {
@@ -72,7 +101,7 @@
 
     .resource-card {
       padding: 1rem 1.1rem;
-      border-radius: 14px;
+      border-radius: 16px;
       background: var(--bg);
       border: 1px solid var(--border);
       display: flex;
@@ -88,7 +117,7 @@
     }
 
     .resource-card p {
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       color: var(--muted);
       margin: 0;
     }
@@ -101,23 +130,25 @@
     }
 
     .actu-row,
-    .user-row {
+    .user-row,
+    .rec-admin-row {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
-      padding: 0.9rem 1rem;
+      gap: 0.7rem;
+      padding: 0.95rem 1.05rem;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 16px;
       margin-bottom: 0.65rem;
     }
 
     .actu-row-top,
-    .user-row-top {
+    .user-row-top,
+    .rec-admin-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 1rem;
+      gap: 0.85rem;
       flex-wrap: wrap;
     }
 
@@ -143,6 +174,28 @@
       align-items: center;
       gap: 0.5rem;
       font-size: 0.86rem;
+    }
+
+    .status-pill-admin {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.22rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    .status-pill-admin.open {
+      background: rgba(22, 163, 74, 0.12);
+      color: #15803d;
+    }
+
+    .status-pill-admin.closed {
+      background: rgba(225, 29, 42, 0.12);
+      color: var(--primary);
+    }
+
+    .adm-sub-title {
+      margin: 0.65rem 0 0.5rem;
+      font-size: 1.02rem;
     }
   </style>
 </head>
@@ -182,6 +235,8 @@
       <a href="a-propos.html">À propos</a>
       <a href="contester.html">Contester</a>
       <a href="forum.html">Forum</a>
+      <a href="recrutement.html">Recrutement</a>
+      <a href="profil.html">Profil</a>
       <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
       <a href="admin.html" id="drawer-admin-link" class="active" style="display: none;">Panel Admin</a>
     </nav>
@@ -209,96 +264,160 @@
       </div>
     </div>
 
-    <div id="admin-panel" style="display: none;">
-      <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.25rem;">
+    <div id="admin-panel" class="adm-page" style="display: none;">
+      <section class="hero" style="padding: 2rem 1.9rem; margin-bottom: 0;">
         <span class="badge">Administration • Accès restreint</span>
         <h1>Poste de commandement Vos JSP</h1>
-        <p class="subtitle" style="margin-bottom: 0;">Déploie une section pour accéder à vos ressources, gérer les contestations, propositions, actualités, messages et membres.</p>
+        <p class="subtitle" style="margin-bottom: 0.9rem;">Choisis un onglet pour gérer rapidement les ressources, le recrutement, les actualités ou les membres.</p>
+        <div class="quick-bar">
+          <a href="mail.html" class="btn btn-small">Ouvrir mail.html</a>
+          <a href="recrutement.html" class="btn btn-secondary btn-small">Page recrutement</a>
+          <a href="actus.html" class="btn btn-secondary btn-small">Fil actualités</a>
+          <a href="galerie.html" class="btn btn-secondary btn-small">Galerie</a>
+          <a href="forum.html" class="btn btn-secondary btn-small">Forum</a>
+        </div>
       </section>
-
-      <div class="quick-bar">
-        <a href="mail.html" class="btn btn-small">Ouvrir mail.html</a>
-        <a href="actus.html" class="btn btn-secondary btn-small">Fil actualités</a>
-        <a href="galerie.html" class="btn btn-secondary btn-small">Galerie</a>
-        <a href="forum.html" class="btn btn-secondary btn-small">Forum</a>
-      </div>
 
       <div id="admin-alert" class="alert"></div>
 
-      <div class="accordion-list">
-        <details class="panel-box" open>
-          <summary>Vos ressources</summary>
-          <div class="panel-content">
-            <div class="resources-grid">
-              <div class="resource-card">
-                <div>
-                  <strong>Messagerie Admin (mail.html)</strong>
-                  <p>Lire et envoyer des mails internes entre admins ainsi que les messages ciblés depuis À propos.</p>
-                </div>
-                <div>
-                  <a href="mail.html" class="btn btn-small">Accéder à mail.html</a>
-                </div>
-              </div>
+      <nav class="adm-nav-tabs" aria-label="Sections du Panel Admin">
+        <button type="button" class="adm-tab-btn active" data-adm-tab="overview">Ressources &amp; Modération</button>
+        <button type="button" class="adm-tab-btn" data-adm-tab="recrutement">Recrutement &amp; Candidatures</button>
+        <button type="button" class="adm-tab-btn" data-adm-tab="actus">Actualités &amp; Propositions</button>
+        <button type="button" class="adm-tab-btn" data-adm-tab="users">Membres &amp; Bans</button>
+      </nav>
 
-              <div class="resource-card">
-                <div>
-                  <strong>Fil d'actualités (actus.html)</strong>
-                  <p>Consulter le rendu public des articles et propositions validées sur le site.</p>
-                </div>
-                <div>
-                  <a href="actus.html" class="btn btn-secondary btn-small">Voir actus.html</a>
-                </div>
+      <!-- ONGLET 1 : RESSOURCES & MODÉRATION -->
+      <div id="adm-tab-overview" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Vos ressources</h2>
+          </div>
+          <div class="resources-grid">
+            <div class="resource-card">
+              <div>
+                <strong>Messagerie Admin (mail.html)</strong>
+                <p>Lire et envoyer des mails internes entre admins ainsi que les messages ciblés depuis À propos.</p>
               </div>
-
-              <div class="resource-card">
-                <div>
-                  <strong>Galerie &amp; Forum</strong>
-                  <p>Vérifier les publications photos des membres et les discussions de la communauté.</p>
-                </div>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                  <a href="galerie.html" class="btn btn-secondary btn-small">Galerie</a>
-                  <a href="forum.html" class="btn btn-secondary btn-small">Forum</a>
-                </div>
+              <div>
+                <a href="mail.html" class="btn btn-small">Accéder à mail.html</a>
               </div>
+            </div>
 
-              <div class="resource-card" id="firebase-resource-card">
-                <div>
-                  <strong>Firebase Console</strong>
-                  <p id="firebase-resource-desc">Réservée au superadmin (authentification, Firestore et règles de sécurité).</p>
-                </div>
-                <div>
-                  <a href="https://console.firebase.google.com/project/vos-jsp" target="_blank" rel="noopener noreferrer" id="firebase-console-btn" class="btn btn-secondary btn-small btn-disabled" aria-disabled="true" tabindex="-1">Ouvrir Firebase</a>
-                </div>
+            <div class="resource-card">
+              <div>
+                <strong>Fil d'actualités (actus.html)</strong>
+                <p>Consulter le rendu public des articles et propositions validées sur le site.</p>
+              </div>
+              <div>
+                <a href="actus.html" class="btn btn-secondary btn-small">Voir actus.html</a>
+              </div>
+            </div>
+
+            <div class="resource-card">
+              <div>
+                <strong>Galerie, Forum &amp; Recrutement</strong>
+                <p>Vérifier les publications photos, discussions et la page recrutement publique.</p>
+              </div>
+              <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+                <a href="galerie.html" class="btn btn-secondary btn-small">Galerie</a>
+                <a href="forum.html" class="btn btn-secondary btn-small">Forum</a>
+                <a href="recrutement.html" class="btn btn-secondary btn-small">Recrutement</a>
+              </div>
+            </div>
+
+            <div class="resource-card" id="firebase-resource-card">
+              <div>
+                <strong>Firebase Console</strong>
+                <p id="firebase-resource-desc">Réservée au superadmin (authentification, Firestore et règles de sécurité).</p>
+              </div>
+              <div>
+                <a href="https://console.firebase.google.com/project/vos-jsp" target="_blank" rel="noopener noreferrer" id="firebase-console-btn" class="btn btn-secondary btn-small btn-disabled" aria-disabled="true" tabindex="-1">Ouvrir Firebase</a>
               </div>
             </div>
           </div>
-        </details>
+        </section>
 
-        <details class="panel-box" open>
-          <summary>Contestations de ban</summary>
-          <div class="panel-content" id="appeals-list">
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Contestations de ban</h2>
+          </div>
+          <div id="appeals-list">
             <p>Chargement des contestations...</p>
           </div>
-        </details>
+        </section>
 
-        <details class="panel-box">
-          <summary>Propositions en attente de validation</summary>
-          <div class="panel-content" id="propositions-list">
-            <p>Chargement des propositions...</p>
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Messages de contact</h2>
           </div>
-        </details>
-
-        <details class="panel-box">
-          <summary>Messages de contact</summary>
-          <div class="panel-content" id="contacts-list">
+          <div id="contacts-list">
             <p>Chargement des messages...</p>
           </div>
-        </details>
+        </section>
+      </div>
 
-        <details class="panel-box">
-          <summary>Publier une actualité</summary>
-          <div class="panel-content">
-            <form id="publish-actu-form">
+      <!-- ONGLET 2 : RECRUTEMENT & CANDIDATURES -->
+      <div id="adm-tab-recrutement" style="display: none; flex-direction: column; gap: 1.25rem;">
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Créer un poste de recrutement</h2>
+          </div>
+          <form id="create-role-form">
+            <div class="adm-grid-2">
+              <div class="form-group">
+                <label for="role-title-input">Intitulé du poste</label>
+                <input type="text" id="role-title-input" maxlength="90" placeholder="Ex. : Modérateur Forum / Discord" required>
+              </div>
+              <div class="form-group">
+                <label for="role-tag-input">Pôle / Catégorie</label>
+                <input type="text" id="role-tag-input" maxlength="50" placeholder="Ex. : Modération, Contenu, Staff">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="role-desc-input">Description &amp; missions</label>
+              <textarea id="role-desc-input" rows="3" maxlength="600" placeholder="Décris les missions attendues et le profil recherché..." required></textarea>
+            </div>
+            <button type="submit" id="create-role-btn" class="btn btn-small">Publier le poste</button>
+          </form>
+        </section>
+
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Postes de recrutement (ouvrir / clôturer)</h2>
+          </div>
+          <div id="admin-roles-list">
+            <p>Chargement des postes...</p>
+          </div>
+        </section>
+
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Candidatures reçues</h2>
+          </div>
+          <div id="admin-apps-list">
+            <p>Chargement des candidatures...</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ONGLET 3 : ACTUALITÉS & PROPOSITIONS -->
+      <div id="adm-tab-actus" style="display: none; flex-direction: column; gap: 1.25rem;">
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Propositions en attente de validation</h2>
+          </div>
+          <div id="propositions-list">
+            <p>Chargement des propositions...</p>
+          </div>
+        </section>
+
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Publier une actualité</h2>
+          </div>
+          <form id="publish-actu-form">
+            <div class="adm-grid-2">
               <div class="form-group">
                 <label for="actu-title">Titre</label>
                 <input type="text" id="actu-title" placeholder="Titre de l'article" required>
@@ -312,6 +431,8 @@
                   <option value="Secourisme">Secourisme</option>
                 </select>
               </div>
+            </div>
+            <div class="adm-grid-2">
               <div class="form-group">
                 <label for="actu-author">Rédacteur</label>
                 <input type="text" id="actu-author" placeholder="Nom ou pseudo du rédacteur" required>
@@ -320,38 +441,41 @@
                 <label for="actu-source">Lien source (discret, optionnel)</label>
                 <input type="url" id="actu-source" placeholder="https://...">
               </div>
-              <div class="form-group">
-                <label for="actu-summary">Résumé</label>
-                <textarea id="actu-summary" rows="2" placeholder="Court résumé affiché sur la carte" required></textarea>
-              </div>
-              <div class="form-group">
-                <label for="actu-content">Texte complet</label>
-                <textarea id="actu-content" rows="5" placeholder="Texte complet (sépare les paragraphes par une ligne vide)" required></textarea>
-              </div>
-              <button type="submit" id="publish-actu-btn" class="btn" style="width: 100%;">Publier sur le fil</button>
-            </form>
-          </div>
-        </details>
-
-        <details class="panel-box" open>
-          <summary>Actualités publiées (Firestore)</summary>
-          <div class="panel-content">
-            <p style="font-size: 0.85rem; color: var(--muted);">La suppression d'une actualité nécessite de cliquer sur <strong>Confirmer la suppression</strong> et d'entrer ton mot de passe de compte.</p>
-            <div id="published-actus-list">
-              <p>Chargement des actualités...</p>
             </div>
-          </div>
-        </details>
-
-        <details class="panel-box" open>
-          <summary>Gestion des comptes, rôles &amp; bannissements</summary>
-          <div class="panel-content">
-            <p style="font-size: 0.85rem; color: var(--muted);">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong> ou supprimer un profil de Firestore. Bannir un membre exige une <strong>raison</strong>, génère automatiquement un message officiel avec formules de politesse affiché sur <code>ban.html</code>, et permet de bloquer aussi son IP.</p>
-            <div id="users-list">
-              <p>Chargement des utilisateurs...</p>
+            <div class="form-group">
+              <label for="actu-summary">Résumé</label>
+              <textarea id="actu-summary" rows="2" placeholder="Court résumé affiché sur la carte" required></textarea>
             </div>
+            <div class="form-group">
+              <label for="actu-content">Texte complet</label>
+              <textarea id="actu-content" rows="5" placeholder="Texte complet (sépare les paragraphes par une ligne vide)" required></textarea>
+            </div>
+            <button type="submit" id="publish-actu-btn" class="btn" style="width: 100%;">Publier sur le fil</button>
+          </form>
+        </section>
+
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Actualités publiées (Firestore)</h2>
           </div>
-        </details>
+          <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">La suppression d'une actualité nécessite de cliquer sur <strong>Confirmer la suppression</strong> et d'entrer ton mot de passe de compte.</p>
+          <div id="published-actus-list">
+            <p>Chargement des actualités...</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ONGLET 4 : MEMBRES & BANS -->
+      <div id="adm-tab-users" style="display: none; flex-direction: column; gap: 1.25rem;">
+        <section class="adm-section-card">
+          <div class="adm-section-head">
+            <h2>Gestion des comptes, rôles &amp; bannissements</h2>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Seul un <strong>superadmin</strong> peut promouvoir ou rétrograder un compte <strong>admin</strong> ou supprimer un profil de Firestore. Bannir un membre exige une <strong>raison</strong>, génère automatiquement un message officiel avec formules de politesse affiché sur <code>ban.html</code>, et permet de bloquer aussi son IP.</p>
+          <div id="users-list">
+            <p>Chargement des utilisateurs...</p>
+          </div>
+        </section>
       </div>
     </div>
   </main>
@@ -382,6 +506,24 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
+
+    const admTabs = Array.from(document.querySelectorAll('.adm-tab-btn'));
+    const admPanels = {
+      overview: document.getElementById('adm-tab-overview'),
+      recrutement: document.getElementById('adm-tab-recrutement'),
+      actus: document.getElementById('adm-tab-actus'),
+      users: document.getElementById('adm-tab-users')
+    };
+
+    admTabs.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.admTab;
+        admTabs.forEach((b) => b.classList.toggle('active', b === btn));
+        Object.entries(admPanels).forEach(([k, el]) => {
+          if (el) el.style.display = k === key ? 'flex' : 'none';
+        });
+      });
+    });
   </script>
 
   <script type="module">
@@ -431,13 +573,23 @@
     const publishForm = document.getElementById('publish-actu-form');
     const publishBtn = document.getElementById('publish-actu-btn');
 
+    const createRoleForm = document.getElementById('create-role-form');
+    const roleTitleInput = document.getElementById('role-title-input');
+    const roleTagInput = document.getElementById('role-tag-input');
+    const roleDescInput = document.getElementById('role-desc-input');
+    const createRoleBtn = document.getElementById('create-role-btn');
+    const adminRolesListEl = document.getElementById('admin-roles-list');
+    const adminAppsListEl = document.getElementById('admin-apps-list');
+
     let currentUser = null;
     let currentRole = 'membre';
     let currentPseudo = 'Membre';
     let panelLoaded = false;
 
     function getInitials(label) {
-      const clean = (label || 'JS').trim();
+      const clean = String(label || 'JS')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) {
         return (parts[0][0] + parts[1][0]).toUpperCase();
@@ -523,6 +675,228 @@
       const cred = EmailAuthProvider.credential(currentUser.email, password);
       await reauthenticateWithCredential(currentUser, cred);
     }
+
+    async function loadAdminRoles() {
+      adminRolesListEl.textContent = 'Chargement...';
+      try {
+        const snap = await getDocs(collection(db, "recrutement_postes"));
+        adminRolesListEl.textContent = '';
+
+        if (snap.empty) {
+          const p = document.createElement('p');
+          p.textContent = 'Aucun poste personnalisé dans Firestore pour le moment (les postes par défaut s’affichent sur recrutement.html).';
+          adminRolesListEl.appendChild(p);
+          return;
+        }
+
+        snap.forEach((d) => {
+          const r = d.data() || {};
+          const isOpen = r.open !== false;
+
+          const row = document.createElement('div');
+          row.className = 'rec-admin-row';
+
+          const top = document.createElement('div');
+          top.className = 'rec-admin-top';
+
+          const left = document.createElement('div');
+          const strong = document.createElement('strong');
+          strong.textContent = r.title || 'Poste';
+          const meta = document.createElement('div');
+          meta.style.cssText = 'font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem;';
+          meta.textContent = `${r.tag || 'Équipe'} • ${r.description || ''}`;
+          left.appendChild(strong);
+          left.appendChild(meta);
+
+          const actions = document.createElement('div');
+          actions.style.cssText = 'display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;';
+
+          const pill = document.createElement('span');
+          pill.className = `status-pill-admin ${isOpen ? 'open' : 'closed'}`;
+          pill.textContent = isOpen ? 'Ouvert' : 'Clôturé';
+
+          const toggleBtn = document.createElement('button');
+          toggleBtn.type = 'button';
+          toggleBtn.className = 'btn btn-secondary btn-small';
+          toggleBtn.textContent = isOpen ? 'Clôturer' : 'Rouvrir';
+          toggleBtn.addEventListener('click', async () => {
+            toggleBtn.disabled = true;
+            try {
+              await updateDoc(doc(db, "recrutement_postes", d.id), { open: !isOpen });
+              showAlert(!isOpen ? 'Poste réouvert.' : 'Poste clôturé.', true);
+              await loadAdminRoles();
+            } catch (err) {
+              toggleBtn.disabled = false;
+              showAlert('Erreur : ' + (err.code || err.message));
+            }
+          });
+
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Supprimer';
+          delBtn.addEventListener('click', async () => {
+            delBtn.disabled = true;
+            try {
+              await deleteDoc(doc(db, "recrutement_postes", d.id));
+              showAlert('Poste supprimé.', true);
+              await loadAdminRoles();
+            } catch (err) {
+              delBtn.disabled = false;
+              showAlert('Erreur : ' + (err.code || err.message));
+            }
+          });
+
+          actions.appendChild(pill);
+          actions.appendChild(toggleBtn);
+          actions.appendChild(delBtn);
+
+          top.appendChild(left);
+          top.appendChild(actions);
+          row.appendChild(top);
+          adminRolesListEl.appendChild(row);
+        });
+      } catch (err) {
+        adminRolesListEl.textContent = 'Erreur de chargement des postes (' + (err.code || err.message) + ').';
+      }
+    }
+
+    async function loadAdminApplications() {
+      adminAppsListEl.textContent = 'Chargement...';
+      try {
+        const snap = await getDocs(collection(db, "candidatures"));
+        adminAppsListEl.textContent = '';
+
+        if (snap.empty) {
+          const p = document.createElement('p');
+          p.textContent = 'Aucune candidature reçue pour le moment.';
+          adminAppsListEl.appendChild(p);
+          return;
+        }
+
+        const list = [];
+        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+
+        list.forEach((app) => {
+          const row = document.createElement('div');
+          row.className = 'rec-admin-row';
+
+          const top = document.createElement('div');
+          top.className = 'rec-admin-top';
+
+          const titleEl = document.createElement('strong');
+          titleEl.textContent = `${app.applicantName || app.applicantPseudo || 'Candidat'} (${app.age || '?'} ans) — ${app.roleTitle || 'Poste'}`;
+
+          const st = String(app.status || 'en_attente').toLowerCase();
+          const stLabel = (st === 'acceptee' || st === 'acceptée' || st === 'retenu')
+            ? 'Retenu'
+            : (st === 'refusee' || st === 'refusée' || st === 'refuse')
+              ? 'Refusé'
+              : 'En attente';
+
+          const badge = document.createElement('span');
+          badge.className = 'status-pill-admin open';
+          badge.textContent = stLabel;
+
+          top.appendChild(titleEl);
+          top.appendChild(badge);
+
+          const details = document.createElement('div');
+          details.style.cssText = 'font-size: 0.85rem; color: var(--muted); white-space: pre-line;';
+          details.textContent = [
+            `Profil JSP : ${app.jspStatus || '—'} • Contact : ${app.contact || '—'} • Dispos : ${app.availability || '—'}`,
+            `Expérience : ${app.experience || '—'}`,
+            `Motivation : ${app.motivation || '—'}`
+          ].join('\n');
+
+          const btns = document.createElement('div');
+          btns.style.cssText = 'display: flex; gap: 0.45rem; flex-wrap: wrap;';
+
+          const acceptBtn = document.createElement('button');
+          acceptBtn.type = 'button';
+          acceptBtn.className = 'btn btn-small';
+          acceptBtn.textContent = 'Retenir';
+          acceptBtn.addEventListener('click', async () => {
+            try {
+              await updateDoc(doc(db, "candidatures", app.id), { status: 'retenu' });
+              showAlert('Candidature marquée comme retenue.', true);
+              await loadAdminApplications();
+            } catch (err) {
+              showAlert('Erreur : ' + (err.code || err.message));
+            }
+          });
+
+          const refuseBtn = document.createElement('button');
+          refuseBtn.type = 'button';
+          refuseBtn.className = 'btn btn-secondary btn-small';
+          refuseBtn.textContent = 'Refuser';
+          refuseBtn.addEventListener('click', async () => {
+            try {
+              await updateDoc(doc(db, "candidatures", app.id), { status: 'refuse' });
+              showAlert('Candidature marquée comme refusée.', true);
+              await loadAdminApplications();
+            } catch (err) {
+              showAlert('Erreur : ' + (err.code || err.message));
+            }
+          });
+
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Supprimer';
+          delBtn.addEventListener('click', async () => {
+            try {
+              await deleteDoc(doc(db, "candidatures", app.id));
+              showAlert('Candidature supprimée.', true);
+              await loadAdminApplications();
+            } catch (err) {
+              showAlert('Erreur : ' + (err.code || err.message));
+            }
+          });
+
+          btns.appendChild(acceptBtn);
+          btns.appendChild(refuseBtn);
+          btns.appendChild(delBtn);
+
+          row.appendChild(top);
+          row.appendChild(details);
+          row.appendChild(btns);
+          adminAppsListEl.appendChild(row);
+        });
+      } catch (err) {
+        adminAppsListEl.textContent = 'Erreur de chargement des candidatures (' + (err.code || err.message) + ').';
+      }
+    }
+
+    createRoleForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const titleVal = roleTitleInput.value.trim();
+      const tagVal = roleTagInput.value.trim();
+      const descVal = roleDescInput.value.trim();
+      if (!titleVal || !descVal) return;
+
+      createRoleBtn.disabled = true;
+      createRoleBtn.textContent = 'Publication...';
+      try {
+        await addDoc(collection(db, "recrutement_postes"), {
+          title: titleVal,
+          tag: tagVal || 'Équipe',
+          description: descVal,
+          open: true,
+          createdAt: serverTimestamp()
+        });
+        roleTitleInput.value = '';
+        roleTagInput.value = '';
+        roleDescInput.value = '';
+        showAlert('Poste de recrutement ajouté.', true);
+        await loadAdminRoles();
+      } catch (err) {
+        showAlert('Erreur : ' + (err.code || err.message));
+      } finally {
+        createRoleBtn.disabled = false;
+        createRoleBtn.textContent = 'Publier le poste';
+      }
+    });
 
     async function loadAppeals() {
       appealsListEl.textContent = 'Chargement...';
@@ -836,96 +1210,98 @@
           strong.textContent = item.title || 'Sans titre';
           const sub = document.createElement('div');
           sub.style.cssText = 'font-size: 0.78rem; color: var(--muted);';
-          sub.textContent = (item.category || 'Infos') + (item.author ? ' • Par ' + item.author : '');
+          sub.textContent = (item.category || 'Cursus JSP') + ' • Par ' + (item.author || 'Rédaction');
           left.appendChild(strong);
           left.appendChild(sub);
 
           const delBtn = document.createElement('button');
           delBtn.type = 'button';
           delBtn.className = 'btn btn-secondary btn-small';
-          delBtn.textContent = 'Supprimer';
+          delBtn.textContent = 'Confirmer la suppression';
+
+          top.appendChild(left);
+          top.appendChild(delBtn);
+          row.appendChild(top);
 
           const confirmBox = document.createElement('div');
           confirmBox.className = 'confirm-delete-box';
           confirmBox.style.display = 'none';
 
-          const promptLbl = document.createElement('label');
-          promptLbl.textContent = 'Entre ton mot de passe de compte pour valider la suppression de cette actualité :';
-          promptLbl.style.marginBottom = '0';
+          const confirmLabel = document.createElement('label');
+          confirmLabel.style.fontSize = '0.84rem';
+          confirmLabel.textContent = 'Entre ton mot de passe pour supprimer cette actualité :';
 
-          const pwdInput = document.createElement('input');
-          pwdInput.type = 'password';
-          pwdInput.placeholder = 'Mot de passe de ton compte';
-          pwdInput.autocomplete = 'current-password';
+          const passInput = document.createElement('input');
+          passInput.type = 'password';
+          passInput.placeholder = 'Ton mot de passe';
 
-          const actionsRow = document.createElement('div');
-          actionsRow.className = 'confirm-delete-actions';
+          const actions = document.createElement('div');
+          actions.className = 'confirm-delete-actions';
 
-          const confirmBtn = document.createElement('button');
-          confirmBtn.type = 'button';
-          confirmBtn.className = 'btn btn-small';
-          confirmBtn.textContent = 'Confirmer la suppression';
+          const execBtn = document.createElement('button');
+          execBtn.type = 'button';
+          execBtn.className = 'btn btn-small';
+          execBtn.textContent = 'Supprimer définitivement';
 
           const cancelBtn = document.createElement('button');
           cancelBtn.type = 'button';
           cancelBtn.className = 'btn btn-secondary btn-small';
           cancelBtn.textContent = 'Annuler';
 
+          actions.appendChild(execBtn);
+          actions.appendChild(cancelBtn);
+          confirmBox.appendChild(confirmLabel);
+          confirmBox.appendChild(passInput);
+          confirmBox.appendChild(actions);
+          row.appendChild(confirmBox);
+
           delBtn.addEventListener('click', () => {
-            const isOpen = confirmBox.style.display !== 'none';
-            confirmBox.style.display = isOpen ? 'none' : 'flex';
-            if (!isOpen) pwdInput.focus();
+            confirmBox.style.display = 'flex';
+            passInput.focus();
           });
 
           cancelBtn.addEventListener('click', () => {
-            pwdInput.value = '';
+            passInput.value = '';
             confirmBox.style.display = 'none';
           });
 
-          confirmBtn.addEventListener('click', async () => {
-            const pwd = pwdInput.value;
+          execBtn.addEventListener('click', async () => {
+            const pwd = passInput.value;
             if (!pwd) {
-              showAlert('Entre ton mot de passe pour confirmer la suppression.');
-              pwdInput.focus();
+              showAlert('Saisis ton mot de passe pour confirmer la suppression.');
               return;
             }
-
-            confirmBtn.disabled = true;
-            cancelBtn.disabled = true;
-            confirmBtn.textContent = 'Vérification...';
-
+            execBtn.disabled = true;
             try {
               await verifyCurrentUserPassword(pwd);
               await deleteDoc(doc(db, "actus", d.id));
-              showAlert('Actualité supprimée définitivement.', true);
+              showAlert('Actualité supprimée.', true);
               await loadPublishedActus();
             } catch (err) {
-              confirmBtn.disabled = false;
-              cancelBtn.disabled = false;
-              confirmBtn.textContent = 'Confirmer la suppression';
-              if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-                showAlert('Mot de passe incorrect : suppression annulée.');
-              } else {
-                showAlert('Suppression impossible : ' + (err.code || err.message));
-              }
+              execBtn.disabled = false;
+              showAlert('Suppression refusée : ' + (err.code || err.message));
             }
           });
 
-          actionsRow.appendChild(confirmBtn);
-          actionsRow.appendChild(cancelBtn);
-          confirmBox.appendChild(promptLbl);
-          confirmBox.appendChild(pwdInput);
-          confirmBox.appendChild(actionsRow);
-
-          top.appendChild(left);
-          top.appendChild(delBtn);
-          row.appendChild(top);
-          row.appendChild(confirmBox);
           pubListEl.appendChild(row);
         });
       } catch (err) {
         pubListEl.textContent = 'Impossible de charger les actualités (' + (err.code || err.message) + ').';
       }
+    }
+
+    async function syncPublicAdminDoc(uid, pseudo, isAdminRole) {
+      try {
+        if (isAdminRole) {
+          await setDoc(doc(db, "public_admins", uid), {
+            uid,
+            pseudo: pseudo || 'Admin',
+            updatedAt: serverTimestamp()
+          }, { merge: true });
+        } else {
+          await deleteDoc(doc(db, "public_admins", uid));
+        }
+      } catch (_) {}
     }
 
     async function loadUsers() {
@@ -936,23 +1312,20 @@
 
         if (snap.empty) {
           const p = document.createElement('p');
-          p.textContent = 'Aucun utilisateur enregistré dans Firestore.';
+          p.textContent = 'Aucun utilisateur trouvé.';
           usersListEl.appendChild(p);
           return;
         }
 
+        const isSuperAdmin = currentRole === 'superadmin';
+
         snap.forEach(d => {
           const u = d.data();
           const uid = d.id;
-          const role = u.role || 'membre';
-          const banned = Boolean(u.banned);
-          const display = u.pseudo || u.email || uid;
-          const knownIp = u.lastIp || u.bannedIp || '';
-          const isSelf = currentUser && uid === currentUser.uid;
-          const targetIsPrivileged = role === 'admin' || role === 'superadmin';
-          const canManageRole = !isSelf && (currentRole === 'superadmin' || !targetIsPrivileged);
-          const canBan = !isSelf && (currentRole === 'superadmin' || !targetIsPrivileged);
-          const canDeleteFromDb = !isSelf && currentRole === 'superadmin';
+          const rawRole = (u.role || u.grade || 'membre').toLowerCase();
+          const isTargetSuperAdmin = rawRole === 'superadmin';
+          const isTargetAdmin = rawRole === 'admin' || isTargetSuperAdmin;
+          const isBanned = u.banned === true;
 
           const row = document.createElement('div');
           row.className = 'user-row';
@@ -961,86 +1334,101 @@
           top.className = 'user-row-top';
 
           const info = document.createElement('div');
-          const nameLine = document.createElement('strong');
-          nameLine.textContent = display;
-
-          const statusTag = document.createElement('span');
-          statusTag.className = 'profile-tag' + (targetIsPrivileged ? ' admin' : '');
-          statusTag.style.marginLeft = '0.5rem';
-          statusTag.textContent = banned ? 'banni' : role;
-
-          const mailLine = document.createElement('div');
-          mailLine.style.cssText = 'font-size: 0.78rem; color: var(--muted);';
-          mailLine.textContent = (u.email || 'Aucun email') + ' • UID : ' + uid.slice(0, 10) + '...' + (knownIp ? ' • IP : ' + knownIp : '');
-
-          info.appendChild(nameLine);
-          info.appendChild(statusTag);
-          info.appendChild(mailLine);
-
-          if (banned && u.banReason) {
-            const reasonPreview = document.createElement('div');
-            reasonPreview.style.cssText = 'font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;';
-            reasonPreview.textContent = 'Motif de suspension : ' + u.banReason;
-            info.appendChild(reasonPreview);
-          }
+          const strong = document.createElement('strong');
+          strong.textContent = (u.pseudo || 'Membre') + ' (' + (u.email || uid) + ')';
+          const meta = document.createElement('div');
+          meta.style.cssText = 'font-size: 0.78rem; color: var(--muted);';
+          meta.textContent = 'Rôle : ' + rawRole + (isBanned ? ' • BANNI' : ' • Actif') + (u.lastIp ? ' • IP : ' + u.lastIp : '');
+          info.appendChild(strong);
+          info.appendChild(meta);
 
           const actions = document.createElement('div');
-          actions.style.cssText = 'display: flex; gap: 0.45rem; flex-wrap: wrap;';
+          actions.style.cssText = 'display: flex; gap: 0.45rem; flex-wrap: wrap; align-items: center;';
 
-          let banBox = null;
-
-          if (role !== 'superadmin' && canManageRole) {
+          if (isSuperAdmin && !isTargetSuperAdmin && uid !== currentUser.uid) {
             const roleBtn = document.createElement('button');
             roleBtn.type = 'button';
             roleBtn.className = 'btn btn-secondary btn-small';
-            roleBtn.textContent = role === 'admin' ? 'Rétrograder membre' : 'Mettre admin';
+            roleBtn.textContent = isTargetAdmin ? 'Rétrograder membre' : 'Promouvoir admin';
             roleBtn.addEventListener('click', async () => {
               roleBtn.disabled = true;
-              const isPromoting = role !== 'admin';
-              const nextRole = isPromoting ? 'admin' : 'membre';
-              const patch = { role: nextRole };
-              let newPseudo = null;
-
-              if (isPromoting) {
-                newPseudo = formatAdminPseudo(u, display);
-                patch.pseudo = newPseudo;
-              }
-
               try {
-                await setDoc(doc(db, "users", uid), patch, { merge: true });
-                if (isPromoting && newPseudo) {
-                  await setDoc(doc(db, "public_admins", uid), {
-                    pseudo: newPseudo,
-                    role: 'admin'
-                  }, { merge: true });
-                } else if (!isPromoting) {
-                  try { await deleteDoc(doc(db, "public_admins", uid)); } catch (_) {}
-                }
-                showAlert(
-                  isPromoting
-                    ? 'Compte promu admin et renommé en "' + newPseudo + '".'
-                    : 'Rôle de ' + display + ' mis à jour : membre.',
-                  true
-                );
+                const nextRole = isTargetAdmin ? 'membre' : 'admin';
+                const nextPseudo = nextRole === 'admin'
+                  ? formatAdminPseudo(u, u.pseudo || 'Membre')
+                  : String(u.pseudo || 'Membre').replace(/^\s*\[[^\]]+\]\s*/g, '').trim() || 'Membre';
+                await setDoc(doc(db, "users", uid), { role: nextRole, grade: nextRole, pseudo: nextPseudo }, { merge: true });
+                await syncPublicAdminDoc(uid, nextPseudo, nextRole === 'admin');
+                showAlert('Rôle mis à jour (' + nextRole + ').', true);
                 await loadUsers();
               } catch (err) {
                 roleBtn.disabled = false;
-                showAlert('Action refusée : ' + (err.code || err.message));
+                showAlert('Erreur rôle : ' + (err.code || err.message));
               }
             });
             actions.appendChild(roleBtn);
           }
 
-          if (role !== 'superadmin' && canBan) {
-            const banBtn = document.createElement('button');
-            banBtn.type = 'button';
-            banBtn.className = banned ? 'btn btn-secondary btn-small' : 'btn btn-small';
-            banBtn.textContent = banned ? 'Débannir' : 'Bannir';
+          const banReasonInput = document.createElement('input');
+          banReasonInput.type = 'text';
+          banReasonInput.placeholder = 'Raison du ban (obligatoire)';
+          banReasonInput.value = u.banReason || '';
+          banReasonInput.style.maxWidth = '230px';
 
-            if (banned) {
-              banBtn.addEventListener('click', async () => {
-                banBtn.disabled = true;
-                try {
+          const ipLabel = document.createElement('label');
+          ipLabel.className = 'ip-check-row';
+          const ipCheckbox = document.createElement('input');
+          ipCheckbox.type = 'checkbox';
+          ipCheckbox.checked = Boolean(u.bannedIp);
+          const ipText = document.createElement('span');
+          ipText.textContent = 'Ban IP' + (u.lastIp ? ' (' + u.lastIp + ')' : '');
+          ipLabel.appendChild(ipCheckbox);
+          ipLabel.appendChild(ipText);
+
+          const banBtn = document.createElement('button');
+          banBtn.type = 'button';
+          banBtn.className = isBanned ? 'btn btn-small' : 'btn btn-secondary btn-small';
+          banBtn.textContent = isBanned ? 'Débannir' : 'Bannir';
+
+          if (!isTargetSuperAdmin && uid !== currentUser.uid) {
+            if (!isBanned) {
+              actions.appendChild(banReasonInput);
+              actions.appendChild(ipLabel);
+            }
+            banBtn.addEventListener('click', async () => {
+              banBtn.disabled = true;
+              try {
+                if (!isBanned) {
+                  const reason = banReasonInput.value.trim();
+                  if (!reason) {
+                    banBtn.disabled = false;
+                    showAlert('Tu dois renseigner une raison avant de bannir ce membre.');
+                    banReasonInput.focus();
+                    return;
+                  }
+                  const memberName = u.pseudo || u.email || 'Membre';
+                  const politeMsg = buildBanPoliteMessage(memberName, reason, currentPseudo);
+                  const targetIp = ipCheckbox.checked ? (u.lastIp || u.bannedIp || '') : '';
+
+                  await setDoc(doc(db, "users", uid), {
+                    banned: true,
+                    banReason: reason,
+                    banMessage: politeMsg,
+                    bannedIp: targetIp
+                  }, { merge: true });
+
+                  if (targetIp) {
+                    await setDoc(doc(db, "banned_ips", sanitizeIpDocId(targetIp)), {
+                      ip: targetIp,
+                      uid,
+                      pseudo: memberName,
+                      reason,
+                      bannedBy: currentUser.uid,
+                      createdAt: serverTimestamp()
+                    }, { merge: true });
+                  }
+                  showAlert('Membre banni avec message officiel.' + (targetIp ? ' IP bloquée.' : ''), true);
+                } else {
                   const ipToUnban = u.bannedIp || u.lastIp || '';
                   await setDoc(doc(db, "users", uid), {
                     banned: false,
@@ -1051,280 +1439,60 @@
                   if (ipToUnban) {
                     try { await deleteDoc(doc(db, "banned_ips", sanitizeIpDocId(ipToUnban))); } catch (_) {}
                   }
-                  showAlert('Compte débanni : ' + display, true);
-                  await loadUsers();
-                } catch (err) {
-                  banBtn.disabled = false;
-                  showAlert('Action refusée : ' + (err.code || err.message));
+                  showAlert('Membre débanni.', true);
                 }
-              });
-            } else {
-              banBox = document.createElement('div');
-              banBox.className = 'confirm-delete-box';
-              banBox.style.display = 'none';
-
-              const reasonLbl = document.createElement('label');
-              reasonLbl.textContent = 'Raison du bannissement (obligatoire) :';
-              reasonLbl.style.marginBottom = '0';
-
-              const reasonInput = document.createElement('input');
-              reasonInput.type = 'text';
-              reasonInput.placeholder = 'Ex. : comportement inapproprié ou non-respect des règles';
-
-              const genBtn = document.createElement('button');
-              genBtn.type = 'button';
-              genBtn.className = 'btn btn-secondary btn-small';
-              genBtn.textContent = 'Générer le message poli';
-
-              const msgLbl = document.createElement('label');
-              msgLbl.textContent = 'Message officiel affiché sur ban.html (modifiable) :';
-              msgLbl.style.marginBottom = '0';
-
-              const msgArea = document.createElement('textarea');
-              msgArea.rows = 7;
-              msgArea.placeholder = 'Saisis la raison pour générer le message avec formules de politesse...';
-
-              const ipRow = document.createElement('div');
-              ipRow.className = 'ip-check-row';
-
-              const ipCheck = document.createElement('input');
-              ipCheck.type = 'checkbox';
-              ipCheck.id = 'ban-ip-' + uid;
-              ipCheck.style.width = 'auto';
-
-              const ipLabel = document.createElement('label');
-              ipLabel.htmlFor = ipCheck.id;
-              ipLabel.style.marginBottom = '0';
-              ipLabel.textContent = knownIp
-                ? `Bannir aussi l'adresse IP (${knownIp})`
-                : "Bannir aussi une adresse IP";
-
-              const customIpInput = document.createElement('input');
-              customIpInput.type = 'text';
-              customIpInput.placeholder = 'Adresse IP (ex: 82.64.xx.xx)';
-              customIpInput.value = knownIp;
-              customIpInput.style.display = knownIp ? 'block' : 'none';
-
-              ipCheck.addEventListener('change', () => {
-                customIpInput.style.display = ipCheck.checked ? 'block' : 'none';
-              });
-
-              ipRow.appendChild(ipCheck);
-              ipRow.appendChild(ipLabel);
-
-              reasonInput.addEventListener('input', () => {
-                if (reasonInput.value.trim()) {
-                  msgArea.value = buildBanPoliteMessage(display, reasonInput.value, currentPseudo);
-                }
-              });
-
-              genBtn.addEventListener('click', () => {
-                const r = reasonInput.value.trim();
-                if (!r) {
-                  showAlert('Saisis d’abord la raison du bannissement.');
-                  reasonInput.focus();
-                  return;
-                }
-                msgArea.value = buildBanPoliteMessage(display, r, currentPseudo);
-              });
-
-              const banActionsRow = document.createElement('div');
-              banActionsRow.className = 'confirm-delete-actions';
-
-              const confirmBanBtn = document.createElement('button');
-              confirmBanBtn.type = 'button';
-              confirmBanBtn.className = 'btn btn-small';
-              confirmBanBtn.textContent = 'Confirmer le bannissement';
-
-              const cancelBanBtn = document.createElement('button');
-              cancelBanBtn.type = 'button';
-              cancelBanBtn.className = 'btn btn-secondary btn-small';
-              cancelBanBtn.textContent = 'Annuler';
-
-              banBtn.addEventListener('click', () => {
-                const isOpen = banBox.style.display !== 'none';
-                banBox.style.display = isOpen ? 'none' : 'flex';
-                if (!isOpen) reasonInput.focus();
-              });
-
-              cancelBanBtn.addEventListener('click', () => {
-                reasonInput.value = '';
-                msgArea.value = '';
-                banBox.style.display = 'none';
-              });
-
-              confirmBanBtn.addEventListener('click', async () => {
-                const reason = reasonInput.value.trim();
-                if (!reason) {
-                  showAlert('La raison du bannissement est obligatoire.');
-                  reasonInput.focus();
-                  return;
-                }
-
-                const finalMessage = msgArea.value.trim() || buildBanPoliteMessage(display, reason, currentPseudo);
-                msgArea.value = finalMessage;
-                const ipToBan = ipCheck.checked ? customIpInput.value.trim() : '';
-
-                confirmBanBtn.disabled = true;
-                cancelBanBtn.disabled = true;
-                try {
-                  await setDoc(doc(db, "users", uid), {
-                    banned: true,
-                    banReason: reason,
-                    banMessage: finalMessage,
-                    bannedIp: ipToBan,
-                    bannedBy: currentUser.uid,
-                    bannedByPseudo: currentPseudo,
-                    bannedAt: serverTimestamp()
-                  }, { merge: true });
-
-                  if (ipToBan) {
-                    await setDoc(doc(db, "banned_ips", sanitizeIpDocId(ipToBan)), {
-                      ip: ipToBan,
-                      uid,
-                      pseudo: display,
-                      reason,
-                      banMessage: finalMessage,
-                      bannedBy: currentUser.uid,
-                      bannedAt: serverTimestamp()
-                    }, { merge: true });
-                  }
-
-                  showAlert('Compte banni instantanément : ' + display, true);
-                  await loadUsers();
-                } catch (err) {
-                  confirmBanBtn.disabled = false;
-                  cancelBanBtn.disabled = false;
-                  showAlert('Action refusée : ' + (err.code || err.message));
-                }
-              });
-
-              banActionsRow.appendChild(genBtn);
-              banActionsRow.appendChild(confirmBanBtn);
-              banActionsRow.appendChild(cancelBanBtn);
-
-              banBox.appendChild(reasonLbl);
-              banBox.appendChild(reasonInput);
-              banBox.appendChild(msgLbl);
-              banBox.appendChild(msgArea);
-              banBox.appendChild(ipRow);
-              banBox.appendChild(customIpInput);
-              banBox.appendChild(banActionsRow);
-            }
-
+                await loadUsers();
+              } catch (err) {
+                banBtn.disabled = false;
+                showAlert('Erreur ban : ' + (err.code || err.message));
+              }
+            });
             actions.appendChild(banBtn);
           }
 
-          let delConfirmBox = null;
-          if (canDeleteFromDb) {
-            const delDbBtn = document.createElement('button');
-            delDbBtn.type = 'button';
-            delDbBtn.className = 'btn btn-secondary btn-small';
-            delDbBtn.textContent = 'Supprimer de la base';
-
-            delConfirmBox = document.createElement('div');
-            delConfirmBox.className = 'confirm-delete-box';
-            delConfirmBox.style.display = 'none';
-
-            const promptLbl = document.createElement('label');
-            promptLbl.textContent = 'Entre ton mot de passe de compte pour supprimer ce profil de Firestore :';
-            promptLbl.style.marginBottom = '0';
-
-            const pwdInput = document.createElement('input');
-            pwdInput.type = 'password';
-            pwdInput.placeholder = 'Mot de passe de ton compte';
-            pwdInput.autocomplete = 'current-password';
-
-            const actionsRow = document.createElement('div');
-            actionsRow.className = 'confirm-delete-actions';
-
-            const confirmBtn = document.createElement('button');
-            confirmBtn.type = 'button';
-            confirmBtn.className = 'btn btn-small';
-            confirmBtn.textContent = 'Confirmer la suppression';
-
-            const cancelBtn = document.createElement('button');
-            cancelBtn.type = 'button';
-            cancelBtn.className = 'btn btn-secondary btn-small';
-            cancelBtn.textContent = 'Annuler';
-
-            delDbBtn.addEventListener('click', () => {
-              const isOpen = delConfirmBox.style.display !== 'none';
-              delConfirmBox.style.display = isOpen ? 'none' : 'flex';
-              if (!isOpen) pwdInput.focus();
-            });
-
-            cancelBtn.addEventListener('click', () => {
-              pwdInput.value = '';
-              delConfirmBox.style.display = 'none';
-            });
-
-            confirmBtn.addEventListener('click', async () => {
-              const pwd = pwdInput.value;
-              if (!pwd) {
-                showAlert('Entre ton mot de passe pour confirmer la suppression du compte.');
-                pwdInput.focus();
-                return;
-              }
-
-              confirmBtn.disabled = true;
-              cancelBtn.disabled = true;
-              confirmBtn.textContent = 'Vérification...';
-
+          if (isSuperAdmin && !isTargetSuperAdmin && uid !== currentUser.uid) {
+            const delUserBtn = document.createElement('button');
+            delUserBtn.type = 'button';
+            delUserBtn.className = 'btn btn-secondary btn-small';
+            delUserBtn.textContent = 'Supprimer profil';
+            delUserBtn.addEventListener('click', async () => {
+              delUserBtn.disabled = true;
               try {
-                await verifyCurrentUserPassword(pwd);
                 await deleteDoc(doc(db, "users", uid));
-                try {
-                  await deleteDoc(doc(db, "public_admins", uid));
-                } catch (_) {}
-                showAlert('Profil ' + display + ' supprimé de la base Firestore.', true);
+                await syncPublicAdminDoc(uid, '', false);
+                showAlert('Profil Firestore supprimé.', true);
                 await loadUsers();
               } catch (err) {
-                confirmBtn.disabled = false;
-                cancelBtn.disabled = false;
-                confirmBtn.textContent = 'Confirmer la suppression';
-                if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-                  showAlert('Mot de passe incorrect : suppression annulée.');
-                } else {
-                  showAlert('Suppression impossible : ' + (err.code || err.message));
-                }
+                delUserBtn.disabled = false;
+                showAlert('Erreur suppression : ' + (err.code || err.message));
               }
             });
-
-            actionsRow.appendChild(confirmBtn);
-            actionsRow.appendChild(cancelBtn);
-            delConfirmBox.appendChild(promptLbl);
-            delConfirmBox.appendChild(pwdInput);
-            delConfirmBox.appendChild(actionsRow);
-
-            actions.appendChild(delDbBtn);
+            actions.appendChild(delUserBtn);
           }
 
           top.appendChild(info);
           top.appendChild(actions);
           row.appendChild(top);
-          if (banBox) row.appendChild(banBox);
-          if (delConfirmBox) row.appendChild(delConfirmBox);
           usersListEl.appendChild(row);
         });
       } catch (err) {
-        usersListEl.textContent = 'Impossible de charger les membres (' + (err.code || err.message) + ').';
+        usersListEl.textContent = 'Impossible de charger les utilisateurs (' + (err.code || err.message) + ').';
       }
     }
 
     publishForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!currentUser || (currentRole !== 'admin' && currentRole !== 'superadmin')) {
-        showAlert('Accès refusé.');
-        return;
-      }
-
       const title = document.getElementById('actu-title').value.trim();
       const category = document.getElementById('actu-category').value;
       const author = document.getElementById('actu-author').value.trim();
       const sourceUrl = document.getElementById('actu-source').value.trim();
       const summary = document.getElementById('actu-summary').value.trim();
-      const rawContent = document.getElementById('actu-content').value.trim();
+      const content = document.getElementById('actu-content').value.trim();
+
+      if (!title || !author || !summary || !content) {
+        showAlert('Remplis tous les champs obligatoires.');
+        return;
+      }
 
       publishBtn.disabled = true;
       publishBtn.textContent = 'Publication...';
@@ -1336,18 +1504,17 @@
           author,
           sourceUrl,
           summary,
-          content: rawContent,
-          fullText: parseParagraphs(rawContent, summary),
+          content,
+          fullText: parseParagraphs(content, summary),
           createdAt: serverTimestamp(),
           publishedBy: currentUser.uid
         });
 
         publishForm.reset();
-        document.getElementById('actu-author').value = currentPseudo;
-        showAlert('Actualité publiée sur le site.', true);
+        showAlert('Actualité publiée avec succès sur le fil.', true);
         await loadPublishedActus();
       } catch (err) {
-        showAlert('Erreur de publication : ' + (err.code || err.message));
+        showAlert('Erreur publication : ' + (err.code || err.message));
       } finally {
         publishBtn.disabled = false;
         publishBtn.textContent = 'Publier sur le fil';
@@ -1360,66 +1527,56 @@
     });
 
     onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
+      currentUser = user || null;
+
       if (!user) {
         profileBox.style.display = 'none';
         logoutBtn.style.display = 'none';
         adminLink.style.display = 'none';
         mailLink.style.display = 'none';
         authBtn.style.display = 'inline-flex';
-        authBtn.textContent = 'Connexion';
-        authBtn.href = 'login.html';
-        denyAccess('Connexion requise', 'Connecte-toi avec un compte administrateur pour accéder à cette page.');
+        denyAccess('Connexion requise', 'Connecte-toi avec un compte administrateur pour accéder au panel.');
         return;
       }
 
-      const userRef = doc(db, "users", user.uid);
-      onSnapshot(userRef, async (snap) => {
-        let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-        let role = 'membre';
-        let banned = false;
+      authBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-flex';
 
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.pseudo) pseudo = data.pseudo;
-          if (data.role) role = data.role;
-          banned = Boolean(data.banned);
-        }
-
-        if (banned) {
+      onSnapshot(doc(db, "users", user.uid), async (snap) => {
+        const data = snap.exists() ? snap.data() : {};
+        if (data.banned === true) {
           window.location.replace('ban.html');
           return;
         }
 
-        currentRole = role;
-        currentPseudo = pseudo;
-        updateFirebaseResourceAccess();
+        const rawRole = (data.role || data.grade || 'membre').toLowerCase();
+        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
+        currentRole = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        currentPseudo = isAdmin
+          ? formatAdminPseudo(data, user.displayName || (user.email ? user.email.split('@')[0] : 'Membre'))
+          : (data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre'));
 
         profileBox.style.display = 'flex';
-        profileAvatar.textContent = getInitials(pseudo);
-        profileName.textContent = pseudo;
-        profileRole.textContent = role;
-        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
+        profileAvatar.textContent = getInitials(currentPseudo);
+        profileName.textContent = currentPseudo;
+        profileRole.textContent = currentRole;
+        profileRole.classList.toggle('admin', isAdmin);
+        adminLink.style.display = isAdmin ? 'block' : 'none';
+        mailLink.style.display = isAdmin ? 'block' : 'none';
 
-        authBtn.style.display = 'none';
-        logoutBtn.style.display = 'inline-flex';
-
-        if (role !== 'admin' && role !== 'superadmin') {
-          adminLink.style.display = 'none';
-          mailLink.style.display = 'none';
-          denyAccess('Accès réservé aux administrateurs', 'Ton compte (' + pseudo + ') a le rôle "' + role + '". Seuls les admins et superadmins peuvent ouvrir ce panel.');
+        if (!isAdmin) {
+          denyAccess('Accès refusé', 'Ton compte n’a pas les droits administrateur.');
           return;
         }
 
-        adminLink.style.display = 'block';
-        mailLink.style.display = 'block';
-        gateEl.style.display = 'none';
-        panelEl.style.display = 'block';
-
-        const authorField = document.getElementById('actu-author');
-        if (authorField && !authorField.value) {
-          authorField.value = pseudo;
+        if (currentRole === 'admin' && data.pseudo !== currentPseudo) {
+          try { await setDoc(doc(db, "users", user.uid), { pseudo: currentPseudo }, { merge: true }); } catch (_) {}
         }
+        await syncPublicAdminDoc(user.uid, currentPseudo, true);
+        updateFirebaseResourceAccess();
+
+        gateEl.style.display = 'none';
+        panelEl.style.display = 'flex';
 
         if (!panelLoaded) {
           panelLoaded = true;
@@ -1428,9 +1585,13 @@
             loadPropositions(),
             loadContacts(),
             loadPublishedActus(),
-            loadUsers()
+            loadUsers(),
+            loadAdminRoles(),
+            loadAdminApplications()
           ]);
         }
+      }, () => {
+        denyAccess('Erreur de vérification', 'Impossible de vérifier ton rôle administrateur.');
       });
     });
   </script>

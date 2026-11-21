@@ -3,339 +3,372 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Forum &amp; Hub Communautaire</title>
+  <title>Vos JSP — Messagerie &amp; Forum</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .hub-wrap {
-      max-width: 920px;
-      margin: 2rem auto 3.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.35rem;
-    }
-
-    .hub-banner {
-      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 1.6rem 1.75rem;
-      box-shadow: var(--shadow);
+    .wa-shell {
+      max-width: 1120px;
+      margin: 1.5rem auto 2.8rem;
       display: grid;
-      grid-template-columns: 1.4fr 0.9fr;
-      gap: 1.25rem;
-      align-items: center;
+      grid-template-columns: 270px 1fr 270px;
+      gap: 1rem;
+      align-items: start;
     }
 
-    @media (max-width: 780px) {
-      .hub-banner {
+    @media (max-width: 980px) {
+      .wa-shell {
         grid-template-columns: 1fr;
       }
     }
 
-    .hub-banner h1 {
-      margin: 0.5rem 0 0.3rem;
-      font-size: 1.75rem;
-      line-height: 1.15;
-    }
-
-    .hub-banner p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    .hub-info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.65rem;
-    }
-
-    .hub-info-tile {
+    .wa-panel {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 0.75rem 0.85rem;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
-    .hub-info-tile small {
-      display: block;
-      font-size: 0.72rem;
+    .wa-panel-head {
+      padding: 0.95rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .wa-panel-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .wa-sub {
+      font-size: 0.76rem;
       color: var(--muted);
+    }
+
+    .channel-list {
+      padding: 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .channel-item {
+      appearance: none;
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      padding: 0.68rem 0.8rem;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.86rem;
       font-weight: 600;
     }
 
-    .hub-info-tile strong {
-      display: block;
-      font-size: 0.92rem;
-      margin-top: 0.15rem;
+    .channel-item:hover {
+      background: var(--bg);
     }
 
-    .hub-toolbar {
+    .channel-item.active {
+      background: rgba(225, 29, 42, 0.1);
+      border-color: rgba(225, 29, 42, 0.25);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .channel-count {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.14rem 0.5rem;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .wa-main {
+      display: flex;
+      flex-direction: column;
+      min-height: 540px;
+    }
+
+    .wa-thread-header {
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 0.75rem;
       flex-wrap: wrap;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 0.7rem 1rem;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
     }
 
-    .filter-pills {
-      display: flex;
-      gap: 0.4rem;
-      flex-wrap: wrap;
+    .wa-thread-meta strong {
+      display: block;
+      font-size: 0.98rem;
     }
 
-    .filter-pill {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: var(--bg);
+    .wa-thread-meta span {
+      font-size: 0.78rem;
       color: var(--muted);
-      font-weight: 700;
-      font-size: 0.82rem;
-      padding: 0.45rem 0.8rem;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: all 0.16s ease;
     }
 
-    .filter-pill.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
+    .wa-messages-stream {
+      padding: 1.1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      max-height: 520px;
+      overflow-y: auto;
+      background: var(--bg);
     }
 
-    .hub-composer {
+    .wa-msg-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 1.5rem 1.6rem;
-      box-shadow: var(--shadow);
-    }
-
-    .hub-composer textarea {
-      width: 100%;
-      min-height: 96px;
-      resize: vertical;
-      border-radius: 15px;
+      border-radius: 16px;
       padding: 0.85rem 1rem;
-      font-family: inherit;
+      max-width: 92%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     }
 
-    .media-tools-row {
+    .wa-msg-card.own {
+      align-self: flex-end;
+      border-color: rgba(225, 29, 42, 0.32);
+    }
+
+    .wa-msg-top {
       display: flex;
-      gap: 0.55rem;
-      flex-wrap: wrap;
-      margin-top: 0.85rem;
+      justify-content: space-between;
       align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.45rem;
+      font-size: 0.8rem;
     }
 
-    .tool-btn {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
+    .wa-author-line {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
       font-weight: 700;
-      font-size: 0.82rem;
-      padding: 0.5rem 0.82rem;
-      border-radius: 12px;
-      cursor: pointer;
+    }
+
+    .wa-mini-av {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: rgba(225, 29, 42, 0.14);
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 800;
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      transition: all 0.16s ease;
+      justify-content: center;
     }
 
-    .tool-btn:hover {
-      border-color: var(--primary);
-    }
-
-    .tool-btn.recording {
-      background: rgba(225, 29, 42, 0.14);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .media-attach-panel {
-      display: none;
-      margin-top: 0.9rem;
-      padding: 0.9rem 1rem;
-      border-radius: 16px;
+    .wa-role-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
       background: var(--bg);
+      color: var(--muted);
       border: 1px solid var(--border);
     }
 
-    .media-attach-panel.open {
-      display: block;
+    .wa-role-pill.admin {
+      color: var(--primary);
+      border-color: rgba(225, 29, 42, 0.3);
+      background: rgba(225, 29, 42, 0.08);
     }
 
-    .voice-preview-box,
-    .video-preview-box {
-      margin-top: 0.75rem;
-      display: none;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .voice-preview-box.active,
-    .video-preview-box.active {
+    .wa-msg-time-actions {
       display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--muted);
+      font-size: 0.73rem;
     }
 
-    .voice-preview-box audio,
-    .video-preview-box video {
+    .wa-msg-body {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .wa-media-box {
+      margin-top: 0.65rem;
+    }
+
+    .wa-media-box audio,
+    .wa-media-box video,
+    .wa-media-box iframe {
       width: 100%;
       max-height: 260px;
       border-radius: 12px;
       background: #000;
     }
 
-    .composer-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 1rem;
-      padding-top: 0.85rem;
-      border-top: 1px solid var(--border);
-      flex-wrap: wrap;
-    }
-
-    .hub-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .hub-post {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 1.25rem 1.4rem;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-    }
-
-    .post-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.7rem;
-      flex-wrap: wrap;
-    }
-
-    .post-user {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-    }
-
-    .post-av {
-      width: 40px;
-      height: 40px;
-      border-radius: 13px;
-      background: rgba(225, 29, 42, 0.14);
-      color: var(--primary);
-      font-weight: 800;
-      font-size: 0.88rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .post-author {
-      font-weight: 800;
-      font-size: 0.96rem;
-    }
-
-    .post-badge {
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 0.18rem 0.55rem;
-      border-radius: 999px;
-      background: var(--bg);
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    .post-badge.admin {
-      background: rgba(225, 29, 42, 0.12);
-      color: var(--primary);
-      border-color: rgba(225, 29, 42, 0.28);
-    }
-
-    .post-right {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .post-text {
-      margin: 0;
-      font-size: 0.95rem;
-      line-height: 1.58;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .post-media {
-      margin-top: 0.85rem;
-    }
-
-    .post-media audio,
-    .post-media video,
-    .post-media iframe {
-      width: 100%;
-      max-height: 310px;
-      border-radius: 14px;
-      background: #000;
-    }
-
-    .post-media iframe {
-      height: 260px;
+    .wa-media-box iframe {
+      height: 230px;
       border: none;
     }
 
-    .post-actions-bar {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.9rem;
-      padding-top: 0.7rem;
+    .wa-msg-foot {
+      margin-top: 0.6rem;
+      padding-top: 0.45rem;
       border-top: 1px solid var(--border);
-      flex-wrap: wrap;
+      display: flex;
+      justify-content: flex-start;
+      gap: 0.4rem;
     }
 
-    .react-btn {
+    .wa-react-btn {
       appearance: none;
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
-      font-weight: 700;
-      font-size: 0.78rem;
-      padding: 0.35rem 0.7rem;
       border-radius: 999px;
+      padding: 0.22rem 0.6rem;
+      font-size: 0.74rem;
+      font-weight: 700;
       cursor: pointer;
     }
 
-    .react-btn:hover {
+    .wa-react-btn:hover {
       border-color: var(--primary);
     }
 
-    .hub-empty {
-      text-align: center;
-      padding: 2.2rem 1.2rem;
+    .wa-composer {
+      padding: 0.85rem 1rem;
+      border-top: 1px solid var(--border);
       background: var(--surface);
-      border: 1px dashed var(--border);
-      border-radius: 22px;
+    }
+
+    .wa-attach-drawer {
+      display: none;
+      margin-bottom: 0.7rem;
+      padding: 0.75rem 0.85rem;
+      border-radius: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .wa-attach-drawer.open {
+      display: block;
+    }
+
+    .wa-preview-slot {
+      display: none;
+      margin-bottom: 0.65rem;
+    }
+
+    .wa-preview-slot.active {
+      display: block;
+    }
+
+    .wa-preview-slot audio,
+    .wa-preview-slot video {
+      width: 100%;
+      max-height: 210px;
+      border-radius: 12px;
+      background: #000;
+    }
+
+    .wa-input-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .wa-icon-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 0.58rem 0.72rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+
+    .wa-icon-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .wa-icon-btn.recording {
+      background: rgba(225, 29, 42, 0.14);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .wa-text-input {
+      flex: 1;
+      border-radius: 12px;
+      padding: 0.62rem 0.85rem;
+      font-size: 0.9rem;
+    }
+
+    .wa-info-body {
+      padding: 1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      font-size: 0.83rem;
+    }
+
+    .wa-info-block {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.75rem 0.85rem;
+    }
+
+    .wa-info-block strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-size: 0.84rem;
+    }
+
+    .wa-info-block p {
+      margin: 0;
       color: var(--muted);
-      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .wa-empty {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .svg-ico {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
     }
   </style>
 </head>
@@ -390,90 +423,113 @@
   </aside>
 
   <main>
-    <div class="hub-wrap">
-      <section class="hub-banner">
-        <div>
-          <span class="badge">🚒 Hub Communautaire Vos JSP</span>
-          <h1>Forum, Vocaux &amp; Vidéos</h1>
-          <p>Partage des messages, enregistre un vocal au micro, filme un clip ou colle un lien vidéo pour animer la communauté JSP.</p>
+    <div class="wa-shell">
+      <!-- COLONNE GAUCHE : FILS & FORMATS -->
+      <aside class="wa-panel">
+        <div class="wa-panel-head">
+          <h2 class="wa-panel-title">Fils de discussion</h2>
+          <span class="wa-sub" id="wa-total-badge">0 msg</span>
         </div>
-        <div class="hub-info-grid">
-          <div class="hub-info-tile">
-            <small>Messages actifs</small>
-            <strong id="hub-total-count">0</strong>
-          </div>
-          <div class="hub-info-tile">
-            <small>Formats supportés</small>
-            <strong>Texte • Vocal • Vidéo</strong>
-          </div>
-          <div class="hub-info-tile">
-            <small>Esprit &amp; cadre</small>
-            <strong>Respect • Cohésion</strong>
-          </div>
-          <div class="hub-info-tile">
-            <small>Statut salon</small>
-            <strong id="hub-live-status">● En ligne</strong>
-          </div>
+        <div class="channel-list" role="tablist">
+          <button type="button" class="channel-item active" data-filter="all">
+            <span>Fil général</span>
+            <span class="channel-count" id="count-all">0</span>
+          </button>
+          <button type="button" class="channel-item" data-filter="text">
+            <span>Messages texte</span>
+            <span class="channel-count" id="count-text">0</span>
+          </button>
+          <button type="button" class="channel-item" data-filter="voice">
+            <span>Messages vocaux</span>
+            <span class="channel-count" id="count-voice">0</span>
+          </button>
+          <button type="button" class="channel-item" data-filter="video">
+            <span>Clips &amp; vidéos</span>
+            <span class="channel-count" id="count-video">0</span>
+          </button>
         </div>
-      </section>
+      </aside>
 
-      <div class="hub-toolbar">
-        <div class="filter-pills" role="group" aria-label="Filtrer les publications">
-          <button type="button" class="filter-pill active" data-filter="all">Tout</button>
-          <button type="button" class="filter-pill" data-filter="text">Discussions</button>
-          <button type="button" class="filter-pill" data-filter="voice">Vocaux</button>
-          <button type="button" class="filter-pill" data-filter="video">Vidéos</button>
+      <!-- COLONNE CENTRALE : CONVERSATION & COMPOSITEUR -->
+      <section class="wa-panel wa-main">
+        <div class="wa-thread-header">
+          <div class="wa-thread-meta">
+            <strong id="wa-active-title">Fil général</strong>
+            <span id="wa-active-desc">Discussions, vocaux et vidéos de la communauté Vos JSP</span>
+          </div>
+          <span class="wa-sub" id="wa-live-indicator">En ligne</span>
         </div>
-        <span class="badge" id="hub-filter-label">Filtre : Tout</span>
-      </div>
 
-      <div id="forum-alert" class="alert"></div>
+        <div id="forum-alert" class="alert" style="margin: 0.75rem 1rem 0;"></div>
 
-      <section class="hub-composer" id="forum-composer-box">
-        <form id="forum-form">
-          <div class="form-group" style="margin-bottom: 0;">
-            <label for="forum-message">Ton message sur le forum</label>
-            <textarea id="forum-message" placeholder="Raconte ta séance JSP, pose une question ou partage une info..." maxlength="1500"></textarea>
-          </div>
+        <div class="wa-messages-stream" id="forum-feed">
+          <div class="wa-empty">Chargement des messages...</div>
+        </div>
 
-          <div class="media-tools-row">
-            <button type="button" class="tool-btn" id="btn-record-voice">🎤 Vocal micro</button>
-            <button type="button" class="tool-btn" id="btn-toggle-video">🎥 Ajouter vidéo</button>
-            <button type="button" class="tool-btn" id="btn-clear-media" style="display: none;">✕ Retirer média</button>
-          </div>
-
-          <div class="media-attach-panel" id="video-panel">
-            <div class="form-group" style="margin-bottom: 0.6rem;">
-              <label for="forum-video-url">Lien vidéo (YouTube, Vimeo ou fichier .mp4)</label>
+        <div class="wa-composer" id="forum-composer-box">
+          <div class="wa-attach-drawer" id="video-panel">
+            <div class="form-group" style="margin-bottom: 0.5rem;">
+              <label for="forum-video-url">Lien vidéo (YouTube ou MP4)</label>
               <input type="url" id="forum-video-url" placeholder="https://www.youtube.com/watch?v=... ou https://.../clip.mp4">
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-              <button type="button" class="btn btn-secondary btn-small" id="btn-camera-start">📹 Filmer caméra</button>
-              <button type="button" class="btn btn-secondary btn-small" id="btn-camera-stop" style="display: none;">⏹ Stop caméra</button>
-              <span id="camera-status-txt" style="font-size: 0.78rem; color: var(--muted);"></span>
+              <button type="button" class="btn btn-secondary btn-small" id="btn-camera-start">Filmer caméra</button>
+              <button type="button" class="btn btn-secondary btn-small" id="btn-camera-stop" style="display: none;">Arrêter caméra</button>
+              <span id="camera-status-txt" class="wa-sub"></span>
             </div>
           </div>
 
-          <div class="voice-preview-box" id="voice-preview-box">
-            <span style="font-size: 0.78rem; font-weight: 700; color: var(--muted);">Aperçu vocal prêt :</span>
+          <div class="wa-preview-slot" id="voice-preview-box">
+            <div class="wa-sub" style="margin-bottom: 0.25rem;">Vocal enregistré :</div>
             <audio id="voice-preview-audio" controls></audio>
           </div>
 
-          <div class="video-preview-box" id="video-preview-box">
-            <span style="font-size: 0.78rem; font-weight: 700; color: var(--muted);">Aperçu vidéo :</span>
+          <div class="wa-preview-slot" id="video-preview-box">
+            <div class="wa-sub" style="margin-bottom: 0.25rem;">Aperçu vidéo :</div>
             <video id="video-preview-el" controls playsinline></video>
           </div>
 
-          <div class="composer-bottom">
-            <span style="font-size: 0.8rem; color: var(--muted);" id="forum-char-count">0 / 1500</span>
-            <button type="submit" id="forum-submit-btn" class="btn">Publier sur le forum</button>
-          </div>
-        </form>
+          <form id="forum-form" class="wa-input-bar">
+            <button type="button" class="wa-icon-btn" id="btn-record-voice" title="Enregistrer un vocal">
+              <svg class="svg-ico" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>
+              <span>Vocal</span>
+            </button>
+
+            <button type="button" class="wa-icon-btn" id="btn-toggle-video" title="Ajouter une vidéo">
+              <svg class="svg-ico" viewBox="0 0 24 24"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3Z"/></svg>
+              <span>Vidéo</span>
+            </button>
+
+            <button type="button" class="wa-icon-btn" id="btn-clear-media" style="display: none;" title="Retirer le média">Retirer</button>
+
+            <input type="text" id="forum-message" class="wa-text-input" placeholder="Écrire un message..." maxlength="1500">
+
+            <button type="submit" id="forum-submit-btn" class="btn btn-small">Envoyer</button>
+          </form>
+        </div>
       </section>
 
-      <section class="hub-feed" id="forum-feed">
-        <div class="hub-empty">Chargement du forum...</div>
-      </section>
+      <!-- COLONNE DROITE : INFOS & CADRE -->
+      <aside class="wa-panel">
+        <div class="wa-panel-head">
+          <h2 class="wa-panel-title">Infos section</h2>
+          <span class="wa-sub">Vos JSP</span>
+        </div>
+        <div class="wa-info-body">
+          <div class="wa-info-block">
+            <strong>Espace membres</strong>
+            <p>Échanges réservés aux membres connectés et non suspendus avec contrôle en temps réel.</p>
+          </div>
+          <div class="wa-info-block">
+            <strong>Vocaux &amp; vidéos</strong>
+            <p>Tu peux enregistrer un court vocal au micro, filmer depuis ta caméra ou coller un lien vidéo.</p>
+          </div>
+          <div class="wa-info-block">
+            <strong>Cadre d'échange</strong>
+            <p>Respect mutuel, propos adaptés à la communauté JSP et modération active.</p>
+          </div>
+        </div>
+      </aside>
     </div>
   </main>
 
@@ -534,16 +590,20 @@
     const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
     const drawerAdminLink = document.getElementById('drawer-admin-link');
 
-    const totalCountEl = document.getElementById('hub-total-count');
-    const liveStatusEl = document.getElementById('hub-live-status');
-    const filterLabelEl = document.getElementById('hub-filter-label');
-    const filterButtons = Array.from(document.querySelectorAll('.filter-pill'));
+    const totalBadgeEl = document.getElementById('wa-total-badge');
+    const countAllEl = document.getElementById('count-all');
+    const countTextEl = document.getElementById('count-text');
+    const countVoiceEl = document.getElementById('count-voice');
+    const countVideoEl = document.getElementById('count-video');
+    const activeTitleEl = document.getElementById('wa-active-title');
+    const activeDescEl = document.getElementById('wa-active-desc');
+    const liveIndicatorEl = document.getElementById('wa-live-indicator');
+    const channelButtons = Array.from(document.querySelectorAll('.channel-item'));
 
     const alertEl = document.getElementById('forum-alert');
     const composerBox = document.getElementById('forum-composer-box');
     const formEl = document.getElementById('forum-form');
     const messageInput = document.getElementById('forum-message');
-    const charCountEl = document.getElementById('forum-char-count');
     const submitBtn = document.getElementById('forum-submit-btn');
 
     const btnRecordVoice = document.getElementById('btn-record-voice');
@@ -577,6 +637,25 @@
     let cameraStream = null;
     let videoRecorder = null;
     let videoChunks = [];
+
+    const channelMeta = {
+      all: {
+        title: 'Fil général',
+        desc: 'Discussions, vocaux et vidéos de la communauté Vos JSP'
+      },
+      text: {
+        title: 'Messages texte',
+        desc: 'Échanges écrits entre membres de la section'
+      },
+      voice: {
+        title: 'Messages vocaux',
+        desc: 'Notes audio enregistrées au micro'
+      },
+      video: {
+        title: 'Clips & vidéos',
+        desc: 'Vidéos partagées ou enregistrées en direct'
+      }
+    };
 
     function showAlert(msg, isSuccess = false) {
       alertEl.style.display = 'block';
@@ -707,7 +786,7 @@
             const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
             const dataUrl = await blobToDataUrl(blob);
             if (dataUrl.length > 650000) {
-              showAlert('Vocal trop long pour être enregistré directement (fais un vocal plus court, ~10–15s max).');
+              showAlert('Vocal trop long (enregistre un vocal court).');
               return;
             }
             attachedAudioDataUrl = dataUrl;
@@ -718,14 +797,14 @@
           mediaRecorder.start();
           isRecordingVoice = true;
           btnRecordVoice.classList.add('recording');
-          btnRecordVoice.textContent = '⏹ Stop vocal';
+          btnRecordVoice.querySelector('span').textContent = 'Stop';
         } catch (err) {
           showAlert('Accès micro refusé ou indisponible : ' + (err.message || err));
         }
       } else {
         isRecordingVoice = false;
         btnRecordVoice.classList.remove('recording');
-        btnRecordVoice.textContent = '🎤 Vocal micro';
+        btnRecordVoice.querySelector('span').textContent = 'Vocal';
         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
           mediaRecorder.stop();
         }
@@ -749,7 +828,7 @@
           const blob = new Blob(videoChunks, { type: videoRecorder.mimeType || 'video/webm' });
           const dataUrl = await blobToDataUrl(blob);
           if (dataUrl.length > 650000) {
-            showAlert('Clip caméra trop lourd pour la base directe (utilise un lien vidéo YouTube/MP4 ou un clip très court).');
+            showAlert('Clip caméra trop volumineux (utilise un lien vidéo YouTube ou MP4).');
             return;
           }
           attachedVideoDataUrl = dataUrl;
@@ -794,11 +873,13 @@
       }
     });
 
-    filterButtons.forEach((btn) => {
+    channelButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         activeFilter = btn.dataset.filter || 'all';
-        filterButtons.forEach((b) => b.classList.toggle('active', b === btn));
-        filterLabelEl.textContent = 'Filtre : ' + btn.textContent;
+        channelButtons.forEach((b) => b.classList.toggle('active', b === btn));
+        const meta = channelMeta[activeFilter] || channelMeta.all;
+        activeTitleEl.textContent = meta.title;
+        activeDescEl.textContent = meta.desc;
         renderFeed();
       });
     });
@@ -809,8 +890,25 @@
       return 'text';
     }
 
+    function updateCounters() {
+      let nText = 0;
+      let nVoice = 0;
+      let nVideo = 0;
+      allPosts.forEach((p) => {
+        const cat = getPostCategory(p);
+        if (cat === 'voice') nVoice += 1;
+        else if (cat === 'video') nVideo += 1;
+        else nText += 1;
+      });
+      totalBadgeEl.textContent = `${allPosts.length} msg`;
+      countAllEl.textContent = String(allPosts.length);
+      countTextEl.textContent = String(nText);
+      countVoiceEl.textContent = String(nVoice);
+      countVideoEl.textContent = String(nVideo);
+    }
+
     function renderFeed() {
-      totalCountEl.textContent = String(allPosts.length);
+      updateCounters();
 
       const filtered = allPosts.filter((p) => {
         if (activeFilter === 'all') return true;
@@ -818,7 +916,7 @@
       });
 
       if (filtered.length === 0) {
-        feedEl.innerHTML = '<div class="hub-empty">Aucune publication dans cette catégorie pour l’instant.</div>';
+        feedEl.innerHTML = '<div class="wa-empty">Aucun message dans ce fil pour le moment.</div>';
         return;
       }
 
@@ -826,40 +924,40 @@
       feedEl.innerHTML = '';
 
       filtered.forEach((post) => {
-        const article = document.createElement('article');
-        article.className = 'hub-post';
+        const isOwn = currentUser && post.authorUid === currentUser.uid;
+        const card = document.createElement('article');
+        card.className = 'wa-msg-card' + (isOwn ? ' own' : '');
 
         const top = document.createElement('div');
-        top.className = 'post-top';
+        top.className = 'wa-msg-top';
 
-        const userWrap = document.createElement('div');
-        userWrap.className = 'post-user';
+        const authorLine = document.createElement('div');
+        authorLine.className = 'wa-author-line';
 
-        const av = document.createElement('div');
-        av.className = 'post-av';
+        const av = document.createElement('span');
+        av.className = 'wa-mini-av';
         av.textContent = getInitials(post.authorPseudo || 'Membre');
 
-        const authorName = document.createElement('span');
-        authorName.className = 'post-author';
-        authorName.textContent = post.authorPseudo || 'Membre';
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = cleanDisplayName(post.authorPseudo || 'Membre');
 
-        const badge = document.createElement('span');
+        const roleSpan = document.createElement('span');
         const pRole = post.authorRole || 'membre';
-        badge.className = 'post-badge' + ((pRole === 'admin' || pRole === 'superadmin') ? ' admin' : '');
-        badge.textContent = pRole;
+        roleSpan.className = 'wa-role-pill' + ((pRole === 'admin' || pRole === 'superadmin') ? ' admin' : '');
+        roleSpan.textContent = pRole;
 
-        userWrap.appendChild(av);
-        userWrap.appendChild(authorName);
-        userWrap.appendChild(badge);
+        authorLine.appendChild(av);
+        authorLine.appendChild(nameSpan);
+        authorLine.appendChild(roleSpan);
 
-        const right = document.createElement('div');
-        right.className = 'post-right';
+        const timeActions = document.createElement('div');
+        timeActions.className = 'wa-msg-time-actions';
 
-        const dt = document.createElement('span');
-        dt.textContent = formatDate(post.createdAt);
-        right.appendChild(dt);
+        const dtSpan = document.createElement('span');
+        dtSpan.textContent = formatDate(post.createdAt);
+        timeActions.appendChild(dtSpan);
 
-        const canDelete = currentUser && (isUserAdmin || post.authorUid === currentUser.uid);
+        const canDelete = currentUser && (isUserAdmin || isOwn);
         if (canDelete) {
           const delBtn = document.createElement('button');
           delBtn.type = 'button';
@@ -872,43 +970,43 @@
               showAlert('Suppression impossible : ' + (err.code || err.message));
             }
           });
-          right.appendChild(delBtn);
+          timeActions.appendChild(delBtn);
         }
 
-        top.appendChild(userWrap);
-        top.appendChild(right);
-        article.appendChild(top);
+        top.appendChild(authorLine);
+        top.appendChild(timeActions);
+        card.appendChild(top);
 
         const textVal = post.message || post.content || '';
         if (textVal) {
           const p = document.createElement('p');
-          p.className = 'post-text';
+          p.className = 'wa-msg-body';
           p.textContent = textVal;
-          article.appendChild(p);
+          card.appendChild(p);
         }
 
         if (post.audioDataUrl && String(post.audioDataUrl).startsWith('data:audio/')) {
           const mediaBox = document.createElement('div');
-          mediaBox.className = 'post-media';
+          mediaBox.className = 'wa-media-box';
           const audioEl = document.createElement('audio');
           audioEl.controls = true;
           audioEl.src = post.audioDataUrl;
           mediaBox.appendChild(audioEl);
-          article.appendChild(mediaBox);
+          card.appendChild(mediaBox);
         }
 
         if (post.videoDataUrl && String(post.videoDataUrl).startsWith('data:video/')) {
           const mediaBox = document.createElement('div');
-          mediaBox.className = 'post-media';
+          mediaBox.className = 'wa-media-box';
           const vidEl = document.createElement('video');
           vidEl.controls = true;
           vidEl.playsInline = true;
           vidEl.src = post.videoDataUrl;
           mediaBox.appendChild(vidEl);
-          article.appendChild(mediaBox);
+          card.appendChild(mediaBox);
         } else if (post.videoUrl && isSafeHttpUrl(post.videoUrl)) {
           const mediaBox = document.createElement('div');
-          mediaBox.className = 'post-media';
+          mediaBox.className = 'wa-media-box';
           const ytEmbed = parseYoutubeEmbedUrl(post.videoUrl);
           if (ytEmbed) {
             const iframe = document.createElement('iframe');
@@ -922,17 +1020,17 @@
             vidEl.src = post.videoUrl;
             mediaBox.appendChild(vidEl);
           }
-          article.appendChild(mediaBox);
+          card.appendChild(mediaBox);
         }
 
-        const actionsBar = document.createElement('div');
-        actionsBar.className = 'post-actions-bar';
+        const foot = document.createElement('div');
+        foot.className = 'wa-msg-foot';
 
         const reactBtn = document.createElement('button');
         reactBtn.type = 'button';
-        reactBtn.className = 'react-btn';
+        reactBtn.className = 'wa-react-btn';
         const likesCount = Number(post.likes || 0);
-        reactBtn.textContent = `🚒 Soutien (${likesCount})`;
+        reactBtn.textContent = `Approuver (${likesCount})`;
         reactBtn.addEventListener('click', async () => {
           if (!currentUser) {
             showAlert('Connecte-toi pour réagir.');
@@ -947,9 +1045,9 @@
           }
         });
 
-        actionsBar.appendChild(reactBtn);
-        article.appendChild(actionsBar);
-        feedEl.appendChild(article);
+        foot.appendChild(reactBtn);
+        card.appendChild(foot);
+        feedEl.appendChild(card);
       });
     }
 
@@ -986,7 +1084,7 @@
 
       forumUnsubscribe = onSnapshot(q, (snap) => {
         hideAlert();
-        liveStatusEl.textContent = '● En ligne';
+        liveIndicatorEl.textContent = 'En ligne';
         const list = [];
         snap.forEach((d) => {
           list.push({ id: d.id, ...(d.data() || {}) });
@@ -994,22 +1092,18 @@
         allPosts = list;
         renderFeed();
       }, (err) => {
-        liveStatusEl.textContent = '● Limité';
-        feedEl.innerHTML = `<div class="hub-empty">Impossible de charger les messages (${err.code || 'erreur'}).</div>`;
+        liveIndicatorEl.textContent = 'Hors ligne';
+        feedEl.innerHTML = `<div class="wa-empty">Impossible de charger les messages (${err.code || 'erreur'}).</div>`;
         showAlert('Erreur Firestore : ' + (err.code || err.message));
       });
     }
-
-    messageInput.addEventListener('input', () => {
-      charCountEl.textContent = `${messageInput.value.length} / 1500`;
-    });
 
     formEl.addEventListener('submit', async (e) => {
       e.preventDefault();
       hideAlert();
 
       if (!currentUser) {
-        showAlert('Connecte-toi pour publier un message, un vocal ou une vidéo.');
+        showAlert('Connecte-toi pour envoyer un message, un vocal ou une vidéo.');
         return;
       }
 
@@ -1017,7 +1111,7 @@
       const vidUrlVal = videoUrlInput.value.trim();
 
       if (!textVal && !attachedAudioDataUrl && !attachedVideoDataUrl && !vidUrlVal) {
-        showAlert('Ajoute du texte, un vocal ou une vidéo avant de publier.');
+        showAlert('Saisis un message ou joins un vocal / une vidéo.');
         return;
       }
 
@@ -1027,7 +1121,7 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Publication...';
+      submitBtn.textContent = 'Envoi...';
 
       try {
         await addDoc(collection(db, "forum"), {
@@ -1043,13 +1137,12 @@
         });
 
         messageInput.value = '';
-        charCountEl.textContent = '0 / 1500';
         clearAttachedMedia();
       } catch (err) {
-        showAlert('Publication impossible : ' + (err.code || err.message));
+        showAlert('Envoi impossible : ' + (err.code || err.message));
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Publier sur le forum';
+        submitBtn.textContent = 'Envoyer';
       }
     });
 
@@ -1077,7 +1170,7 @@
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
-        feedEl.innerHTML = '<div class="hub-empty">Connecte-toi pour accéder au forum. <a href="login.html">Se connecter</a></div>';
+        feedEl.innerHTML = '<div class="wa-empty">Connecte-toi pour accéder au forum. <a href="login.html">Se connecter</a></div>';
         return;
       }
 
@@ -1099,7 +1192,7 @@
 
         profileBox.style.display = 'flex';
         profileAvatar.textContent = getInitials(pseudo);
-        profileName.textContent = pseudo;
+        profileName.textContent = cleanDisplayName(pseudo);
         profileRole.textContent = role;
         profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
         drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';

@@ -3,8 +3,152 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Connexion</title>
+  <title>Vos JSP — Connexion &amp; Inscription</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .auth-shell {
+      max-width: 500px;
+      margin: 2rem auto 2.5rem;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.75rem 1.65rem;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-top-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(225, 29, 42, 0.1);
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .auth-heading {
+      font-size: 1.75rem;
+      margin: 0.65rem 0 0.25rem;
+      line-height: 1.2;
+    }
+
+    .auth-subtitle {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 0 0 1.25rem;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.3rem;
+      border-radius: 14px;
+      margin-bottom: 1.3rem;
+    }
+
+    .mode-tab {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .mode-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .password-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-wrap input {
+      width: 100%;
+      padding-right: 2.75rem;
+    }
+
+    .toggle-pwd-btn {
+      position: absolute;
+      right: 0.55rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 0.25rem 0.4rem;
+      border-radius: 8px;
+    }
+
+    .toggle-pwd-btn:hover {
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .pwd-meter {
+      margin-top: 0.45rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .pwd-meter-bar {
+      height: 5px;
+      border-radius: 999px;
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .pwd-meter-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width 0.2s ease, background 0.2s ease;
+    }
+
+    .pwd-meter-text {
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+
+    .auth-footer-links {
+      margin-top: 1.15rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-size: 0.84rem;
+    }
+
+    .auth-footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-footer-links a:hover {
+      color: var(--primary);
+    }
+  </style>
 </head>
 <body>
   <div class="topbar">
@@ -48,34 +192,51 @@
   </aside>
 
   <main>
-    <div class="card" style="max-width: 480px; margin: 2rem auto;">
-      <span class="card-meta">Espace membre</span>
-      <h1 id="auth-heading" style="font-size: 1.7rem; margin: 0.35rem 0 0.25rem;">Connexion</h1>
-      <p id="auth-sub" style="color: var(--muted); font-size: 0.92rem; margin-top: 0;">Connecte-toi à ton compte Vos JSP.</p>
+    <div class="auth-shell">
+      <div class="auth-card">
+        <span class="auth-top-badge">🚒 Espace Communauté Vos JSP</span>
+        <h1 class="auth-heading" id="auth-heading">Bon retour parmi nous</h1>
+        <p class="auth-subtitle" id="auth-sub">Connecte-toi pour accéder au forum, à la galerie et aux actualités.</p>
 
-      <div id="auth-alert" class="alert"></div>
-
-      <form id="auth-form">
-        <div class="form-group" id="pseudo-group" style="display: none;">
-          <label for="auth-pseudo">Pseudo</label>
-          <input type="text" id="auth-pseudo" placeholder="Ton pseudo">
+        <div class="mode-switch" role="tablist" aria-label="Mode d'authentification">
+          <button type="button" class="mode-tab active" id="tab-login" role="tab" aria-selected="true">Connexion</button>
+          <button type="button" class="mode-tab" id="tab-register" role="tab" aria-selected="false">Inscription</button>
         </div>
 
-        <div class="form-group">
-          <label for="auth-email">Adresse e-mail</label>
-          <input type="email" id="auth-email" placeholder="exemple@mail.com" required>
+        <div id="auth-alert" class="alert"></div>
+
+        <form id="auth-form">
+          <div class="form-group" id="pseudo-group" style="display: none;">
+            <label for="auth-pseudo">Pseudo JSP / Membre</label>
+            <input type="text" id="auth-pseudo" placeholder="Ex. : Léo_JSP91" maxlength="32">
+          </div>
+
+          <div class="form-group">
+            <label for="auth-email">Adresse e-mail</label>
+            <input type="email" id="auth-email" placeholder="prenom.nom@exemple.com" autocomplete="email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="auth-password">Mot de passe</label>
+            <div class="password-wrap">
+              <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password" required>
+              <button type="button" class="toggle-pwd-btn" id="toggle-pwd-btn" aria-label="Afficher ou masquer le mot de passe" title="Afficher / masquer">👁️</button>
+            </div>
+            <div class="pwd-meter" id="pwd-meter">
+              <div class="pwd-meter-bar">
+                <div class="pwd-meter-fill" id="pwd-meter-fill"></div>
+              </div>
+              <span class="pwd-meter-text" id="pwd-meter-text">Force : faible (6 caractères minimum)</span>
+            </div>
+          </div>
+
+          <button type="submit" id="auth-submit" class="btn" style="width: 100%; margin-top: 0.35rem;">Se connecter</button>
+        </form>
+
+        <div class="auth-footer-links">
+          <a href="contester.html">Compte suspendu ? Contester</a>
+          <a href="a-propos.html">Besoin d'aide ? Contact</a>
         </div>
-
-        <div class="form-group">
-          <label for="auth-password">Mot de passe</label>
-          <input type="password" id="auth-password" placeholder="••••••••" required>
-        </div>
-
-        <button type="submit" id="auth-submit" class="btn" style="width: 100%;">Se connecter</button>
-      </form>
-
-      <div style="margin-top: 1rem; text-align: center;">
-        <button type="button" id="toggle-mode-btn" class="btn btn-secondary btn-small" style="width: 100%;">Créer un compte</button>
       </div>
     </div>
   </main>
@@ -126,14 +287,19 @@
 
     const headingEl = document.getElementById('auth-heading');
     const subEl = document.getElementById('auth-sub');
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
     const alertEl = document.getElementById('auth-alert');
     const formEl = document.getElementById('auth-form');
     const pseudoGroup = document.getElementById('pseudo-group');
     const pseudoInput = document.getElementById('auth-pseudo');
     const emailInput = document.getElementById('auth-email');
     const passwordInput = document.getElementById('auth-password');
+    const togglePwdBtn = document.getElementById('toggle-pwd-btn');
+    const pwdMeter = document.getElementById('pwd-meter');
+    const pwdMeterFill = document.getElementById('pwd-meter-fill');
+    const pwdMeterText = document.getElementById('pwd-meter-text');
     const submitBtn = document.getElementById('auth-submit');
-    const toggleBtn = document.getElementById('toggle-mode-btn');
 
     let isRegisterMode = false;
     let userUnsubscribe = null;
@@ -142,6 +308,75 @@
       alertEl.style.display = 'block';
       alertEl.className = isSuccess ? 'alert success' : 'alert';
       alertEl.textContent = msg;
+    }
+
+    function formatAuthError(err) {
+      const code = err && err.code ? err.code : '';
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+        return 'Adresse e-mail ou mot de passe incorrect.';
+      }
+      if (code === 'auth/email-already-in-use') {
+        return 'Cette adresse e-mail est déjà utilisée par un compte.';
+      }
+      if (code === 'auth/weak-password') {
+        return 'Le mot de passe doit contenir au moins 6 caractères.';
+      }
+      if (code === 'auth/too-many-requests') {
+        return 'Trop de tentatives. Réessaie dans quelques instants.';
+      }
+      return 'Erreur de connexion : ' + (code || (err && err.message) || 'inconnue');
+    }
+
+    function updatePasswordMeter(val) {
+      if (!isRegisterMode) {
+        pwdMeter.style.display = 'none';
+        return;
+      }
+      pwdMeter.style.display = 'flex';
+      let score = 0;
+      if (val.length >= 6) score += 35;
+      if (val.length >= 10) score += 25;
+      if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score += 20;
+      if (/\d/.test(val) || /[^A-Za-z0-9]/.test(val)) score += 20;
+
+      pwdMeterFill.style.width = score + '%';
+      if (score < 40) {
+        pwdMeterFill.style.background = '#e11d2a';
+        pwdMeterText.textContent = 'Force : faible (6 caractères minimum)';
+      } else if (score < 75) {
+        pwdMeterFill.style.background = '#f59e0b';
+        pwdMeterText.textContent = 'Force : moyenne';
+      } else {
+        pwdMeterFill.style.background = '#16a34a';
+        pwdMeterText.textContent = 'Force : solide';
+      }
+    }
+
+    function setAuthMode(register) {
+      isRegisterMode = register;
+      alertEl.style.display = 'none';
+
+      tabLogin.classList.toggle('active', !register);
+      tabLogin.setAttribute('aria-selected', String(!register));
+      tabRegister.classList.toggle('active', register);
+      tabRegister.setAttribute('aria-selected', String(register));
+
+      if (register) {
+        headingEl.textContent = 'Créer un compte';
+        subEl.textContent = 'Rejoins la communauté Vos JSP en quelques secondes.';
+        pseudoGroup.style.display = 'block';
+        pseudoInput.required = true;
+        passwordInput.autocomplete = 'new-password';
+        submitBtn.textContent = 'Créer mon compte';
+      } else {
+        headingEl.textContent = 'Bon retour parmi nous';
+        subEl.textContent = 'Connecte-toi pour accéder au forum, à la galerie et aux actualités.';
+        pseudoGroup.style.display = 'none';
+        pseudoInput.required = false;
+        passwordInput.autocomplete = 'current-password';
+        submitBtn.textContent = 'Se connecter';
+      }
+      updatePasswordMeter(passwordInput.value);
     }
 
     function sanitizeIpDocId(ip) {
@@ -172,25 +407,16 @@
       return false;
     }
 
-    toggleBtn.addEventListener('click', () => {
-      isRegisterMode = !isRegisterMode;
-      alertEl.style.display = 'none';
-      if (isRegisterMode) {
-        headingEl.textContent = 'Inscription';
-        subEl.textContent = 'Crée ton compte membre Vos JSP.';
-        pseudoGroup.style.display = 'block';
-        pseudoInput.required = true;
-        submitBtn.textContent = 'Créer mon compte';
-        toggleBtn.textContent = 'J’ai déjà un compte';
-      } else {
-        headingEl.textContent = 'Connexion';
-        subEl.textContent = 'Connecte-toi à ton compte Vos JSP.';
-        pseudoGroup.style.display = 'none';
-        pseudoInput.required = false;
-        submitBtn.textContent = 'Se connecter';
-        toggleBtn.textContent = 'Créer un compte';
-      }
+    tabLogin.addEventListener('click', () => setAuthMode(false));
+    tabRegister.addEventListener('click', () => setAuthMode(true));
+
+    togglePwdBtn.addEventListener('click', () => {
+      const nextType = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = nextType;
+      togglePwdBtn.textContent = nextType === 'password' ? '👁️' : '🙈';
     });
+
+    passwordInput.addEventListener('input', () => updatePasswordMeter(passwordInput.value));
 
     formEl.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -203,7 +429,7 @@
       const pseudo = pseudoInput.value.trim();
 
       submitBtn.disabled = true;
-      submitBtn.textContent = isRegisterMode ? 'Création...' : 'Connexion...';
+      submitBtn.textContent = isRegisterMode ? 'Création du compte...' : 'Connexion en cours...';
 
       try {
         const currentIp = await fetchPublicIp();
@@ -246,7 +472,7 @@
       } catch (err) {
         submitBtn.disabled = false;
         submitBtn.textContent = isRegisterMode ? 'Créer mon compte' : 'Se connecter';
-        showAlert('Erreur : ' + (err.code || err.message));
+        showAlert(formatAuthError(err));
       }
     });
 

@@ -6,159 +6,354 @@
   <title>Vos JSP — Galerie</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1.35rem;
-      margin-top: 1.5rem;
-    }
-
-    .gallery-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
+    .gal-page {
+      max-width: 1120px;
+      margin: 2rem auto 3.5rem;
       display: flex;
       flex-direction: column;
+      gap: 1.45rem;
     }
 
-    .gallery-media-btn {
-      padding: 0;
-      border: 0;
-      background: var(--surface-2, #0f172a);
-      cursor: zoom-in;
+    .gal-hero {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.75rem 1.9rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .gal-hero h1 {
+      margin: 0.55rem 0 0.3rem;
+      font-size: 1.9rem;
+      letter-spacing: -0.02em;
+      line-height: 1.12;
+    }
+
+    .gal-hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      max-width: 590px;
+      line-height: 1.5;
+    }
+
+    .gal-stats {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .gal-stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.65rem 0.95rem;
+      min-width: 108px;
+    }
+
+    .gal-stat-box small {
       display: block;
-      width: 100%;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 600;
     }
 
-    .gallery-media {
-      width: 100%;
-      max-height: 300px;
-      object-fit: contain;
+    .gal-stat-box strong {
       display: block;
-      margin: 0 auto;
+      font-size: 1.05rem;
+      margin-top: 0.1rem;
     }
 
-    .gallery-body {
-      padding: 1rem 1.15rem 1.2rem;
+    .gal-controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+    }
+
+    .gal-filters {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .gal-filter-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.45rem 0.82rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .gal-filter-btn:hover {
+      border-color: var(--primary);
+      color: var(--text);
+    }
+
+    .gal-filter-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .gal-upload-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.45rem 1.6rem;
+      box-shadow: var(--shadow);
+    }
+
+    .gal-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .gal-media-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+    }
+
+    @media (max-width: 700px) {
+      .gal-form-grid,
+      .gal-media-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gal-upload-card textarea {
+      width: 100%;
+      min-height: 76px;
+      resize: vertical;
+      border-radius: 14px;
+      padding: 0.75rem 0.95rem;
+      font-family: inherit;
+    }
+
+    .gal-preview-strip {
+      display: none;
+      margin-top: 0.8rem;
+      padding: 0.75rem;
+      border-radius: 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .gal-preview-strip.active {
+      display: flex;
+    }
+
+    .gal-preview-strip img {
+      width: 96px;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 10px;
+      flex-shrink: 0;
+      background: #000;
+    }
+
+    .gal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.15rem;
+    }
+
+    @media (max-width: 960px) {
+      .gal-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 620px) {
+      .gal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .gal-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(225, 29, 42, 0.35);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.07);
+    }
+
+    .gal-thumb-wrap {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: var(--bg);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .gal-thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.25s ease;
+    }
+
+    .gal-card:hover .gal-thumb-wrap img {
+      transform: scale(1.03);
+    }
+
+    .gal-cat-chip {
+      position: absolute;
+      top: 0.7rem;
+      left: 0.7rem;
+      background: rgba(17, 24, 39, 0.78);
+      color: #fff;
+      backdrop-filter: blur(6px);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.24rem 0.62rem;
+      border-radius: 999px;
+    }
+
+    .gal-card-body {
+      padding: 1rem 1.15rem;
       display: flex;
       flex-direction: column;
       gap: 0.45rem;
       flex: 1;
     }
 
-    .gallery-meta {
-      font-size: 0.78rem;
-      color: var(--muted);
+    .gal-card-title {
+      margin: 0;
+      font-size: 1.02rem;
+      font-weight: 800;
+      line-height: 1.3;
     }
 
-    .gallery-actions {
+    .gal-card-desc {
+      margin: 0;
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .gal-card-author {
       margin-top: auto;
-      padding-top: 0.6rem;
+      padding-top: 0.55rem;
+      font-size: 0.76rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .gal-card-actions {
+      padding: 0.7rem 1.15rem 0.95rem;
+      border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 0.5rem;
     }
 
-    details.upload-box {
-      background: var(--surface);
+    .gal-like-btn {
+      appearance: none;
       border: 1px solid var(--border);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      margin-bottom: 1.75rem;
-      overflow: hidden;
-    }
-
-    details.upload-box > summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 1.15rem 1.5rem;
+      background: var(--bg);
+      color: var(--text);
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      user-select: none;
+      font-size: 0.78rem;
+      padding: 0.36rem 0.72rem;
+      border-radius: 999px;
+      cursor: pointer;
     }
 
-    details.upload-box > summary::-webkit-details-marker {
-      display: none;
+    .gal-like-btn:hover {
+      border-color: var(--primary);
+      background: rgba(225, 29, 42, 0.06);
     }
 
-    details.upload-box > summary::after {
-      content: "+";
-      font-size: 1.3rem;
+    .gal-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 2.5rem 1.2rem;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 22px;
       color: var(--muted);
+      font-size: 0.92rem;
     }
 
-    details.upload-box[open] > summary::after {
-      content: "−";
-    }
-
-    .upload-content {
-      padding: 1.25rem 1.5rem 1.5rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .lightbox {
+    .gal-lightbox {
       position: fixed;
       inset: 0;
-      background: rgba(9, 13, 22, 0.9);
-      z-index: 999;
+      background: rgba(0, 0, 0, 0.82);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 1.25rem;
+      z-index: 2000;
     }
 
-    .lightbox.open {
+    .gal-lightbox.open {
       display: flex;
     }
 
-    .lightbox-inner {
-      position: relative;
-      max-width: 96vw;
-      max-height: 92vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
+    .gal-lightbox-inner {
+      max-width: 880px;
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
     }
 
-    .lightbox-img {
-      max-width: 100%;
-      max-height: 82vh;
-      width: auto;
-      height: auto;
+    .gal-lightbox-inner img {
+      width: 100%;
+      max-height: 70vh;
       object-fit: contain;
-      border-radius: 12px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
-      background: #0b0f19;
+      background: #090d16;
+      display: block;
     }
 
-    .lightbox-caption {
-      color: #f8fafc;
-      font-size: 0.92rem;
-      text-align: center;
-      max-width: 720px;
-    }
-
-    .lightbox-close {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      background: rgba(15, 23, 42, 0.85);
-      color: #fff;
-      font-size: 1.5rem;
-      line-height: 1;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
+    .gal-lightbox-foot {
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
   </style>
 </head>
@@ -175,7 +370,7 @@
         <div>VOS <span>JSP</span></div>
       </a>
     </div>
-    <a href="proposer.html" class="btn btn-secondary btn-small">Proposer</a>
+    <a href="index.html" class="btn btn-secondary btn-small">Accueil</a>
   </div>
 
   <div class="nav-backdrop" id="nav-backdrop"></div>
@@ -213,63 +408,103 @@
   </aside>
 
   <main>
-    <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
-      <span class="badge">Communauté • Photos JSP</span>
-      <h1>Galerie Vos JSP</h1>
-      <p class="subtitle" style="margin-bottom: 0;">Clique sur une image pour l'afficher en taille réelle. Tout membre connecté peut envoyer une photo.</p>
-    </section>
-
-    <div id="gallery-alert" class="alert"></div>
-
-    <details class="upload-box" id="upload-accordion">
-      <summary>Envoyer une photo dans la galerie</summary>
-      <div class="upload-content">
-        <div id="upload-guest-msg" style="display: none;">
-          <p style="margin-bottom: 0.85rem;">Tu dois être connecté avec ton compte pour envoyer une photo dans la galerie.</p>
-          <a href="login.html" class="btn btn-small">Se connecter</a>
+    <div class="gal-page">
+      <header class="gal-hero">
+        <div>
+          <span class="badge">Album Communautaire • Vos JSP</span>
+          <h1>Galerie photos</h1>
+          <p>Les meilleurs moments en manœuvre, les engins et matériels, les journées de cohésion et cérémonies partagés par la communauté.</p>
         </div>
-
-        <form id="upload-form" style="display: none;">
-          <div class="form-group">
-            <label for="photo-title">Titre ou légende</label>
-            <input type="text" id="photo-title" placeholder="Ex: Manœuvre du samedi matin" required>
+        <div class="gal-stats">
+          <div class="gal-stat-box">
+            <small>Photos publiées</small>
+            <strong id="gal-total-photos">0</strong>
           </div>
-
-          <div class="form-group">
-            <label for="photo-category">Catégorie</label>
-            <select id="photo-category" required>
-              <option value="Manœuvres">Manœuvres</option>
-              <option value="Vie de section">Vie de section</option>
-              <option value="Matériel & Engins">Matériel &amp; Engins</option>
-              <option value="Cohésion & Cérémonies">Cohésion &amp; Cérémonies</option>
-            </select>
+          <div class="gal-stat-box">
+            <small>Soutiens cumulés</small>
+            <strong id="gal-total-likes">0</strong>
           </div>
+        </div>
+      </header>
 
-          <div class="form-group">
-            <label for="photo-file">Choisir une image depuis ton appareil</label>
-            <input type="file" id="photo-file" accept="image/*">
-          </div>
-
-          <div class="form-group">
-            <label for="photo-url">Ou coller un lien d'image (optionnel)</label>
-            <input type="url" id="photo-url" placeholder="https://...">
-          </div>
-
-          <button type="submit" id="upload-submit-btn" class="btn" style="width: 100%;">Publier dans la galerie</button>
-        </form>
+      <div class="gal-controls-bar">
+        <div class="gal-filters" role="group" aria-label="Filtrer la galerie">
+          <button type="button" class="gal-filter-btn active" data-cat="all">Tout</button>
+          <button type="button" class="gal-filter-btn" data-cat="Manœuvres">Manœuvres</button>
+          <button type="button" class="gal-filter-btn" data-cat="Matériel &amp; Engins">Matériel &amp; Engins</button>
+          <button type="button" class="gal-filter-btn" data-cat="Cohésion &amp; Cérémonies">Cohésion &amp; Cérémonies</button>
+          <button type="button" class="gal-filter-btn" data-cat="Autre">Autre</button>
+        </div>
+        <span class="badge" id="gal-active-filter-badge">Catégorie : Tout</span>
       </div>
-    </details>
 
-    <div id="gallery-list" class="gallery-grid">
-      <p>Chargement de la galerie...</p>
+      <div id="gal-alert" class="alert"></div>
+
+      <section class="gal-upload-card" id="gal-composer-box">
+        <form id="gal-form">
+          <div class="gal-form-grid">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="gal-title">Titre de la photo</label>
+              <input type="text" id="gal-title" placeholder="Ex. : Établissement de ligne du samedi matin" maxlength="110" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="gal-category">Catégorie</label>
+              <select id="gal-category">
+                <option value="Manœuvres">Manœuvres</option>
+                <option value="Matériel & Engins">Matériel &amp; Engins</option>
+                <option value="Cohésion & Cérémonies">Cohésion &amp; Cérémonies</option>
+                <option value="Autre">Autre</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="gal-media-grid">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="gal-url">Lien direct vers l'image (URL https://)</label>
+              <input type="url" id="gal-url" placeholder="https://exemple.com/photo.jpg">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="gal-file">Ou importer une image depuis l'appareil</label>
+              <input type="file" id="gal-file" accept="image/*">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="gal-desc">Légende / contexte</label>
+            <textarea id="gal-desc" placeholder="Ajoute un détail sur la séance, le lieu ou l'équipe..." maxlength="500"></textarea>
+          </div>
+
+          <div class="gal-preview-strip" id="gal-preview-strip">
+            <img id="gal-preview-img" alt="Aperçu">
+            <div style="flex: 1; min-width: 0;">
+              <strong style="display: block; font-size: 0.86rem;">Aperçu prêt</strong>
+              <span id="gal-preview-info" style="font-size: 0.78rem; color: var(--muted);">Image sélectionnée</span>
+            </div>
+            <button type="button" class="btn btn-secondary btn-small" id="gal-clear-btn">Effacer</button>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 0.9rem;">
+            <button type="submit" id="gal-submit-btn" class="btn">Publier la photo</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="gal-grid" id="gal-grid">
+        <div class="gal-empty">Chargement de la galerie...</div>
+      </section>
     </div>
   </main>
 
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Aperçu en taille réelle">
-    <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Fermer">&times;</button>
-    <div class="lightbox-inner" id="lightbox-inner">
-      <img class="lightbox-img" id="lightbox-img" src="" alt="">
-      <div class="lightbox-caption" id="lightbox-caption"></div>
+  <div class="gal-lightbox" id="gal-lightbox" aria-hidden="true">
+    <div class="gal-lightbox-inner">
+      <img id="lb-img" alt="">
+      <div class="gal-lightbox-foot">
+        <div>
+          <strong id="lb-title" style="display: block; font-size: 1rem;"></strong>
+          <span id="lb-meta" style="font-size: 0.82rem; color: var(--muted);"></span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-small" id="lb-close-btn">Fermer</button>
+      </div>
     </div>
   </div>
 
@@ -299,331 +534,490 @@
     }
     document.getElementById('menu-close').addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
-
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxCaption = document.getElementById('lightbox-caption');
-    const lightboxClose = document.getElementById('lightbox-close');
-
-    function openLightbox(src, title, meta) {
-      if (!src) return;
-      lightboxImg.src = src;
-      lightboxImg.alt = title || 'Photo JSP';
-      lightboxCaption.textContent = (title || 'Sans titre') + (meta ? ' • ' + meta : '');
-      lightbox.classList.add('open');
-    }
-
-    function closeLightbox() {
-      lightbox.classList.remove('open');
-      lightboxImg.src = '';
-    }
-
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && lightbox.classList.contains('open')) {
-        closeLightbox();
-      }
-    });
   </script>
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
       collection,
       query,
       orderBy,
-      getDocs,
+      limit,
       addDoc,
+      updateDoc,
       deleteDoc,
       doc,
       getDoc,
-      serverTimestamp
+      onSnapshot,
+      serverTimestamp,
+      increment
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
     const profileName = document.getElementById('drawer-profile-name');
     const profileRole = document.getElementById('drawer-profile-role');
-    const authBtn = document.getElementById('drawer-auth-btn');
-    const logoutBtn = document.getElementById('drawer-logout-btn');
-    const adminLink = document.getElementById('drawer-admin-link');
+    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
+    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
+    const drawerAdminLink = document.getElementById('drawer-admin-link');
 
-    const alertBox = document.getElementById('gallery-alert');
-    const guestMsg = document.getElementById('upload-guest-msg');
-    const uploadForm = document.getElementById('upload-form');
-    const uploadSubmitBtn = document.getElementById('upload-submit-btn');
-    const galleryListEl = document.getElementById('gallery-list');
+    const totalPhotosEl = document.getElementById('gal-total-photos');
+    const totalLikesEl = document.getElementById('gal-total-likes');
+    const activeFilterBadge = document.getElementById('gal-active-filter-badge');
+    const filterButtons = Array.from(document.querySelectorAll('.gal-filter-btn'));
+
+    const alertEl = document.getElementById('gal-alert');
+    const composerBox = document.getElementById('gal-composer-box');
+    const formEl = document.getElementById('gal-form');
+    const titleInput = document.getElementById('gal-title');
+    const categorySelect = document.getElementById('gal-category');
+    const urlInput = document.getElementById('gal-url');
+    const fileInput = document.getElementById('gal-file');
+    const descInput = document.getElementById('gal-desc');
+    const previewStrip = document.getElementById('gal-preview-strip');
+    const previewImg = document.getElementById('gal-preview-img');
+    const previewInfo = document.getElementById('gal-preview-info');
+    const clearBtn = document.getElementById('gal-clear-btn');
+    const submitBtn = document.getElementById('gal-submit-btn');
+    const gridEl = document.getElementById('gal-grid');
+
+    const lightbox = document.getElementById('gal-lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbTitle = document.getElementById('lb-title');
+    const lbMeta = document.getElementById('lb-meta');
+    const lbCloseBtn = document.getElementById('lb-close-btn');
 
     let currentUser = null;
-    let currentPseudo = 'Membre';
-    let isAdmin = false;
-    let isBanned = false;
+    let currentProfile = { pseudo: 'Membre', role: 'membre' };
+    let userUnsubscribe = null;
+    let galleryUnsubscribe = null;
+    let allItems = [];
+    let activeCat = 'all';
+    let compressedDataUrl = '';
+
+    function showAlert(msg, isSuccess = false) {
+      alertEl.style.display = 'block';
+      alertEl.className = isSuccess ? 'alert success' : 'alert';
+      alertEl.textContent = msg;
+    }
+
+    function hideAlert() {
+      alertEl.style.display = 'none';
+      alertEl.textContent = '';
+    }
+
+    function cleanDisplayName(raw) {
+      return String(raw || 'Membre')
+        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
+        .trim() || 'Membre';
+    }
 
     function getInitials(label) {
-      const clean = (label || 'JS').trim();
+      const clean = cleanDisplayName(label);
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
     }
 
-    function showAlert(msg, isSuccess = false) {
-      alertBox.style.display = 'block';
-      alertBox.className = isSuccess ? 'alert success' : 'alert';
-      alertBox.textContent = msg;
+    function isSafeHttpUrl(str) {
+      try {
+        const u = new URL(String(str || '').trim());
+        return u.protocol === 'https:' || u.protocol === 'http:';
+      } catch (_) {
+        return false;
+      }
     }
 
-    function compressImageToDataUrl(file, maxWidth = 1400, quality = 0.85) {
+    function compressImageFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
           const img = new Image();
           img.onload = () => {
-            const scale = Math.min(1, maxWidth / img.width);
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.max(1, Math.round(img.width * scale));
-            canvas.height = Math.max(1, Math.round(img.height * scale));
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', quality);
-            if (dataUrl.length > 780000) {
-              reject(new Error('Image trop lourde après compression. Choisis une image plus petite ou un lien d\'image.'));
-              return;
+            const maxDim = 960;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w >= h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
             }
-            resolve(dataUrl);
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.72));
           };
-          img.onerror = () => reject(new Error('Fichier image invalide.'));
-          img.src = reader.result;
+          img.onerror = () => reject(new Error('Image invalide'));
+          img.src = String(reader.result || '');
         };
-        reader.onerror = () => reject(new Error('Lecture du fichier impossible.'));
+        reader.onerror = () => reject(new Error('Lecture fichier impossible'));
         reader.readAsDataURL(file);
       });
     }
 
-    async function loadGallery() {
-      galleryListEl.textContent = '';
-      const loadingP = document.createElement('p');
-      loadingP.textContent = 'Chargement de la galerie...';
-      galleryListEl.appendChild(loadingP);
-
-      try {
-        const q = query(collection(db, "galerie"), orderBy("createdAt", "desc"));
-        const snap = await getDocs(q);
-        galleryListEl.textContent = '';
-
-        if (snap.empty) {
-          const emptyP = document.createElement('p');
-          emptyP.textContent = 'Aucune photo dans la galerie pour le moment. Sois le premier à en publier une !';
-          galleryListEl.appendChild(emptyP);
-          return;
-        }
-
-        snap.forEach(d => {
-          const item = d.data();
-          const card = document.createElement('article');
-          card.className = 'gallery-card';
-
-          const mediaBtn = document.createElement('button');
-          mediaBtn.type = 'button';
-          mediaBtn.className = 'gallery-media-btn';
-          mediaBtn.title = 'Afficher en taille réelle';
-
-          const img = document.createElement('img');
-          img.className = 'gallery-media';
-          img.src = item.imageUrl || '';
-          img.alt = item.title || 'Photo JSP';
-          img.loading = 'lazy';
-
-          const metaText = (item.category || 'Galerie') + ' • Par ' + (item.author || 'Membre');
-          mediaBtn.addEventListener('click', () => {
-            openLightbox(item.imageUrl || '', item.title || 'Sans titre', metaText);
-          });
-          mediaBtn.appendChild(img);
-
-          const body = document.createElement('div');
-          body.className = 'gallery-body';
-
-          const title = document.createElement('h3');
-          title.style.fontSize = '1.02rem';
-          title.textContent = item.title || 'Sans titre';
-
-          const meta = document.createElement('div');
-          meta.className = 'gallery-meta';
-          meta.textContent = metaText;
-
-          body.appendChild(title);
-          body.appendChild(meta);
-
-          const actions = document.createElement('div');
-          actions.className = 'gallery-actions';
-
-          const viewBtn = document.createElement('button');
-          viewBtn.type = 'button';
-          viewBtn.className = 'btn btn-secondary btn-small';
-          viewBtn.textContent = 'Taille réelle';
-          viewBtn.addEventListener('click', () => {
-            openLightbox(item.imageUrl || '', item.title || 'Sans titre', metaText);
-          });
-          actions.appendChild(viewBtn);
-
-          const canDelete = Boolean(currentUser) && (isAdmin || item.authorUid === currentUser.uid);
-          if (canDelete) {
-            const delBtn = document.createElement('button');
-            delBtn.type = 'button';
-            delBtn.className = 'btn btn-secondary btn-small';
-            delBtn.textContent = 'Supprimer';
-            delBtn.addEventListener('click', async () => {
-              delBtn.disabled = true;
-              try {
-                await deleteDoc(doc(db, "galerie", d.id));
-                showAlert('Photo supprimée.', true);
-                await loadGallery();
-              } catch (err) {
-                delBtn.disabled = false;
-                showAlert('Suppression impossible (' + (err.code || err.message) + ').');
-              }
-            });
-            actions.appendChild(delBtn);
-          }
-
-          body.appendChild(actions);
-          card.appendChild(mediaBtn);
-          card.appendChild(body);
-          galleryListEl.appendChild(card);
-        });
-      } catch (err) {
-        galleryListEl.textContent = '';
-        const errP = document.createElement('p');
-        errP.textContent = 'Impossible de charger la galerie (' + (err.code || err.message) + ').';
-        galleryListEl.appendChild(errP);
+    function updatePreview() {
+      const urlVal = urlInput.value.trim();
+      if (compressedDataUrl) {
+        previewImg.src = compressedDataUrl;
+        previewInfo.textContent = 'Fichier image optimisé prêt';
+        previewStrip.classList.add('active');
+      } else if (isSafeHttpUrl(urlVal)) {
+        previewImg.src = urlVal;
+        previewInfo.textContent = urlVal;
+        previewStrip.classList.add('active');
+      } else {
+        previewImg.removeAttribute('src');
+        previewStrip.classList.remove('active');
       }
     }
 
-    uploadForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!currentUser) {
-        showAlert('Connecte-toi pour envoyer une photo.');
+    urlInput.addEventListener('input', () => {
+      if (urlInput.value.trim()) {
+        compressedDataUrl = '';
+        fileInput.value = '';
+      }
+      updatePreview();
+    });
+
+    fileInput.addEventListener('change', async () => {
+      hideAlert();
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) {
+        compressedDataUrl = '';
+        updatePreview();
         return;
       }
-      if (isBanned) {
-        showAlert('Ton compte est banni : tu ne peux pas envoyer de photo.');
-        return;
-      }
-
-      const title = document.getElementById('photo-title').value.trim();
-      const category = document.getElementById('photo-category').value;
-      const fileInput = document.getElementById('photo-file');
-      const urlInput = document.getElementById('photo-url').value.trim();
-      const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
-
-      if (!file && !urlInput) {
-        showAlert('Choisis une image ou renseigne un lien d\'image.');
-        return;
-      }
-
-      uploadSubmitBtn.disabled = true;
-      uploadSubmitBtn.textContent = 'Envoi en cours...';
-      alertBox.style.display = 'none';
-
       try {
-        let latestPseudo = currentPseudo;
-        try {
-          const freshSnap = await getDoc(doc(db, "users", currentUser.uid));
-          if (freshSnap.exists() && freshSnap.data().pseudo) {
-            latestPseudo = freshSnap.data().pseudo;
-            currentPseudo = latestPseudo;
-          } else if (currentUser.displayName) {
-            latestPseudo = currentUser.displayName;
-          }
-        } catch (err) {}
+        const dataUrl = await compressImageFile(file);
+        if (dataUrl.length > 680000) {
+          showAlert('Image trop lourde même après compression. Utilise un lien URL ou une image plus légère.');
+          fileInput.value = '';
+          compressedDataUrl = '';
+          updatePreview();
+          return;
+        }
+        compressedDataUrl = dataUrl;
+        urlInput.value = '';
+        updatePreview();
+      } catch (err) {
+        showAlert(err.message || 'Impossible de charger cette image.');
+      }
+    });
 
-        let finalImageUrl = urlInput;
-        if (file) {
-          finalImageUrl = await compressImageToDataUrl(file);
+    clearBtn.addEventListener('click', () => {
+      compressedDataUrl = '';
+      urlInput.value = '';
+      fileInput.value = '';
+      updatePreview();
+    });
+
+    function openLightbox(item) {
+      const src = item.imageDataUrl || item.imageUrl || '';
+      if (!src) return;
+      lbImg.src = src;
+      lbTitle.textContent = item.title || 'Photo Vos JSP';
+      lbMeta.textContent = `Par ${cleanDisplayName(item.authorPseudo || 'Membre')} • ${item.category || 'Autre'}`;
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      lbImg.removeAttribute('src');
+    }
+
+    lbCloseBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeCat = btn.dataset.cat || 'all';
+        filterButtons.forEach((b) => b.classList.toggle('active', b === btn));
+        activeFilterBadge.textContent = 'Catégorie : ' + btn.textContent;
+        renderGallery();
+      });
+    });
+
+    function renderGallery() {
+      let totalLikes = 0;
+      allItems.forEach((it) => {
+        totalLikes += Number(it.likes || 0);
+      });
+      totalPhotosEl.textContent = String(allItems.length);
+      totalLikesEl.textContent = String(totalLikes);
+
+      const filtered = allItems.filter((it) => {
+        if (activeCat === 'all') return true;
+        return String(it.category || 'Autre') === activeCat;
+      });
+
+      if (filtered.length === 0) {
+        gridEl.innerHTML = '<div class="gal-empty">Aucune photo dans cette catégorie pour le moment.</div>';
+        return;
+      }
+
+      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
+      gridEl.innerHTML = '';
+
+      filtered.forEach((item) => {
+        const imgSrc = item.imageDataUrl || (isSafeHttpUrl(item.imageUrl) ? item.imageUrl : '');
+        if (!imgSrc) return;
+
+        const card = document.createElement('article');
+        card.className = 'gal-card';
+
+        const thumbWrap = document.createElement('div');
+        thumbWrap.className = 'gal-thumb-wrap';
+
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.alt = item.title || 'Photo galerie';
+        img.loading = 'lazy';
+
+        const chip = document.createElement('span');
+        chip.className = 'gal-cat-chip';
+        chip.textContent = item.category || 'Autre';
+
+        thumbWrap.appendChild(img);
+        thumbWrap.appendChild(chip);
+        thumbWrap.addEventListener('click', () => openLightbox(item));
+
+        const body = document.createElement('div');
+        body.className = 'gal-card-body';
+
+        const h3 = document.createElement('h3');
+        h3.className = 'gal-card-title';
+        h3.textContent = item.title || 'Sans titre';
+        body.appendChild(h3);
+
+        if (item.description || item.caption) {
+          const p = document.createElement('p');
+          p.className = 'gal-card-desc';
+          p.textContent = item.description || item.caption;
+          body.appendChild(p);
         }
 
+        const authorRow = document.createElement('div');
+        authorRow.className = 'gal-card-author';
+        authorRow.textContent = `Par ${cleanDisplayName(item.authorPseudo || 'Membre')}`;
+        body.appendChild(authorRow);
+
+        const actions = document.createElement('div');
+        actions.className = 'gal-card-actions';
+
+        const likeBtn = document.createElement('button');
+        likeBtn.type = 'button';
+        likeBtn.className = 'gal-like-btn';
+        likeBtn.textContent = `Soutenir (${Number(item.likes || 0)})`;
+        likeBtn.addEventListener('click', async () => {
+          if (!currentUser) {
+            showAlert('Connecte-toi pour soutenir une photo.');
+            return;
+          }
+          try {
+            await updateDoc(doc(db, "galerie", item.id), {
+              likes: increment(1)
+            });
+          } catch (err) {
+            showAlert('Action impossible : ' + (err.code || err.message));
+          }
+        });
+        actions.appendChild(likeBtn);
+
+        const canDelete = currentUser && (isUserAdmin || item.authorUid === currentUser.uid);
+        if (canDelete) {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn btn-secondary btn-small';
+          delBtn.textContent = 'Supprimer';
+          delBtn.addEventListener('click', async () => {
+            try {
+              await deleteDoc(doc(db, "galerie", item.id));
+            } catch (err) {
+              showAlert('Suppression impossible : ' + (err.code || err.message));
+            }
+          });
+          actions.appendChild(delBtn);
+        }
+
+        card.appendChild(thumbWrap);
+        card.appendChild(body);
+        card.appendChild(actions);
+        gridEl.appendChild(card);
+      });
+    }
+
+    function sanitizeIpDocId(ip) {
+      return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    }
+
+    async function redirectIfIpBanned() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
+        if (!res.ok) return false;
+        const data = await res.json();
+        const ip = data && data.ip ? String(data.ip).trim() : '';
+        if (!ip) return false;
+        const snap = await getDoc(doc(db, "banned_ips", sanitizeIpDocId(ip)));
+        if (snap.exists()) {
+          window.location.replace('ban.html');
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
+
+    function stopGalleryListener() {
+      if (galleryUnsubscribe) {
+        galleryUnsubscribe();
+        galleryUnsubscribe = null;
+      }
+    }
+
+    function startGalleryListener() {
+      stopGalleryListener();
+      const q = query(collection(db, "galerie"), orderBy("createdAt", "desc"), limit(80));
+
+      galleryUnsubscribe = onSnapshot(q, (snap) => {
+        hideAlert();
+        const list = [];
+        snap.forEach((d) => {
+          list.push({ id: d.id, ...(d.data() || {}) });
+        });
+        allItems = list;
+        renderGallery();
+      }, (err) => {
+        gridEl.innerHTML = `<div class="gal-empty">Impossible de charger la galerie (${err.code || 'erreur'}).</div>`;
+        showAlert('Erreur Firestore : ' + (err.code || err.message));
+      });
+    }
+
+    formEl.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      if (!currentUser) {
+        showAlert('Connecte-toi pour publier une photo.');
+        return;
+      }
+
+      const titleVal = titleInput.value.trim();
+      const catVal = categorySelect.value || 'Autre';
+      const urlVal = urlInput.value.trim();
+      const descVal = descInput.value.trim();
+
+      if (!titleVal) {
+        showAlert('Renseigne un titre pour la photo.');
+        return;
+      }
+
+      if (!compressedDataUrl && !isSafeHttpUrl(urlVal)) {
+        showAlert('Ajoute un lien image valide (https://) ou sélectionne un fichier image.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Publication...';
+
+      try {
         await addDoc(collection(db, "galerie"), {
-          title,
-          category,
-          imageUrl: finalImageUrl,
-          author: latestPseudo,
           authorUid: currentUser.uid,
+          authorPseudo: currentProfile.pseudo,
+          title: titleVal,
+          category: catVal,
+          description: descVal,
+          imageUrl: isSafeHttpUrl(urlVal) ? urlVal : '',
+          imageDataUrl: compressedDataUrl || '',
+          likes: 0,
           createdAt: serverTimestamp()
         });
 
-        uploadForm.reset();
-        showAlert('Photo ajoutée à la galerie (' + latestPseudo + ') !', true);
-        await loadGallery();
+        titleInput.value = '';
+        urlInput.value = '';
+        fileInput.value = '';
+        descInput.value = '';
+        compressedDataUrl = '';
+        updatePreview();
+        showAlert('Photo publiée dans la galerie.', true);
       } catch (err) {
-        showAlert(err.message || ('Erreur d\'envoi (' + (err.code || 'firestore') + ').'));
+        showAlert('Publication impossible : ' + (err.code || err.message));
       } finally {
-        uploadSubmitBtn.disabled = false;
-        uploadSubmitBtn.textContent = 'Publier dans la galerie';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publier la photo';
       }
+    });
+
+    drawerLogoutBtn.addEventListener('click', async () => {
+      stopGalleryListener();
+      await signOut(auth);
+      window.location.replace('login.html');
     });
 
     onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      isAdmin = false;
-      isBanned = false;
+      if (userUnsubscribe) {
+        userUnsubscribe();
+        userUnsubscribe = null;
+      }
+      stopGalleryListener();
+
+      if (await redirectIfIpBanned()) return;
+
+      currentUser = user || null;
 
       if (!user) {
+        composerBox.style.display = 'none';
         profileBox.style.display = 'none';
-        logoutBtn.style.display = 'none';
-        adminLink.style.display = 'none';
-        authBtn.style.display = 'inline-flex';
-        uploadForm.style.display = 'none';
-        guestMsg.style.display = 'block';
-        await loadGallery();
+        drawerLogoutBtn.style.display = 'none';
+        drawerAdminLink.style.display = 'none';
+        drawerAuthBtn.style.display = 'inline-flex';
+        startGalleryListener();
         return;
       }
 
-      let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-      let role = 'membre';
+      composerBox.style.display = 'block';
+      drawerAuthBtn.style.display = 'none';
+      drawerLogoutBtn.style.display = 'inline-flex';
 
-      try {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.pseudo) pseudo = data.pseudo;
-          if (data.role) role = data.role;
-          isBanned = data.banned === true;
+      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
+        const data = snap.exists() ? (snap.data() || {}) : {};
+        if (data.banned === true) {
+          stopGalleryListener();
+          window.location.replace('ban.html');
+          return;
         }
-      } catch (e) {}
 
-      currentPseudo = pseudo;
-      isAdmin = !isBanned && (role === 'admin' || role === 'superadmin');
+        const pseudo = data.pseudo || user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+        const role = data.role || 'membre';
+        currentProfile = { pseudo, role };
 
-      profileName.textContent = pseudo;
-      profileAvatar.textContent = getInitials(pseudo);
-      profileRole.textContent = isBanned ? 'banni' : role;
-      profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-      adminLink.style.display = isAdmin ? 'flex' : 'none';
+        profileBox.style.display = 'flex';
+        profileAvatar.textContent = getInitials(pseudo);
+        profileName.textContent = cleanDisplayName(pseudo);
+        profileRole.textContent = role;
+        profileRole.classList.toggle('admin', role === 'admin' || role === 'superadmin');
+        drawerAdminLink.style.display = (role === 'admin' || role === 'superadmin') ? 'block' : 'none';
 
-      profileBox.style.display = 'flex';
-      authBtn.style.display = 'none';
-      logoutBtn.style.display = 'inline-flex';
-
-      if (isBanned) {
-        uploadForm.style.display = 'none';
-        guestMsg.style.display = 'block';
-        guestMsg.innerHTML = '<p style="margin-bottom:0.85rem;">Ton compte est suspendu.</p><a href="contester.html" class="btn btn-small">Contester le bannissement</a>';
-      } else {
-        guestMsg.style.display = 'none';
-        uploadForm.style.display = 'block';
-      }
-
-      await loadGallery();
-    });
-
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.replace('galerie.html');
+        if (!galleryUnsubscribe) {
+          startGalleryListener();
+        }
+      }, () => {
+        if (!galleryUnsubscribe) {
+          startGalleryListener();
+        }
+      });
     });
   </script>
 </body>

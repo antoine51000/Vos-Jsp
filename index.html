@@ -156,27 +156,27 @@
 
     .idx-update-title {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       font-weight: 800;
-      line-height: 1.3;
+      line-height: 1.32;
     }
 
     .idx-update-sub {
       display: block;
-      font-size: 0.74rem;
+      font-size: 0.73rem;
       color: var(--muted);
       margin-top: 0.15rem;
-      line-height: 1.35;
     }
 
     .idx-update-time {
       flex-shrink: 0;
-      font-size: 0.69rem;
+      font-size: 0.68rem;
       font-weight: 800;
       color: var(--primary);
       background: rgba(225, 29, 42, 0.08);
       padding: 0.2rem 0.5rem;
       border-radius: 999px;
+      white-space: nowrap;
     }
 
     .idx-features {
@@ -434,7 +434,7 @@
 
   <main>
     <div class="idx-page">
-      <!-- HERO + 10 DERNIÈRES MISES À JOUR EN TEMPS RÉEL -->
+      <!-- HERO + 10 DERNIÈRES MISES À JOUR DU SITE -->
       <section class="idx-hero">
         <div>
           <span class="idx-pill">Communauté Indépendante • Jeunes Sapeurs-Pompiers</span>
@@ -446,12 +446,12 @@
           </div>
         </div>
 
-        <aside class="idx-updates-panel" aria-label="10 dernières mises à jour">
+        <aside class="idx-updates-panel" aria-label="10 dernières mises à jour du site">
           <div class="idx-updates-head">
-            <h2>10 dernières mises à jour</h2>
-            <span class="live-chip"><span class="live-dot"></span>Temps réel</span>
+            <h2>10 dernières mises à jour du site</h2>
+            <span class="live-chip"><span class="live-dot"></span>En direct</span>
           </div>
-          <div class="idx-updates-list" id="live-updates-list"></div>
+          <div class="idx-updates-list" id="site-updates-list"></div>
         </aside>
       </section>
 
@@ -578,7 +578,6 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
-      collection,
       doc,
       getDoc,
       onSnapshot
@@ -593,51 +592,38 @@
     const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
     const drawerAdminLink = document.getElementById('drawer-admin-link');
     const drawerMailLink = document.getElementById('drawer-mail-link');
-    const liveUpdatesList = document.getElementById('live-updates-list');
+    const siteUpdatesList = document.getElementById('site-updates-list');
 
-    const BASE_UPDATES = [
-      { title: 'Ajout de l’espace Ressources (ressources.html)', sub: 'Nouvelle rubrique dédiée aux fiches et supports JSP', tag: 'Site' },
-      { title: 'Chat candidat & compteur de messages non lus', sub: 'Échanges directs sur les candidatures et badge 1, 2, 3...', tag: 'Recrutement' },
-      { title: 'Suppression directe des candidatures dans Admin', sub: 'Nettoyage complet d’une candidature et de ses messages', tag: 'Admin' },
-      { title: 'Sélecteur simple des rôles dans l’espace Admin', sub: 'Choix d’un rôle puis attribution par cases à cocher', tag: 'Admin' },
-      { title: 'Règles Firestore mises à jour', sub: 'Support du chat de recrutement et des collections du site', tag: 'Sécurité' },
-      { title: 'Formulaire de candidature en 4 étapes', sub: 'Parcours guidé avec récapitulatif et suivi en direct', tag: 'Recrutement' },
-      { title: 'Protection IP & vérification de suspension', sub: 'Redirection automatique vers ban.html si banni', tag: 'Sécurité' },
-      { title: 'Galerie photo & partage communautaire', sub: 'Publication en 2 étapes et filtres par catégorie', tag: 'Galerie' },
-      { title: 'Forum d’entraide des membres', sub: 'Discussions ouvertes aux comptes actifs', tag: 'Forum' },
-      { title: 'Préparation du serveur Discord Vos JSP', sub: 'Ouverture annoncée prochainement aux membres inscrits', tag: 'Discord' }
+    const GITHUB_OWNER = 'antoine51000';
+    const GITHUB_REPO = 'vos-jsp';
+
+    const FALLBACK_SITE_UPDATES = [
+      { title: 'Refonte de l’accueil & ajout de Ressources', date: '22 nov. 2026 • 22:26', code: 'v1.10' },
+      { title: 'Suppression directe des candidatures dans Admin', date: '22 nov. 2026 • 22:15', code: 'v1.9' },
+      { title: 'Messagerie candidat <-> admin avec compteurs', date: '22 nov. 2026 • 22:08', code: 'v1.8' },
+      { title: 'Mise à jour des règles de sécurité Firestore', date: '22 nov. 2026 • 21:55', code: 'v1.7' },
+      { title: 'Simplification du sélecteur de rôles Admin', date: '22 nov. 2026 • 21:40', code: 'v1.6' },
+      { title: 'Correction du formulaire de contact & suggestions', date: '22 nov. 2026 • 14:00', code: 'v1.5' },
+      { title: 'Ajout du suivi des candidatures sur recrutement.html', date: '22 nov. 2026 • 13:30', code: 'v1.4' },
+      { title: 'Mise en ligne de la galerie photo communautaire', date: '21 nov. 2026 • 19:10', code: 'v1.3' },
+      { title: 'Ouverture du forum d’entraide des membres', date: '21 nov. 2026 • 17:45', code: 'v1.2' },
+      { title: 'Lancement initial de la plateforme Vos JSP', date: '20 nov. 2026 • 18:00', code: 'v1.0' }
     ];
 
-    let liveActus = [];
-    let userUnsubscribe = null;
-
-    function formatShortDate(ts) {
-      if (!ts) return 'Récent';
-      const d = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts);
+    function formatCommitDate(isoDate) {
+      const d = new Date(isoDate);
       if (Number.isNaN(d.getTime())) return 'Récent';
-      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+      const diffMin = Math.floor((Date.now() - d.getTime()) / 60000);
+      if (diffMin < 1) return 'À l’instant';
+      if (diffMin < 60) return `Il y a ${diffMin} min`;
+      const diffH = Math.floor(diffMin / 60);
+      if (diffH < 24) return `Il y a ${diffH} h`;
+      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
     }
 
-    function renderLiveUpdates() {
-      const actuItems = liveActus.map((a) => ({
-        title: `Actu : ${a.title || 'Nouvelle publication'}`,
-        sub: a.category ? `${a.category} • ${a.summary || ''}` : (a.summary || 'Nouvelle actualité publiée'),
-        tag: a.createdAt ? formatShortDate(a.createdAt) : 'Actu',
-        sortTs: a.createdAt && typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : Date.now()
-      }));
-
-      const combined = [
-        ...actuItems,
-        ...BASE_UPDATES.map((u, idx) => ({
-          ...u,
-          sortTs: 1000000 - idx
-        }))
-      ]
-        .sort((a, b) => b.sortTs - a.sortTs)
-        .slice(0, 10);
-
-      liveUpdatesList.innerHTML = '';
-      combined.forEach((item) => {
+    function renderSiteUpdates(items) {
+      siteUpdatesList.innerHTML = '';
+      items.slice(0, 10).forEach((item) => {
         const row = document.createElement('div');
         row.className = 'idx-update-row';
 
@@ -648,27 +634,47 @@
 
         const s = document.createElement('span');
         s.className = 'idx-update-sub';
-        s.textContent = item.sub;
+        s.textContent = item.date;
 
         left.append(t, s);
 
         const badge = document.createElement('span');
         badge.className = 'idx-update-time';
-        badge.textContent = item.tag;
+        badge.textContent = item.code;
 
         row.append(left, badge);
-        liveUpdatesList.appendChild(row);
+        siteUpdatesList.appendChild(row);
       });
     }
 
-    onSnapshot(collection(db, 'actus'), (snap) => {
-      const list = [];
-      snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-      liveActus = list;
-      renderLiveUpdates();
-    }, () => {
-      renderLiveUpdates();
-    });
+    async function loadLiveGitHubUpdates() {
+      renderSiteUpdates(FALLBACK_SITE_UPDATES);
+      try {
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/commits?per_page=10`, {
+          cache: 'no-store'
+        });
+        if (!res.ok) return;
+        const commits = await res.json();
+        if (!Array.isArray(commits) || !commits.length) return;
+
+        const mapped = commits.map((c) => {
+          const rawMsg = (c.commit && c.commit.message ? c.commit.message.split('\n')[0] : 'Mise à jour du site').trim();
+          const dateIso = c.commit && c.commit.author ? c.commit.author.date : '';
+          const shortSha = c.sha ? `#${c.sha.slice(0, 6)}` : 'MAJ';
+          return {
+            title: rawMsg,
+            date: formatCommitDate(dateIso),
+            code: shortSha
+          };
+        });
+        renderSiteUpdates(mapped);
+      } catch (_) {}
+    }
+
+    loadLiveGitHubUpdates();
+    setInterval(loadLiveGitHubUpdates, 60000);
+
+    let userUnsubscribe = null;
 
     function getInitials(label) {
       const clean = String(label || 'JS')
@@ -786,8 +792,6 @@
         drawerMailLink.style.display = 'none';
       });
     });
-
-    renderLiveUpdates();
   </script>
 </body>
 </html>

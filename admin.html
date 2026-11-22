@@ -91,6 +91,14 @@
       gap: 1.2rem;
     }
 
+    .adm-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
     .adm-card h2 {
       margin: 0 0 0.2rem;
       font-size: 1.2rem;
@@ -164,35 +172,6 @@
       margin-top: 0.15rem;
     }
 
-    .adm-roles-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      padding: 0.65rem 0.75rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-    }
-
-    .adm-role-chip {
-      display: inline-flex !important;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      padding: 0.25rem 0.55rem;
-      border-radius: 999px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      cursor: pointer;
-    }
-
-    .adm-role-chip input {
-      width: auto !important;
-      margin: 0 !important;
-      accent-color: var(--primary);
-    }
-
     .adm-actions {
       display: flex;
       gap: 0.45rem;
@@ -222,6 +201,85 @@
       width: auto !important;
       margin: 0 !important;
       accent-color: var(--primary);
+    }
+
+    /* Drawer / Panneau Attribution des Rôles */
+    .roles-drawer-box {
+      background: var(--bg);
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      padding: 1.25rem;
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .roles-drawer-box.open {
+      display: flex;
+    }
+
+    .roles-pills-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .role-select-pill {
+      appearance: none;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.55rem 0.95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .role-select-pill:hover {
+      border-color: var(--primary);
+    }
+
+    .role-select-pill.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .role-assign-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .role-member-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0.8rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .role-member-item:hover {
+      border-color: var(--primary);
+    }
+
+    .role-member-item input {
+      width: 18px !important;
+      height: 18px !important;
+      margin: 0 !important;
+      accent-color: var(--primary);
+      cursor: pointer;
     }
   </style>
 </head>
@@ -312,9 +370,32 @@
 
         <!-- 1. MEMBRES & MAILS -->
         <section class="adm-card" id="sec-membres">
-          <div>
-            <h2>Membres, rôles d'équipe &amp; mails admin</h2>
-            <p class="adm-card-sub">Attribue les rôles issus du recrutement aux membres, gère les droits, les bans et les mails internes.</p>
+          <div class="adm-card-head">
+            <div>
+              <h2>Membres &amp; adresses mail admin</h2>
+              <p class="adm-card-sub">Gère les comptes, les rôles d'équipe, les bans et les mails internes.</p>
+            </div>
+            <button type="button" id="toggle-roles-manager" class="btn btn-small">Voir les rôles</button>
+          </div>
+
+          <!-- PANNEAU ATTRIBUTION PAR RÔLE -->
+          <div id="roles-manager-panel" class="roles-drawer-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <div>
+                <strong style="font-size: 1rem;">1. Clique sur un rôle à attribuer :</strong>
+              </div>
+              <button type="button" id="close-roles-manager" class="btn btn-secondary btn-small">Fermer</button>
+            </div>
+
+            <div class="roles-pills-bar" id="roles-pills-bar"></div>
+
+            <div class="role-assign-panel" id="role-assign-panel" style="display: none;">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <strong id="selected-role-heading" style="font-size: 0.96rem;">Attribuer le rôle à :</strong>
+                <input type="search" id="role-member-search" placeholder="Filtrer un membre..." style="max-width: 220px; padding: 0.45rem 0.75rem;">
+              </div>
+              <div class="adm-rows" id="role-members-checklist"></div>
+            </div>
           </div>
 
           <div class="adm-two">
@@ -339,7 +420,7 @@
             </div>
 
             <div class="adm-box">
-              <h3>Liste des membres &amp; rôles</h3>
+              <h3>Liste des membres</h3>
               <div class="form-group">
                 <input type="search" id="user-search" placeholder="Chercher un membre (pseudo, mail, rôle, IP)...">
               </div>
@@ -416,7 +497,7 @@
         <section class="adm-card" id="sec-recrut" style="display: none;">
           <div>
             <h2>Recrutement &amp; Candidatures</h2>
-            <p class="adm-card-sub">Les postes ajoutés ici apparaissent aussi dans les rôles attribuables aux membres.</p>
+            <p class="adm-card-sub">Les postes ajoutés ici apparaissent aussi dans « Voir les rôles ».</p>
           </div>
 
           <div class="adm-two">
@@ -504,6 +585,13 @@
       recrut: document.getElementById('sec-recrut')
     };
 
+    const rolesManagerPanel = document.getElementById('roles-manager-panel');
+    const rolesPillsBar = document.getElementById('roles-pills-bar');
+    const roleAssignPanel = document.getElementById('role-assign-panel');
+    const selectedRoleHeading = document.getElementById('selected-role-heading');
+    const roleMemberSearch = document.getElementById('role-member-search');
+    const roleMembersChecklist = document.getElementById('role-members-checklist');
+
     const BASE_RECRUTEMENT_ROLES = [
       'Modérateur / Modératrice',
       'Rédacteur / Rédactrice Actus',
@@ -515,6 +603,7 @@
     let adminLabel = 'Admin';
     let authSub = null;
     let dataSubs = [];
+    let selectedRoleToAssign = null;
 
     let users = [], mails = [], props = [], actus = [], forum = [], galerie = [], roles = [], apps = [];
 
@@ -587,13 +676,86 @@
         : current.filter((item) => item !== roleName);
 
       await updateDoc(doc(db, 'users', userObj.id), { staffRoles: next });
-      notify(`${checked ? 'Rôle ajouté' : 'Rôle retiré'} : ${roleName}`, true);
+      notify(`${checked ? 'Rôle attribué' : 'Rôle retiré'} (${roleName}) à ${userObj.pseudo || 'ce membre'}.`, true);
     }
+
+    function renderRoleAssigner() {
+      const teamRoles = getAvailableTeamRoles();
+      rolesPillsBar.innerHTML = '';
+
+      if (!teamRoles.length) {
+        rolesPillsBar.innerHTML = '<span style="color:var(--muted);font-size:0.85rem;">Aucun rôle configuré.</span>';
+        roleAssignPanel.style.display = 'none';
+        return;
+      }
+
+      teamRoles.forEach((rName) => {
+        const count = users.filter((u) => Array.isArray(u.staffRoles) && u.staffRoles.includes(rName)).length;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `role-select-pill ${selectedRoleToAssign === rName ? 'selected' : ''}`;
+        btn.textContent = `${rName} (${count})`;
+        btn.addEventListener('click', () => {
+          selectedRoleToAssign = rName;
+          renderRoleAssigner();
+        });
+        rolesPillsBar.appendChild(btn);
+      });
+
+      if (!selectedRoleToAssign || !teamRoles.includes(selectedRoleToAssign)) {
+        roleAssignPanel.style.display = 'none';
+        return;
+      }
+
+      roleAssignPanel.style.display = 'flex';
+      selectedRoleHeading.textContent = `Attribuer le rôle « ${selectedRoleToAssign} » à :`;
+
+      const q = (roleMemberSearch.value || '').trim().toLowerCase();
+      const filteredUsers = users.filter((u) => {
+        if (!q) return true;
+        return `${u.pseudo || ''} ${u.email || ''}`.toLowerCase().includes(q);
+      });
+
+      roleMembersChecklist.innerHTML = '';
+      if (!filteredUsers.length) {
+        roleMembersChecklist.innerHTML = '<div class="adm-empty">Aucun membre trouvé.</div>';
+        return;
+      }
+
+      filteredUsers.forEach((u) => {
+        const hasRole = Array.isArray(u.staffRoles) && u.staffRoles.includes(selectedRoleToAssign);
+        const label = document.createElement('label');
+        label.className = 'role-member-item';
+
+        const span = document.createElement('span');
+        span.textContent = `${u.pseudo || 'Membre'} (${u.email || 'sans e-mail'})`;
+
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.checked = hasRole;
+        chk.addEventListener('change', async () => {
+          await toggleMemberTeamRole(u, selectedRoleToAssign, chk.checked);
+        });
+
+        label.append(span, chk);
+        roleMembersChecklist.appendChild(label);
+      });
+    }
+
+    document.getElementById('toggle-roles-manager').addEventListener('click', () => {
+      const isOpen = rolesManagerPanel.classList.toggle('open');
+      if (isOpen) renderRoleAssigner();
+    });
+
+    document.getElementById('close-roles-manager').addEventListener('click', () => {
+      rolesManagerPanel.classList.remove('open');
+    });
+
+    roleMemberSearch.addEventListener('input', renderRoleAssigner);
 
     function renderUsers() {
       const box = document.getElementById('users-list');
       const q = (document.getElementById('user-search').value || '').trim().toLowerCase();
-      const teamRoles = getAvailableTeamRoles();
 
       const list = users.filter((u) => {
         if (!q) return true;
@@ -625,28 +787,11 @@
         t.textContent = `${u.pseudo || 'Membre'} (${u.email || '—'})`;
         const s = document.createElement('span');
         s.className = 'adm-row-sub';
-        s.textContent = `Accès : ${role}${memberTeamRoles.length ? ` • Postes : ${memberTeamRoles.join(', ')}` : ''}${banned ? ' • BANNI' : ''}${ip ? ` • IP : ${ip}` : ''}`;
+        s.textContent = `Accès : ${role}${memberTeamRoles.length ? ` • Rôles : ${memberTeamRoles.join(', ')}` : ''}${banned ? ' • BANNI' : ''}${ip ? ` • IP : ${ip}` : ''}`;
         info.append(t, s);
 
         head.append(info);
         row.append(head);
-
-        // Sélecteur des rôles liés au recrutement
-        const rolesBox = document.createElement('div');
-        rolesBox.className = 'adm-roles-grid';
-        teamRoles.forEach((rName) => {
-          const chip = document.createElement('label');
-          chip.className = 'adm-role-chip';
-          const chk = document.createElement('input');
-          chk.type = 'checkbox';
-          chk.checked = memberTeamRoles.includes(rName);
-          chk.addEventListener('change', async () => {
-            await toggleMemberTeamRole(u, rName, chk.checked);
-          });
-          chip.append(chk, document.createTextNode(rName));
-          rolesBox.appendChild(chip);
-        });
-        row.appendChild(rolesBox);
 
         const acts = document.createElement('div');
         acts.className = 'adm-actions';
@@ -960,13 +1105,13 @@
     function startDataSubs() {
       stopDataSubs();
       const map = [
-        ['users', (l) => { users = l; renderUsers(); }],
+        ['users', (l) => { users = l; renderUsers(); if (rolesManagerPanel.classList.contains('open')) renderRoleAssigner(); }],
         ['admin_mails', (l) => { mails = l; renderMails(); }],
         ['propositions', (l) => { props = l; renderActusAndProps(); }],
         ['actus', (l) => { actus = l; renderActusAndProps(); }],
         ['forum', (l) => { forum = l; renderMod(); }],
         ['galerie', (l) => { galerie = l; renderMod(); }],
-        ['recrutement_postes', (l) => { roles = l; renderRecrut(); renderUsers(); }],
+        ['recrutement_postes', (l) => { roles = l; renderRecrut(); renderUsers(); if (rolesManagerPanel.classList.contains('open')) renderRoleAssigner(); }],
         ['candidatures', (l) => { apps = l; renderRecrut(); }]
       ];
       map.forEach(([colName, cb]) => {

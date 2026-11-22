@@ -212,7 +212,7 @@
       }
     }
 
-    .scan-preview-box {
+    .photo-preview-box {
       background: var(--bg);
       border: 1.5px dashed var(--border);
       border-radius: 20px;
@@ -222,9 +222,8 @@
       gap: 0.75rem;
     }
 
-    .scan-frame {
-      position: relative;
-      background: #f8fafc;
+    .photo-frame {
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
@@ -234,14 +233,14 @@
       justify-content: center;
     }
 
-    .scan-frame img {
+    .photo-frame img {
       width: 100%;
       max-height: 320px;
       object-fit: contain;
       display: block;
     }
 
-    .scan-placeholder {
+    .photo-placeholder {
       color: var(--muted);
       font-size: 0.85rem;
       text-align: center;
@@ -300,33 +299,18 @@
       white-space: pre-line;
     }
 
-    .res-scanned-sheet {
-      background: #f8fafc;
+    .res-photo-box {
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 0.45rem;
-      position: relative;
+      overflow: hidden;
       cursor: zoom-in;
+      background: var(--surface);
     }
 
-    .res-scanned-badge {
-      position: absolute;
-      top: 0.85rem;
-      left: 0.85rem;
-      background: rgba(15, 23, 42, 0.85);
-      color: #fff;
-      font-size: 0.68rem;
-      font-weight: 800;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      letter-spacing: 0.03em;
-    }
-
-    .res-scanned-sheet img {
+    .res-photo-box img {
       width: 100%;
-      max-height: 250px;
+      max-height: 260px;
       object-fit: cover;
-      border-radius: 11px;
       display: block;
     }
 
@@ -362,7 +346,6 @@
     .res-modal-inner img {
       width: 100%;
       border-radius: 14px;
-      background: #f8fafc;
     }
   </style>
 </head>
@@ -427,7 +410,7 @@
         <div>
           <span class="badge">Explorateur JSP1 – JSP4 • Vos JSP</span>
           <h1>Explorateur de Ressources &amp; Fiches</h1>
-          <p><strong>Double-clique</strong> sur un dossier (<strong>JSP1</strong>, <strong>JSP2</strong>, <strong>JSP3</strong>, <strong>JSP4</strong>) puis sur un sous-dossier pour ouvrir son contenu. Les <strong>Rédacteur Fiches &amp; Cours JSP</strong>, <strong>admin</strong> et <strong>superadmin</strong> peuvent créer des sous-dossiers et publier des fiches avec numérisation auto.</p>
+          <p><strong>Double-clique</strong> sur un dossier (<strong>JSP1</strong>, <strong>JSP2</strong>, <strong>JSP3</strong>, <strong>JSP4</strong>) puis sur un sous-dossier pour ouvrir son contenu. Les <strong>Rédacteur Fiches &amp; Cours JSP</strong>, <strong>admin</strong> et <strong>superadmin</strong> peuvent créer des sous-dossiers et publier des fiches avec photo.</p>
         </div>
         <span class="badge" id="res-perm-badge">Lecture seule</span>
       </header>
@@ -453,7 +436,7 @@
       <section class="res-card" id="res-editor-card" style="display: none;">
         <div>
           <h2>Ajouter une fiche / un cours</h2>
-          <p class="res-item-meta">Choisis le dossier JSP et le sous-dossier, écris le texte et prends une photo pour numérisation automatique.</p>
+          <p class="res-item-meta">Choisis le dossier JSP et le sous-dossier, écris le texte et ajoute une photo.</p>
         </div>
 
         <form id="res-form">
@@ -487,7 +470,7 @@
               </div>
 
               <div class="form-group">
-                <label for="res-photo">Prendre une photo ou importer une image (numérisation auto)</label>
+                <label for="res-photo">Prendre une photo ou importer une image</label>
                 <input type="file" id="res-photo" accept="image/*" capture="environment">
               </div>
 
@@ -497,14 +480,14 @@
               </div>
             </div>
 
-            <div class="scan-preview-box">
+            <div class="photo-preview-box">
               <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
-                <strong style="font-size: 0.9rem;">Aperçu numérisation auto</strong>
-                <span class="badge" id="scan-status">En attente de photo</span>
+                <strong style="font-size: 0.9rem;">Aperçu photo</strong>
+                <span class="badge" id="photo-status">Aucune photo</span>
               </div>
 
-              <div class="scan-frame" id="scan-preview-frame">
-                <div class="scan-placeholder">Prends une photo ou choisis une image pour lancer la numérisation automatique.</div>
+              <div class="photo-frame" id="photo-preview-frame">
+                <div class="photo-placeholder">Prends une photo ou choisis une image pour l'aperçu.</div>
               </div>
             </div>
           </div>
@@ -526,10 +509,10 @@
   <div class="res-modal" id="res-modal">
     <div class="res-modal-inner">
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
-        <strong id="res-modal-title">Aperçu numérisé</strong>
+        <strong id="res-modal-title">Photo</strong>
         <button type="button" class="btn btn-secondary btn-small" id="res-modal-close">Fermer</button>
       </div>
-      <img id="res-modal-img" alt="Fiche numérisée">
+      <img id="res-modal-img" alt="Photo de la ressource">
     </div>
   </div>
 
@@ -598,8 +581,8 @@
     const resPhotoInput = document.getElementById('res-photo');
     const resSubmitBtn = document.getElementById('res-submit');
     const resClearBtn = document.getElementById('res-clear');
-    const scanStatus = document.getElementById('scan-status');
-    const scanPreviewFrame = document.getElementById('scan-preview-frame');
+    const photoStatus = document.getElementById('photo-status');
+    const photoPreviewFrame = document.getElementById('photo-preview-frame');
     const resListTitle = document.getElementById('res-list-title');
     const resListSub = document.getElementById('res-list-sub');
     const resListEl = document.getElementById('res-list');
@@ -614,7 +597,7 @@
     let currentPseudo = 'Membre';
     let canManageFoldersAndRes = false;
     let isSystemAdmin = false;
-    let scannedDataUrl = '';
+    let photoDataUrl = '';
 
     let currentJspFolder = null;
     let currentSubFolder = null;
@@ -902,7 +885,7 @@
       populateSubfolderSelect(resJspLevelSelect.value);
     });
 
-    function autoScanImageFile(file) {
+    function readCleanPhotoFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = reject;
@@ -910,135 +893,16 @@
           const img = new Image();
           img.onerror = reject;
           img.onload = () => {
-            const maxW = 1240;
+            const maxW = 1280;
             const scale = img.width > maxW ? maxW / img.width : 1;
-            const rawW = Math.round(img.width * scale);
-            const rawH = Math.round(img.height * scale);
-
-            const workCanvas = document.createElement('canvas');
-            workCanvas.width = rawW;
-            workCanvas.height = rawH;
-            const workCtx = workCanvas.getContext('2d');
-            workCtx.drawImage(img, 0, 0, rawW, rawH);
-
-            const data = workCtx.getImageData(0, 0, rawW, rawH).data;
-
-            const isPagePixel = (x, y) => {
-              const idx = (y * rawW + x) * 4;
-              const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
-              return lum > 105;
-            };
-
-            let topY = 0;
-            for (let y = 0; y < rawH * 0.45; y += 2) {
-              let hits = 0;
-              for (let x = Math.round(rawW * 0.2); x < Math.round(rawW * 0.8); x += 8) {
-                if (isPagePixel(x, y)) hits++;
-              }
-              if (hits >= 12) { topY = y; break; }
-            }
-
-            let botY = rawH;
-            for (let y = rawH - 1; y > rawH * 0.55; y -= 2) {
-              let hits = 0;
-              for (let x = Math.round(rawW * 0.2); x < Math.round(rawW * 0.8); x += 8) {
-                if (isPagePixel(x, y)) hits++;
-              }
-              if (hits >= 12) { botY = Math.min(rawH, y + 4); break; }
-            }
-
-            let leftX = 0;
-            for (let x = 0; x < rawW * 0.45; x += 2) {
-              let hits = 0;
-              for (let y = Math.round(rawH * 0.2); y < Math.round(rawH * 0.8); y += 8) {
-                if (isPagePixel(x, y)) hits++;
-              }
-              if (hits >= 12) { leftX = x; break; }
-            }
-
-            let rightX = rawW;
-            for (let x = rawW - 1; x > rawW * 0.55; x -= 2) {
-              let hits = 0;
-              for (let y = Math.round(rawH * 0.2); y < Math.round(rawH * 0.8); y += 8) {
-                if (isPagePixel(x, y)) hits++;
-              }
-              if (hits >= 12) { rightX = Math.min(rawW, x + 4); break; }
-            }
-
-            const cropW = Math.max(160, rightX - leftX);
-            const cropH = Math.max(160, botY - topY);
-
-            const pageCanvas = document.createElement('canvas');
-            pageCanvas.width = cropW;
-            pageCanvas.height = cropH;
-            const pageCtx = pageCanvas.getContext('2d');
-            pageCtx.drawImage(workCanvas, leftX, topY, cropW, cropH, 0, 0, cropW, cropH);
-
-            const pageImg = pageCtx.getImageData(0, 0, cropW, cropH);
-            const p = pageImg.data;
-
-            for (let i = 0; i < p.length; i += 4) {
-              let r = p[i];
-              let g = p[i + 1];
-              let b = p[i + 2];
-
-              const maxC = Math.max(r, g, b);
-              const minC = Math.min(r, g, b);
-              const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
-              const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-
-              if (sat < 0.18 && lum > 155) {
-                r = 255;
-                g = 255;
-                b = 255;
-              } else if (sat < 0.2 && lum <= 155) {
-                const darkFactor = 1.55;
-                r = Math.max(0, Math.min(255, Math.round((r - 120) * darkFactor + 100)));
-                g = Math.max(0, Math.min(255, Math.round((g - 120) * darkFactor + 100)));
-                b = Math.max(0, Math.min(255, Math.round((b - 120) * darkFactor + 100)));
-              } else {
-                r = Math.max(0, Math.min(255, Math.round((r - 128) * 1.22 + 138)));
-                g = Math.max(0, Math.min(255, Math.round((g - 128) * 1.22 + 138)));
-                b = Math.max(0, Math.min(255, Math.round((b - 128) * 1.22 + 138)));
-              }
-
-              p[i] = r;
-              p[i + 1] = g;
-              p[i + 2] = b;
-            }
-
-            pageCtx.putImageData(pageImg, 0, 0);
-
-            const headerH = 42;
-            const pad = 24;
-            const outCanvas = document.createElement('canvas');
-            outCanvas.width = cropW + pad * 2;
-            outCanvas.height = cropH + pad * 2 + headerH;
-            const outCtx = outCanvas.getContext('2d');
-
-            outCtx.fillStyle = '#f8fafc';
-            outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
-
-            outCtx.fillStyle = '#ffffff';
-            outCtx.fillRect(0, 0, outCanvas.width, headerH);
-            outCtx.fillStyle = '#e11d2a';
-            outCtx.fillRect(0, headerH - 2, outCanvas.width, 2);
-
-            outCtx.fillStyle = '#0f172a';
-            outCtx.font = 'bold 13px sans-serif';
-            outCtx.fillText('FICHE NUMÉRISÉE • VOS JSP', pad, 26);
-
-            outCtx.fillStyle = '#64748b';
-            outCtx.font = '600 11px sans-serif';
-            outCtx.fillText('Texte & schémas nettoyés', Math.max(pad + 190, outCanvas.width - pad - 145), 26);
-
-            outCtx.drawImage(pageCanvas, pad, pad + headerH);
-
-            outCtx.strokeStyle = '#cbd5e1';
-            outCtx.lineWidth = 1.5;
-            outCtx.strokeRect(pad, pad + headerH, cropW, cropH);
-
-            resolve(outCanvas.toDataURL('image/jpeg', 0.86));
+            const w = Math.round(img.width * scale);
+            const h = Math.round(img.height * scale);
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.85));
           };
           img.src = reader.result;
         };
@@ -1046,29 +910,29 @@
       });
     }
 
-    function renderScanPreview() {
-      scanPreviewFrame.innerHTML = '';
-      if (!scannedDataUrl) {
-        scanStatus.textContent = 'En attente de photo';
-        scanPreviewFrame.innerHTML = '<div class="scan-placeholder">Prends une photo ou choisis une image pour lancer la numérisation automatique.</div>';
+    function renderPhotoPreview() {
+      photoPreviewFrame.innerHTML = '';
+      if (!photoDataUrl) {
+        photoStatus.textContent = 'Aucune photo';
+        photoPreviewFrame.innerHTML = '<div class="photo-placeholder">Prends une photo ou choisis une image pour l\'aperçu.</div>';
         return;
       }
-      scanStatus.textContent = 'Numérisation prête';
+      photoStatus.textContent = 'Photo prête';
       const img = document.createElement('img');
-      img.src = scannedDataUrl;
-      img.alt = 'Aperçu numérisé';
-      scanPreviewFrame.appendChild(img);
+      img.src = photoDataUrl;
+      img.alt = 'Aperçu photo';
+      photoPreviewFrame.appendChild(img);
     }
 
     resPhotoInput.addEventListener('change', async () => {
       const file = resPhotoInput.files && resPhotoInput.files[0];
       if (!file) return;
-      scanStatus.textContent = 'Numérisation...';
+      photoStatus.textContent = 'Chargement...';
       try {
-        scannedDataUrl = await autoScanImageFile(file);
-        renderScanPreview();
+        photoDataUrl = await readCleanPhotoFile(file);
+        renderPhotoPreview();
       } catch (_) {
-        showAlert('Impossible de numériser cette image.');
+        showAlert('Impossible de charger cette photo.');
       }
     });
 
@@ -1077,8 +941,8 @@
       resForm.reset();
       resJspLevelSelect.value = targetLvl;
       populateSubfolderSelect(targetLvl, currentSubFolder || 'Général');
-      scannedDataUrl = '';
-      renderScanPreview();
+      photoDataUrl = '';
+      renderPhotoPreview();
     }
     resClearBtn.addEventListener('click', resetEditor);
 
@@ -1105,7 +969,7 @@
           subfolder,
           title,
           content,
-          scannedImageUrl: scannedDataUrl || '',
+          scannedImageUrl: photoDataUrl || '',
           author: currentPseudo,
           authorUid: currentUser.uid,
           createdAt: serverTimestamp()
@@ -1191,24 +1055,20 @@
         card.appendChild(txt);
 
         if (r.scannedImageUrl) {
-          const sheet = document.createElement('div');
-          sheet.className = 'res-scanned-sheet';
-
-          const scanTag = document.createElement('span');
-          scanTag.className = 'res-scanned-badge';
-          scanTag.textContent = 'SCAN AUTO';
+          const box = document.createElement('div');
+          box.className = 'res-photo-box';
 
           const img = document.createElement('img');
           img.src = r.scannedImageUrl;
-          img.alt = r.title || 'Fiche numérisée';
+          img.alt = r.title || 'Photo';
 
-          sheet.append(scanTag, img);
-          sheet.addEventListener('click', () => {
-            modalTitle.textContent = `${r.title || 'Fiche numérisée'} (${r.jspLevel || 'JSP1'} / ${r.subfolder || 'Général'})`;
+          box.appendChild(img);
+          box.addEventListener('click', () => {
+            modalTitle.textContent = `${r.title || 'Photo'} (${r.jspLevel || 'JSP1'} / ${r.subfolder || 'Général'})`;
             modalImg.src = r.scannedImageUrl;
             modalEl.classList.add('open');
           });
-          card.appendChild(sheet);
+          card.appendChild(box);
         }
 
         resListEl.appendChild(card);
@@ -1303,7 +1163,7 @@
     });
 
     populateSubfolderSelect('JSP1');
-    renderScanPreview();
+    renderPhotoPreview();
     renderExplorer();
     renderRessourcesList();
   </script>

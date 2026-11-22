@@ -18,19 +18,19 @@
       position: relative;
       overflow: hidden;
       background:
-        radial-gradient(circle at top right, rgba(225, 29, 42, 0.14), transparent 45%),
+        radial-gradient(circle at top right, rgba(225, 29, 42, 0.15), transparent 46%),
         linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
       border: 1px solid var(--border);
       border-radius: 28px;
       padding: 2.35rem 2.15rem;
       box-shadow: var(--shadow);
       display: grid;
-      grid-template-columns: 1.35fr 0.9fr;
+      grid-template-columns: 1.32fr 0.98fr;
       gap: 1.65rem;
       align-items: center;
     }
 
-    @media (max-width: 840px) {
+    @media (max-width: 880px) {
       .idx-hero {
         grid-template-columns: 1fr;
         padding: 1.75rem 1.45rem;
@@ -76,41 +76,107 @@
       align-items: center;
     }
 
-    .idx-highlight-box {
+    .idx-updates-panel {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 24px;
-      padding: 1.3rem;
+      padding: 1.25rem 1.3rem;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+      gap: 0.8rem;
     }
 
-    .idx-highlight-item {
-      padding: 0.8rem 0.95rem;
-      border-radius: 16px;
+    .idx-updates-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .idx-updates-head h2 {
+      margin: 0;
+      font-size: 1.02rem;
+      letter-spacing: -0.01em;
+    }
+
+    .live-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      background: rgba(225, 29, 42, 0.11);
+      border: 1px solid rgba(225, 29, 42, 0.25);
+      padding: 0.22rem 0.55rem;
+      border-radius: 999px;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: pulseLive 1.4s infinite ease-in-out;
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.55; }
+    }
+
+    .idx-updates-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 365px;
+      overflow-y: auto;
+      padding-right: 0.2rem;
+    }
+
+    .idx-update-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.65rem;
+      padding: 0.65rem 0.8rem;
+      border-radius: 14px;
       background: var(--bg);
       border: 1px solid var(--border);
-      transition: transform 0.18s ease, border-color 0.18s ease;
+      transition: transform 0.16s ease, border-color 0.16s ease;
     }
 
-    .idx-highlight-item:hover {
+    .idx-update-row:hover {
       transform: translateX(3px);
       border-color: rgba(225, 29, 42, 0.35);
     }
 
-    .idx-highlight-item strong {
+    .idx-update-title {
       display: block;
-      font-size: 0.92rem;
+      font-size: 0.85rem;
+      font-weight: 800;
+      line-height: 1.3;
     }
 
-    .idx-highlight-item span {
+    .idx-update-sub {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.74rem;
       color: var(--muted);
-      margin-top: 0.2rem;
-      line-height: 1.4;
+      margin-top: 0.15rem;
+      line-height: 1.35;
+    }
+
+    .idx-update-time {
+      flex-shrink: 0;
+      font-size: 0.69rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: rgba(225, 29, 42, 0.08);
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
     }
 
     .idx-features {
@@ -368,7 +434,7 @@
 
   <main>
     <div class="idx-page">
-      <!-- HERO -->
+      <!-- HERO + 10 DERNIÈRES MISES À JOUR EN TEMPS RÉEL -->
       <section class="idx-hero">
         <div>
           <span class="idx-pill">Communauté Indépendante • Jeunes Sapeurs-Pompiers</span>
@@ -380,20 +446,13 @@
           </div>
         </div>
 
-        <div class="idx-highlight-box">
-          <div class="idx-highlight-item">
-            <strong>Ressources &amp; Fiches JSP</strong>
-            <span>Retrouve des supports, guides et outils dédiés au parcours et au quotidien JSP.</span>
+        <aside class="idx-updates-panel" aria-label="10 dernières mises à jour">
+          <div class="idx-updates-head">
+            <h2>10 dernières mises à jour</h2>
+            <span class="live-chip"><span class="live-dot"></span>Temps réel</span>
           </div>
-          <div class="idx-highlight-item">
-            <strong>Galerie &amp; Album</strong>
-            <span>Publie tes photos en 2 étapes, filtre par catégorie et soutiens la communauté.</span>
-          </div>
-          <div class="idx-highlight-item">
-            <strong>Forum &amp; Discord à venir</strong>
-            <span>Discute avec les membres et prépare-toi à l'ouverture du futur serveur Discord.</span>
-          </div>
-        </div>
+          <div class="idx-updates-list" id="live-updates-list"></div>
+        </aside>
       </section>
 
       <!-- ACCÈS RAPIDE -->
@@ -519,6 +578,7 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
+      collection,
       doc,
       getDoc,
       onSnapshot
@@ -533,8 +593,82 @@
     const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
     const drawerAdminLink = document.getElementById('drawer-admin-link');
     const drawerMailLink = document.getElementById('drawer-mail-link');
+    const liveUpdatesList = document.getElementById('live-updates-list');
 
+    const BASE_UPDATES = [
+      { title: 'Ajout de l’espace Ressources (ressources.html)', sub: 'Nouvelle rubrique dédiée aux fiches et supports JSP', tag: 'Site' },
+      { title: 'Chat candidat & compteur de messages non lus', sub: 'Échanges directs sur les candidatures et badge 1, 2, 3...', tag: 'Recrutement' },
+      { title: 'Suppression directe des candidatures dans Admin', sub: 'Nettoyage complet d’une candidature et de ses messages', tag: 'Admin' },
+      { title: 'Sélecteur simple des rôles dans l’espace Admin', sub: 'Choix d’un rôle puis attribution par cases à cocher', tag: 'Admin' },
+      { title: 'Règles Firestore mises à jour', sub: 'Support du chat de recrutement et des collections du site', tag: 'Sécurité' },
+      { title: 'Formulaire de candidature en 4 étapes', sub: 'Parcours guidé avec récapitulatif et suivi en direct', tag: 'Recrutement' },
+      { title: 'Protection IP & vérification de suspension', sub: 'Redirection automatique vers ban.html si banni', tag: 'Sécurité' },
+      { title: 'Galerie photo & partage communautaire', sub: 'Publication en 2 étapes et filtres par catégorie', tag: 'Galerie' },
+      { title: 'Forum d’entraide des membres', sub: 'Discussions ouvertes aux comptes actifs', tag: 'Forum' },
+      { title: 'Préparation du serveur Discord Vos JSP', sub: 'Ouverture annoncée prochainement aux membres inscrits', tag: 'Discord' }
+    ];
+
+    let liveActus = [];
     let userUnsubscribe = null;
+
+    function formatShortDate(ts) {
+      if (!ts) return 'Récent';
+      const d = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts);
+      if (Number.isNaN(d.getTime())) return 'Récent';
+      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    }
+
+    function renderLiveUpdates() {
+      const actuItems = liveActus.map((a) => ({
+        title: `Actu : ${a.title || 'Nouvelle publication'}`,
+        sub: a.category ? `${a.category} • ${a.summary || ''}` : (a.summary || 'Nouvelle actualité publiée'),
+        tag: a.createdAt ? formatShortDate(a.createdAt) : 'Actu',
+        sortTs: a.createdAt && typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : Date.now()
+      }));
+
+      const combined = [
+        ...actuItems,
+        ...BASE_UPDATES.map((u, idx) => ({
+          ...u,
+          sortTs: 1000000 - idx
+        }))
+      ]
+        .sort((a, b) => b.sortTs - a.sortTs)
+        .slice(0, 10);
+
+      liveUpdatesList.innerHTML = '';
+      combined.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'idx-update-row';
+
+        const left = document.createElement('div');
+        const t = document.createElement('span');
+        t.className = 'idx-update-title';
+        t.textContent = item.title;
+
+        const s = document.createElement('span');
+        s.className = 'idx-update-sub';
+        s.textContent = item.sub;
+
+        left.append(t, s);
+
+        const badge = document.createElement('span');
+        badge.className = 'idx-update-time';
+        badge.textContent = item.tag;
+
+        row.append(left, badge);
+        liveUpdatesList.appendChild(row);
+      });
+    }
+
+    onSnapshot(collection(db, 'actus'), (snap) => {
+      const list = [];
+      snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+      liveActus = list;
+      renderLiveUpdates();
+    }, () => {
+      renderLiveUpdates();
+    });
 
     function getInitials(label) {
       const clean = String(label || 'JS')
@@ -652,6 +786,8 @@
         drawerMailLink.style.display = 'none';
       });
     });
+
+    renderLiveUpdates();
   </script>
 </body>
 </html>

@@ -6,371 +6,307 @@
   <title>Vos JSP — Recrutement</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .rec-page {
-      max-width: 1120px;
-      margin: 2rem auto 3.6rem;
+    .rec-wrap {
+      max-width: 1080px;
+      margin: 1.8rem auto 3.8rem;
       display: flex;
       flex-direction: column;
-      gap: 1.45rem;
+      gap: 1.4rem;
     }
 
     .rec-hero {
-      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 26px;
-      padding: 1.85rem 2rem;
+      border-radius: 24px;
+      padding: 1.75rem 1.95rem;
       box-shadow: var(--shadow);
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
-      gap: 1.25rem;
+      align-items: center;
+      gap: 1.2rem;
       flex-wrap: wrap;
     }
 
     .rec-hero h1 {
-      margin: 0.55rem 0 0.35rem;
-      font-size: 1.9rem;
+      margin: 0.45rem 0 0.35rem;
+      font-size: 1.85rem;
       letter-spacing: -0.02em;
-      line-height: 1.12;
     }
 
     .rec-hero p {
       margin: 0;
       color: var(--muted);
-      font-size: 0.94rem;
-      max-width: 600px;
-      line-height: 1.52;
+      font-size: 0.92rem;
+      max-width: 580px;
     }
 
     .rec-stats {
       display: flex;
-      gap: 0.65rem;
+      gap: 0.7rem;
       flex-wrap: wrap;
     }
 
-    .rec-stat-box {
-      background: var(--surface);
+    .rec-stat {
+      background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 0.65rem 0.95rem;
-      min-width: 112px;
+      padding: 0.75rem 1rem;
+      min-width: 110px;
     }
 
-    .rec-stat-box small {
+    .rec-stat small {
       display: block;
       font-size: 0.72rem;
       color: var(--muted);
       font-weight: 700;
     }
 
-    .rec-stat-box strong {
+    .rec-stat strong {
       display: block;
-      font-size: 1.05rem;
-      margin-top: 0.12rem;
-      color: var(--primary);
+      font-size: 1.2rem;
+      margin-top: 0.15rem;
     }
 
-    .rec-layout {
+    .rec-grid {
       display: grid;
-      grid-template-columns: 0.95fr 1.2fr;
-      gap: 1.35rem;
+      grid-template-columns: 1fr 1.05fr;
+      gap: 1.25rem;
       align-items: start;
     }
 
-    @media (max-width: 920px) {
-      .rec-layout {
+    @media (max-width: 860px) {
+      .rec-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .rec-section-title {
-      margin: 0 0 0.9rem;
-      font-size: 1.2rem;
+    .rec-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.5rem 1.65rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .rec-roles-stack {
+    .rec-card h2 {
+      margin: 0;
+      font-size: 1.22rem;
+    }
+
+    .rec-sub {
+      margin: 0.2rem 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .role-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .role-item {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 1rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .role-item.selected {
+      border-color: var(--primary);
+    }
+
+    .role-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .role-item-title {
+      font-weight: 800;
+      font-size: 0.98rem;
+    }
+
+    .role-item-desc {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .step-progress {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .step-pane {
+      display: none;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .step-pane.active {
+      display: flex;
+    }
+
+    .summary-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.9rem 1rem;
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    .summary-box p {
+      margin: 0.25rem 0;
+    }
+
+    .step-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 0.3rem;
+    }
+
+    .my-apps-list {
       display: flex;
       flex-direction: column;
       gap: 0.85rem;
     }
 
-    .rec-role-card {
-      background: var(--surface);
+    .my-app-card {
+      background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.15rem 1.25rem;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+      border-radius: 18px;
+      padding: 1.05rem 1.2rem;
       display: flex;
       flex-direction: column;
-      gap: 0.45rem;
-      transition: border-color 0.16s ease, transform 0.16s ease;
+      gap: 0.6rem;
     }
 
-    .rec-role-card.selected {
-      border-color: var(--primary);
-      box-shadow: 0 10px 24px rgba(225, 29, 42, 0.09);
-    }
-
-    .rec-role-card.closed {
-      opacity: 0.72;
-    }
-
-    .rec-role-top {
+    .my-app-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
     }
 
-    .rec-role-title {
-      margin: 0;
-      font-size: 1.06rem;
+    .my-app-title {
       font-weight: 800;
+      font-size: 0.98rem;
     }
 
-    .rec-status-pill {
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 0.22rem 0.62rem;
-      border-radius: 999px;
-    }
-
-    .rec-status-pill.open {
-      background: rgba(22, 163, 74, 0.12);
-      color: #15803d;
-    }
-
-    .rec-status-pill.closed {
-      background: rgba(225, 29, 42, 0.12);
-      color: var(--primary);
-    }
-
-    .rec-role-desc {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.48;
-      white-space: pre-wrap;
-    }
-
-    .rec-role-foot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.6rem;
-      margin-top: 0.25rem;
+    .my-app-meta {
       font-size: 0.78rem;
       color: var(--muted);
-      flex-wrap: wrap;
     }
 
-    .rec-wizard-card {
+    .my-app-details {
+      font-size: 0.84rem;
+      line-height: 1.45;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 1.55rem 1.65rem;
-      box-shadow: var(--shadow);
+      border-radius: 12px;
+      padding: 0.7rem 0.85rem;
     }
 
-    .rec-steps-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.65rem;
-      flex-wrap: wrap;
+    .my-app-details p {
+      margin: 0.2rem 0;
     }
 
-    .rec-step-badge {
+    .msg-count-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      font-size: 0.76rem;
-      font-weight: 800;
-      color: var(--primary);
-      background: rgba(225, 29, 42, 0.1);
-      padding: 0.28rem 0.7rem;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
       border-radius: 999px;
-    }
-
-    .rec-step-pills {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.45rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .rec-step-pill {
-      height: 7px;
-      border-radius: 999px;
-      background: var(--border);
-      overflow: hidden;
-      transition: background 0.2s ease;
-    }
-
-    .rec-step-pill.active {
       background: var(--primary);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 900;
+      margin-left: 0.35rem;
     }
 
-    .rec-step-pill.done {
-      background: rgba(225, 29, 42, 0.48);
-    }
-
-    .rec-locked-box {
-      background: var(--bg);
-      border: 1px dashed var(--border);
-      border-radius: 18px;
-      padding: 1.35rem 1.15rem;
-      text-align: center;
-    }
-
-    .rec-locked-box strong {
-      display: block;
-      font-size: 1rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .rec-locked-box p {
-      margin: 0 0 1rem;
-      font-size: 0.86rem;
-      color: var(--muted);
-    }
-
-    .rec-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 125px;
-      gap: 0.8rem;
-    }
-
-    @media (max-width: 560px) {
-      .rec-grid-2 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .rec-wizard-card textarea {
-      width: 100%;
-      min-height: 92px;
-      resize: vertical;
-      border-radius: 14px;
-      padding: 0.78rem 0.92rem;
-      font-family: inherit;
-    }
-
-    .rec-summary-box {
-      background: var(--bg);
+    .app-chat-box {
+      display: none;
+      flex-direction: column;
+      gap: 0.6rem;
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 0.95rem 1.05rem;
-      margin-bottom: 1rem;
+      border-radius: 14px;
+      padding: 0.8rem;
+    }
+
+    .app-chat-box.open {
+      display: flex;
+    }
+
+    .app-chat-msgs {
+      max-height: 220px;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.45rem;
+    }
+
+    .app-chat-msg {
+      padding: 0.55rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.83rem;
+      line-height: 1.4;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .app-chat-msg.mine {
+      border-color: var(--primary);
+    }
+
+    .app-chat-author {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .app-chat-form {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .app-chat-form input {
+      flex: 1;
+      padding: 0.55rem 0.75rem;
       font-size: 0.85rem;
     }
 
-    .rec-summary-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-
-    .rec-summary-row span {
-      color: var(--muted);
-    }
-
-    .rec-check-row {
-      display: flex !important;
-      align-items: flex-start !important;
-      gap: 0.65rem !important;
-      width: 100% !important;
-      padding: 0.85rem 1rem;
-      border-radius: 14px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      margin-bottom: 1.1rem;
+    .adm-check {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.84rem;
+      font-weight: 700;
       cursor: pointer;
     }
 
-    .rec-check-row input[type="checkbox"] {
+    .adm-check input {
       width: auto !important;
-      flex: 0 0 auto !important;
-      margin: 0.2rem 0 0 0 !important;
+      margin: 0 !important;
       accent-color: var(--primary);
-    }
-
-    .rec-check-row span {
-      flex: 1 1 auto !important;
-      min-width: 0 !important;
-      font-size: 0.86rem;
-      line-height: 1.45;
-      color: var(--text);
-    }
-
-    .rec-step-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.65rem;
-      flex-wrap: wrap;
-    }
-
-    .rec-my-apps {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 1.55rem 1.65rem;
-      box-shadow: var(--shadow);
-    }
-
-    .rec-app-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .rec-app-item {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 0.9rem 1.05rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .rec-app-badge {
-      font-size: 0.75rem;
-      font-weight: 800;
-      padding: 0.24rem 0.65rem;
-      border-radius: 999px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-    }
-
-    .rec-app-badge.accepted {
-      color: #15803d;
-      border-color: rgba(22, 163, 74, 0.35);
-      background: rgba(22, 163, 74, 0.08);
-    }
-
-    .rec-app-badge.rejected {
-      color: var(--primary);
-      border-color: rgba(225, 29, 42, 0.35);
-      background: rgba(225, 29, 42, 0.08);
-    }
-
-    .rec-empty {
-      text-align: center;
-      padding: 1.6rem 1rem;
-      border: 1px dashed var(--border);
-      border-radius: 18px;
-      color: var(--muted);
-      font-size: 0.88rem;
     }
   </style>
 </head>
@@ -429,163 +365,122 @@
   </aside>
 
   <main>
-    <div class="rec-page">
+    <div class="rec-wrap">
       <header class="rec-hero">
         <div>
-          <span class="badge">Équipe &amp; Bénévolat • Vos JSP</span>
+          <span class="badge">Équipe &amp; bénévolat • Vos JSP</span>
           <h1>Rejoins l'équipe Vos JSP</h1>
-          <p>Avance étape par étape pour envoyer ta candidature. Une connexion au compte est obligatoire.</p>
+          <p>Choisis un poste, remplis ta candidature et discute directement avec l'équipe dans tes candidatures en bas de page.</p>
         </div>
         <div class="rec-stats">
-          <div class="rec-stat-box">
+          <div class="rec-stat">
             <small>Postes ouverts</small>
-            <strong id="rec-open-count">0</strong>
+            <strong id="stat-open-roles">0</strong>
           </div>
-          <div class="rec-stat-box">
-            <small>Total fiches</small>
-            <strong id="rec-total-count">0</strong>
+          <div class="rec-stat">
+            <small>Mes candidatures</small>
+            <strong id="stat-my-apps">0</strong>
           </div>
         </div>
       </header>
 
       <div id="rec-alert" class="alert"></div>
 
-      <div class="rec-layout">
-        <div>
-          <h2 class="rec-section-title">Postes disponibles</h2>
-          <div class="rec-roles-stack" id="rec-roles-list">
-            <div class="rec-empty">Chargement des postes...</div>
+      <div class="rec-grid">
+        <!-- COLONNE GAUCHE : POSTES -->
+        <section class="rec-card">
+          <div>
+            <h2>Postes disponibles</h2>
+            <p class="rec-sub">Sélectionne le poste qui t'intéresse.</p>
           </div>
-        </div>
+          <div class="role-list" id="roles-container"></div>
+        </section>
 
-        <div class="rec-wizard-card">
-          <div class="rec-steps-header">
-            <span class="rec-step-badge" id="rec-step-label">Étape 1 / 4 — Profil &amp; Poste</span>
-            <span style="font-size: 0.78rem; color: var(--muted); font-weight: 700;" id="rec-step-percent">25%</span>
-          </div>
-
-          <div class="rec-step-pills" aria-hidden="true">
-            <div class="rec-step-pill active" id="rec-pill-1"></div>
-            <div class="rec-step-pill" id="rec-pill-2"></div>
-            <div class="rec-step-pill" id="rec-pill-3"></div>
-            <div class="rec-step-pill" id="rec-pill-4"></div>
-          </div>
-
-          <div id="rec-auth-lock" class="rec-locked-box">
-            <strong>Connexion obligatoire</strong>
-            <p>Tu dois être connecté à ton compte Vos JSP pour remplir et envoyer une candidature.</p>
-            <a href="login.html" class="btn btn-small">Se connecter</a>
+        <!-- COLONNE DROITE : FORMULAIRE EN 4 ÉTAPES -->
+        <section class="rec-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+            <div>
+              <h2>Formulaire de candidature</h2>
+              <p class="rec-sub" id="selected-role-label">Poste sélectionné : aucun</p>
+            </div>
+            <span class="step-progress" id="step-indicator">Étape 1 / 4</span>
           </div>
 
-          <form id="rec-apply-form" style="display: none;">
+          <form id="candidature-form">
             <!-- ÉTAPE 1 -->
-            <div class="rec-step-pane" data-step="1">
+            <div class="step-pane active" data-step="1">
               <div class="form-group">
-                <label for="rec-role-select">Poste souhaité</label>
-                <select id="rec-role-select" required></select>
+                <label for="app-name">Pseudo / Nom affiché</label>
+                <input type="text" id="app-name" required placeholder="Ton pseudo">
               </div>
-
-              <div class="rec-grid-2">
-                <div class="form-group">
-                  <label for="rec-name-input">Ton pseudo ou prénom</label>
-                  <input type="text" id="rec-name-input" maxlength="80" placeholder="Ex. : Léo" required>
-                </div>
-                <div class="form-group">
-                  <label for="rec-age-input">Ton âge</label>
-                  <input type="number" id="rec-age-input" min="11" max="99" placeholder="Ex. : 14" required>
-                </div>
-              </div>
-
               <div class="form-group">
-                <label for="rec-jsp-status-select">Ton lien avec l'univers JSP / pompiers</label>
-                <select id="rec-jsp-status-select" required>
-                  <option value="JSP en formation">JSP en formation</option>
-                  <option value="Ancien JSP">Ancien JSP</option>
-                  <option value="Sapeur-Pompier / Encadrant">Sapeur-Pompier / Encadrant</option>
-                  <option value="Passionné / Futur JSP">Passionné / Futur JSP</option>
-                </select>
+                <label for="app-profile">Âge &amp; profil (JSP, ancien JSP, encadrant...)</label>
+                <input type="text" id="app-profile" required placeholder="Ex. : 15 ans • JSP2">
               </div>
-
-              <div class="rec-step-actions">
+              <div class="step-nav">
                 <span></span>
-                <button type="button" class="btn btn-small" data-next-step="2">Étape 2 : Contact &amp; Dispos →</button>
+                <button type="button" class="btn btn-small" id="to-step-2">Étape 2 &rarr;</button>
               </div>
             </div>
 
             <!-- ÉTAPE 2 -->
-            <div class="rec-step-pane" data-step="2" style="display: none;">
+            <div class="step-pane" data-step="2">
               <div class="form-group">
-                <label for="rec-contact-input">Moyen de contact (Discord, e-mail...)</label>
-                <input type="text" id="rec-contact-input" maxlength="100" placeholder="Ex. : @pseudo_discord ou mail@exemple.fr" required>
+                <label for="app-contact">Contact (e-mail ou Discord)</label>
+                <input type="text" id="app-contact" required placeholder="Ex. : pseudo@mail.com ou @pseudo">
               </div>
-
               <div class="form-group">
-                <label for="rec-avail-input">Disponibilités dans la semaine</label>
-                <input type="text" id="rec-avail-input" maxlength="140" placeholder="Ex. : Mercredi après-midi, soirs et week-ends" required>
+                <label for="app-avail">Disponibilités</label>
+                <input type="text" id="app-avail" required placeholder="Ex. : Mercredi après-midi et week-end">
               </div>
-
-              <div class="rec-step-actions">
-                <button type="button" class="btn btn-secondary btn-small" data-prev-step="1">← Étape 1</button>
-                <button type="button" class="btn btn-small" data-next-step="3">Étape 3 : Expérience &amp; Motivation →</button>
+              <div class="step-nav">
+                <button type="button" class="btn btn-secondary btn-small" id="back-to-1">&larr; Étape 1</button>
+                <button type="button" class="btn btn-small" id="to-step-3">Étape 3 &rarr;</button>
               </div>
             </div>
 
             <!-- ÉTAPE 3 -->
-            <div class="rec-step-pane" data-step="3" style="display: none;">
+            <div class="step-pane" data-step="3">
               <div class="form-group">
-                <label for="rec-exp-input">Expériences passées (modération, staff, animation, rédaction...)</label>
-                <textarea id="rec-exp-input" maxlength="600" placeholder="Décris tes expériences ou précise si c'est une première fois..." required></textarea>
+                <label for="app-motivation">Motivation &amp; expérience</label>
+                <textarea id="app-motivation" rows="4" required placeholder="Pourquoi veux-tu rejoindre l'équipe Vos JSP ?"></textarea>
               </div>
-
-              <div class="form-group">
-                <label for="rec-motivation-input">Pourquoi veux-tu rejoindre l'équipe et qu'apporteras-tu ?</label>
-                <textarea id="rec-motivation-input" maxlength="800" placeholder="Explique ta motivation et ce que tu veux apporter..." required></textarea>
-              </div>
-
-              <div class="rec-step-actions">
-                <button type="button" class="btn btn-secondary btn-small" data-prev-step="2">← Étape 2</button>
-                <button type="button" class="btn btn-small" data-next-step="4">Étape 4 : Validation →</button>
+              <div class="step-nav">
+                <button type="button" class="btn btn-secondary btn-small" id="back-to-2">&larr; Étape 2</button>
+                <button type="button" class="btn btn-small" id="to-step-4">Étape 4 &rarr;</button>
               </div>
             </div>
 
             <!-- ÉTAPE 4 -->
-            <div class="rec-step-pane" data-step="4" style="display: none;">
-              <div class="rec-summary-box">
-                <div class="rec-summary-row"><span>Poste</span><strong id="rec-sum-role">—</strong></div>
-                <div class="rec-summary-row"><span>Candidat</span><strong id="rec-sum-name">—</strong></div>
-                <div class="rec-summary-row"><span>Âge &amp; Profil</span><strong id="rec-sum-agejsp">—</strong></div>
-                <div class="rec-summary-row"><span>Contact &amp; Dispos</span><strong id="rec-sum-contactavail">—</strong></div>
-              </div>
-
-              <label class="rec-check-row" for="rec-commit">
-                <input type="checkbox" id="rec-commit" required>
-                <span>Je m'engage à respecter les règles de la communauté, le cadre JSP et les décisions de la direction.</span>
+            <div class="step-pane" data-step="4">
+              <div class="summary-box" id="app-summary"></div>
+              <label class="adm-check">
+                <input type="checkbox" id="app-commit" required>
+                <span>Je m'engage à respecter les règles de la communauté et le cadre JSP.</span>
               </label>
-
-              <div class="rec-step-actions">
-                <button type="button" class="btn btn-secondary btn-small" data-prev-step="3">← Étape 3</button>
-                <button type="submit" id="rec-submit-btn" class="btn btn-small">Envoyer ma candidature</button>
+              <div class="step-nav">
+                <button type="button" class="btn btn-secondary btn-small" id="back-to-3">&larr; Étape 3</button>
+                <button type="submit" class="btn btn-small" id="app-submit">Envoyer ma candidature</button>
               </div>
             </div>
           </form>
-        </div>
+        </section>
       </div>
 
-      <section class="rec-my-apps" id="rec-my-apps-box" style="display: none;">
-        <h2 class="rec-section-title" style="margin-bottom: 0.35rem;">Mes candidatures</h2>
-        <p style="margin: 0 0 1rem; color: var(--muted); font-size: 0.86rem;">Suivi en direct de tes demandes envoyées sur ce compte.</p>
-        <div class="rec-app-list" id="rec-my-apps-list">
-          <div class="rec-empty">Aucune candidature envoyée pour le moment.</div>
+      <!-- MES CANDIDATURES + CHAT -->
+      <section class="rec-card" id="mes-candidatures">
+        <div>
+          <h2>Mes candidatures &amp; discussions</h2>
+          <p class="rec-sub">Retrouve le suivi de tes candidatures et échange directement avec l'équipe.</p>
         </div>
+        <div class="my-apps-list" id="my-apps-list"></div>
       </section>
     </div>
   </main>
 
   <footer>
     <div class="footer-container">
-      <div>
-        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
-      </div>
+      <div><strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.</div>
       <div class="footer-links">
         <a href="mentions-legales.html">Mentions légales</a>
         <a href="confidentialite.html">Confidentialité</a>
@@ -614,19 +509,9 @@
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import {
-      collection,
-      query,
-      where,
-      addDoc,
-      doc,
-      getDoc,
-      onSnapshot,
-      serverTimestamp
+      collection, doc, addDoc, updateDoc, onSnapshot, query, where, orderBy, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const profileBox = document.getElementById('drawer-profile-box');
@@ -639,544 +524,470 @@
     const drawerMailLink = document.getElementById('drawer-mail-link');
 
     const alertEl = document.getElementById('rec-alert');
-    const openCountEl = document.getElementById('rec-open-count');
-    const totalCountEl = document.getElementById('rec-total-count');
-    const rolesListEl = document.getElementById('rec-roles-list');
-    const roleSelectEl = document.getElementById('rec-role-select');
+    const rolesContainer = document.getElementById('roles-container');
+    const selectedRoleLabel = document.getElementById('selected-role-label');
+    const statOpenRoles = document.getElementById('stat-open-roles');
+    const statMyApps = document.getElementById('stat-my-apps');
+    const myAppsList = document.getElementById('my-apps-list');
 
-    const stepLabelEl = document.getElementById('rec-step-label');
-    const stepPercentEl = document.getElementById('rec-step-percent');
-    const stepPills = [
-      document.getElementById('rec-pill-1'),
-      document.getElementById('rec-pill-2'),
-      document.getElementById('rec-pill-3'),
-      document.getElementById('rec-pill-4')
-    ];
-    const stepPanes = Array.from(document.querySelectorAll('.rec-step-pane'));
+    const form = document.getElementById('candidature-form');
+    const appNameInput = document.getElementById('app-name');
+    const appProfileInput = document.getElementById('app-profile');
+    const appContactInput = document.getElementById('app-contact');
+    const appAvailInput = document.getElementById('app-avail');
+    const appMotivationInput = document.getElementById('app-motivation');
+    const appCommitInput = document.getElementById('app-commit');
+    const appSubmitBtn = document.getElementById('app-submit');
+    const summaryBox = document.getElementById('app-summary');
+    const stepIndicator = document.getElementById('step-indicator');
 
-    const authLockEl = document.getElementById('rec-auth-lock');
-    const applyForm = document.getElementById('rec-apply-form');
-    const nameInput = document.getElementById('rec-name-input');
-    const ageInput = document.getElementById('rec-age-input');
-    const jspStatusSelect = document.getElementById('rec-jsp-status-select');
-    const contactInput = document.getElementById('rec-contact-input');
-    const availInput = document.getElementById('rec-avail-input');
-    const expInput = document.getElementById('rec-exp-input');
-    const motivationInput = document.getElementById('rec-motivation-input');
-    const commitCheck = document.getElementById('rec-commit');
-    const submitBtn = document.getElementById('rec-submit-btn');
-
-    const sumRoleEl = document.getElementById('rec-sum-role');
-    const sumNameEl = document.getElementById('rec-sum-name');
-    const sumAgeJspEl = document.getElementById('rec-sum-agejsp');
-    const sumContactAvailEl = document.getElementById('rec-sum-contactavail');
-
-    const myAppsBox = document.getElementById('rec-my-apps-box');
-    const myAppsListEl = document.getElementById('rec-my-apps-list');
-
-    const STEP_TITLES = {
-      1: 'Étape 1 / 4 — Profil & Poste',
-      2: 'Étape 2 / 4 — Contact & Dispos',
-      3: 'Étape 3 / 4 — Expérience & Motivation',
-      4: 'Étape 4 / 4 — Engagement & Envoi'
-    };
-
-    const DEFAULT_ROLES = [
+    const DEFAULT_POSTES = [
       {
-        id: 'default-modo',
+        id: 'def-modo',
         title: 'Modérateur / Modératrice',
-        tag: 'Modération',
-        description: 'Veiller au respect des règles, accompagner les membres et garder les échanges propres sur le site et le futur Discord.',
+        description: 'Veiller au respect des règles sur le forum, la galerie et les échanges de la communauté.',
         open: true
       },
       {
-        id: 'default-redac',
+        id: 'def-redac',
         title: 'Rédacteur / Rédactrice Actus',
-        tag: 'Contenu',
-        description: 'Publier des actualités claires, mettre en avant la vie de la communauté et relayer les infos utiles.',
+        description: 'Rédiger, corriger et publier des articles sur la vie JSP, le secourisme et la sécurité civile.',
         open: true
       },
       {
-        id: 'default-discord',
+        id: 'def-anim',
         title: 'Animateur / Staff Discord',
-        tag: 'Communauté',
-        description: 'Aider à structurer et animer le futur serveur Discord, accueillir les nouveaux et organiser les discussions.',
+        description: 'Animer la communauté, aider les membres et relayer les informations importantes.',
         open: true
       }
     ];
 
-    let currentStep = 1;
     let currentUser = null;
-    let userUnsubscribe = null;
-    let rolesUnsubscribe = null;
-    let myAppsUnsubscribe = null;
-    let rolesData = [...DEFAULT_ROLES];
-    let selectedRoleTitle = '';
+    let currentMemberPseudo = 'Membre';
+    let isBannedUser = false;
+    let authSub = null;
+    let myAppsSub = null;
+    let myChatSubs = {};
+    let openChats = new Set();
+    let messagesByApp = {};
+    let selectedRole = DEFAULT_POSTES[0].title;
+    let firestoreRoles = [];
+    let myApps = [];
+    let currentStep = 1;
 
-    function showAlert(msg, isSuccess = false) {
+    function showAlert(msg, ok = false) {
       alertEl.style.display = 'block';
-      alertEl.className = isSuccess ? 'alert success' : 'alert';
+      alertEl.className = ok ? 'alert success' : 'alert';
       alertEl.textContent = msg;
-    }
-
-    function hideAlert() {
-      alertEl.style.display = 'none';
-      alertEl.textContent = '';
     }
 
     function getInitials(label) {
       const clean = String(label || 'JS')
         .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
         .trim() || 'JS';
-      const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-      return clean.slice(0, 2).toUpperCase();
+      const p = clean.split(/[\s._-]+/).filter(Boolean);
+      return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : clean.slice(0, 2).toUpperCase();
     }
 
-    function formatAdminPseudo(userData, fallbackDisplay) {
-      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
-      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
-      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
-      return `[ ADMIN ] ${firstName}`;
+    function formatAdminPseudo(d, fallback) {
+      const raw = (d && (d.prenom || d.pseudo || d.displayName)) || fallback || 'Membre';
+      const first = String(raw).replace(/^\s*\[[^\]]+\]\s*/g, '').trim().split(/\s+/)[0] || 'Membre';
+      return `[ ADMIN ] ${first}`;
     }
 
-    function paintAvatar(container, imgSrc, pseudo) {
-      container.innerHTML = '';
-      if (imgSrc) {
+    function paintAvatar(el, src, pseudo) {
+      el.innerHTML = '';
+      if (src) {
         const img = document.createElement('img');
-        img.src = imgSrc;
+        img.src = src;
         img.alt = pseudo || 'Avatar';
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = 'inherit';
-        img.style.display = 'block';
-        container.appendChild(img);
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;';
+        el.appendChild(img);
       } else {
-        container.textContent = getInitials(pseudo);
+        el.textContent = getInitials(pseudo);
       }
     }
 
-    function refreshSummary() {
-      sumRoleEl.textContent = roleSelectEl.value || '—';
-      sumNameEl.textContent = nameInput.value.trim() || '—';
-      const ageTxt = ageInput.value ? `${ageInput.value} ans` : '—';
-      sumAgeJspEl.textContent = `${ageTxt} • ${jspStatusSelect.value || '—'}`;
-      sumContactAvailEl.textContent = `${contactInput.value.trim() || '—'} • ${availInput.value.trim() || '—'}`;
-    }
-
-    function setStep(stepNum) {
-      currentStep = Math.max(1, Math.min(4, stepNum));
-      stepPanes.forEach((pane) => {
-        pane.style.display = Number(pane.dataset.step) === currentStep ? 'block' : 'none';
+    function setStep(step) {
+      currentStep = step;
+      stepIndicator.textContent = `Étape ${step} / 4`;
+      document.querySelectorAll('.step-pane').forEach((pane) => {
+        pane.classList.toggle('active', Number(pane.dataset.step) === step);
       });
-      stepPills.forEach((pill, idx) => {
-        const n = idx + 1;
-        pill.classList.toggle('active', n === currentStep);
-        pill.classList.toggle('done', n < currentStep);
-      });
-      stepLabelEl.textContent = STEP_TITLES[currentStep] || `Étape ${currentStep} / 4`;
-      stepPercentEl.textContent = `${currentStep * 25}%`;
-      if (currentStep === 4) {
-        refreshSummary();
+      if (step === 4) {
+        summaryBox.innerHTML = `
+          <p><strong>Poste :</strong> ${selectedRole || 'Non choisi'}</p>
+          <p><strong>Candidat :</strong> ${appNameInput.value.trim() || '—'}</p>
+          <p><strong>Profil :</strong> ${appProfileInput.value.trim() || '—'}</p>
+          <p><strong>Contact &amp; dispos :</strong> ${appContactInput.value.trim() || '—'} • ${appAvailInput.value.trim() || '—'}</p>
+          <p><strong>Motivation :</strong> ${appMotivationInput.value.trim() || '—'}</p>
+        `;
       }
     }
 
-    function validateStep(stepNum) {
-      hideAlert();
-      if (stepNum === 1) {
-        const chosenRole = roleSelectEl.value.trim();
-        const roleObj = rolesData.find((r) => r.title === chosenRole);
-        const ageVal = Number(ageInput.value);
-        if (!chosenRole || (roleObj && roleObj.open === false)) {
-          showAlert('Choisis un poste ouvert.');
-          return false;
-        }
-        if (!nameInput.value.trim()) {
-          showAlert('Renseigne ton pseudo ou prénom.');
-          nameInput.focus();
-          return false;
-        }
-        if (!Number.isInteger(ageVal) || ageVal < 11 || ageVal > 99) {
-          showAlert('Renseigne un âge valide (entre 11 et 99 ans).');
-          ageInput.focus();
-          return false;
-        }
-        return true;
-      }
-      if (stepNum === 2) {
-        if (!contactInput.value.trim()) {
-          showAlert('Renseigne un moyen de contact.');
-          contactInput.focus();
-          return false;
-        }
-        if (!availInput.value.trim()) {
-          showAlert('Renseigne tes disponibilités.');
-          availInput.focus();
-          return false;
-        }
-        return true;
-      }
-      if (stepNum === 3) {
-        if (!expInput.value.trim()) {
-          showAlert('Renseigne le champ expérience.');
-          expInput.focus();
-          return false;
-        }
-        if (!motivationInput.value.trim()) {
-          showAlert('Renseigne ta motivation.');
-          motivationInput.focus();
-          return false;
-        }
-        return true;
-      }
-      return true;
-    }
-
-    document.querySelectorAll('[data-next-step]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const target = Number(btn.dataset.nextStep);
-        if (validateStep(currentStep)) {
-          setStep(target);
-        }
-      });
-    });
-
-    document.querySelectorAll('[data-prev-step]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        hideAlert();
-        setStep(Number(btn.dataset.prevStep));
-      });
-    });
-
-    function renderRolesAndSelect() {
-      const openRoles = rolesData.filter((r) => r.open !== false);
-      openCountEl.textContent = String(openRoles.length);
-      totalCountEl.textContent = String(rolesData.length);
-
-      roleSelectEl.innerHTML = '';
-      if (openRoles.length === 0) {
-        const opt = document.createElement('option');
-        opt.value = '';
-        opt.textContent = 'Aucun recrutement ouvert pour le moment';
-        roleSelectEl.appendChild(opt);
-        roleSelectEl.disabled = true;
-        submitBtn.disabled = true;
-      } else {
-        roleSelectEl.disabled = false;
-        submitBtn.disabled = false;
-        openRoles.forEach((r) => {
-          const opt = document.createElement('option');
-          opt.value = r.title;
-          opt.textContent = r.title;
-          roleSelectEl.appendChild(opt);
-        });
-        if (selectedRoleTitle && openRoles.some((r) => r.title === selectedRoleTitle)) {
-          roleSelectEl.value = selectedRoleTitle;
-        } else {
-          selectedRoleTitle = openRoles[0].title;
-          roleSelectEl.value = selectedRoleTitle;
-        }
-      }
-
-      rolesListEl.innerHTML = '';
-      if (rolesData.length === 0) {
-        rolesListEl.innerHTML = '<div class="rec-empty">Aucun poste configuré pour le moment.</div>';
+    document.getElementById('to-step-2').addEventListener('click', () => {
+      if (!appNameInput.value.trim() || !appProfileInput.value.trim()) {
+        showAlert('Remplis ton pseudo et ton profil avant de continuer.');
         return;
       }
+      alertEl.style.display = 'none';
+      setStep(2);
+    });
+    document.getElementById('back-to-1').addEventListener('click', () => setStep(1));
+    document.getElementById('to-step-3').addEventListener('click', () => {
+      if (!appContactInput.value.trim() || !appAvailInput.value.trim()) {
+        showAlert('Remplis ton contact et tes disponibilités avant de continuer.');
+        return;
+      }
+      alertEl.style.display = 'none';
+      setStep(3);
+    });
+    document.getElementById('back-to-2').addEventListener('click', () => setStep(2));
+    document.getElementById('to-step-4').addEventListener('click', () => {
+      if (!appMotivationInput.value.trim()) {
+        showAlert('Écris ta motivation avant de passer au récapitulatif.');
+        return;
+      }
+      alertEl.style.display = 'none';
+      setStep(4);
+    });
+    document.getElementById('back-to-3').addEventListener('click', () => setStep(3));
 
-      rolesData.forEach((roleItem) => {
-        const isOpen = roleItem.open !== false;
-        const isSelected = isOpen && roleSelectEl.value === roleItem.title;
+    function getRolesList() {
+      const merged = [...DEFAULT_POSTES];
+      firestoreRoles.forEach((r) => {
+        const idx = merged.findIndex((m) => m.title.toLowerCase() === String(r.title || '').toLowerCase());
+        if (idx >= 0) merged[idx] = { ...merged[idx], ...r };
+        else merged.push(r);
+      });
+      return merged;
+    }
 
-        const card = document.createElement('article');
-        card.className = `rec-role-card ${isOpen ? '' : 'closed'} ${isSelected ? 'selected' : ''}`;
+    function renderRoles() {
+      const list = getRolesList();
+      const openCount = list.filter((r) => r.open !== false).length;
+      statOpenRoles.textContent = String(openCount);
+
+      if (!list.some((r) => r.title === selectedRole && r.open !== false)) {
+        const firstOpen = list.find((r) => r.open !== false);
+        selectedRole = firstOpen ? firstOpen.title : (list[0] ? list[0].title : '');
+      }
+      selectedRoleLabel.textContent = `Poste sélectionné : ${selectedRole || 'aucun'}`;
+
+      rolesContainer.innerHTML = '';
+      list.forEach((r) => {
+        const isOpen = r.open !== false;
+        const isSel = r.title === selectedRole;
+        const card = document.createElement('div');
+        card.className = `role-item ${isSel ? 'selected' : ''}`;
 
         const top = document.createElement('div');
-        top.className = 'rec-role-top';
+        top.className = 'role-item-top';
 
-        const h3 = document.createElement('h3');
-        h3.className = 'rec-role-title';
-        h3.textContent = roleItem.title || 'Poste';
+        const titleEl = document.createElement('span');
+        titleEl.className = 'role-item-title';
+        titleEl.textContent = r.title;
 
-        const pill = document.createElement('span');
-        pill.className = `rec-status-pill ${isOpen ? 'open' : 'closed'}`;
-        pill.textContent = isOpen ? 'Ouvert' : 'Clôturé';
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = isOpen ? 'Ouvert' : 'Clôturé';
 
-        top.appendChild(h3);
-        top.appendChild(pill);
+        top.append(titleEl, badge);
 
-        const desc = document.createElement('p');
-        desc.className = 'rec-role-desc';
-        desc.textContent = roleItem.description || '';
+        const descEl = document.createElement('p');
+        descEl.className = 'role-item-desc';
+        descEl.textContent = r.description || '';
 
-        const foot = document.createElement('div');
-        foot.className = 'rec-role-foot';
-
-        const tagSpan = document.createElement('span');
-        tagSpan.textContent = roleItem.tag ? `Pôle : ${roleItem.tag}` : 'Équipe Vos JSP';
-        foot.appendChild(tagSpan);
-
-        if (isOpen) {
-          const pickBtn = document.createElement('button');
-          pickBtn.type = 'button';
-          pickBtn.className = 'btn btn-secondary btn-small';
-          pickBtn.textContent = isSelected ? 'Sélectionné' : 'Choisir ce poste';
-          pickBtn.addEventListener('click', () => {
-            selectedRoleTitle = roleItem.title;
-            roleSelectEl.value = roleItem.title;
-            renderRolesAndSelect();
-            if (currentUser && currentStep === 1) nameInput.focus();
-          });
-          foot.appendChild(pickBtn);
-        }
-
-        card.appendChild(top);
-        card.appendChild(desc);
-        card.appendChild(foot);
-        rolesListEl.appendChild(card);
-      });
-    }
-
-    roleSelectEl.addEventListener('change', () => {
-      selectedRoleTitle = roleSelectEl.value;
-      renderRolesAndSelect();
-    });
-
-    function startRolesListener() {
-      if (rolesUnsubscribe) {
-        rolesUnsubscribe();
-        rolesUnsubscribe = null;
-      }
-
-      rolesUnsubscribe = onSnapshot(collection(db, "recrutement_postes"), (snap) => {
-        if (snap.empty) {
-          rolesData = [...DEFAULT_ROLES];
-          renderRolesAndSelect();
-          return;
-        }
-        const list = [];
-        snap.forEach((d) => {
-          list.push({ id: d.id, ...(d.data() || {}) });
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = isSel ? 'btn btn-small' : 'btn btn-secondary btn-small';
+        btn.disabled = !isOpen;
+        btn.textContent = isSel ? 'Sélectionné' : (isOpen ? 'Choisir ce poste' : 'Fermé');
+        btn.addEventListener('click', () => {
+          selectedRole = r.title;
+          renderRoles();
+          if (currentStep === 4) setStep(4);
         });
-        rolesData = list;
-        renderRolesAndSelect();
-      }, () => {
-        rolesData = [...DEFAULT_ROLES];
-        renderRolesAndSelect();
+
+        card.append(top, descEl, btn);
+        rolesContainer.appendChild(card);
       });
     }
 
-    function formatStatusBadge(status) {
-      const s = String(status || 'en_attente').toLowerCase();
-      if (s === 'acceptee' || s === 'acceptée' || s === 'accepted') {
-        return { label: 'Acceptée', cls: 'accepted' };
-      }
-      if (s === 'refusee' || s === 'refusée' || s === 'rejected') {
-        return { label: 'Refusée', cls: 'rejected' };
-      }
-      return { label: 'En attente', cls: '' };
+    function stopMyChatSubs() {
+      Object.values(myChatSubs).forEach((u) => { try { u(); } catch (_) {} });
+      myChatSubs = {};
     }
 
-    function stopMyAppsListener() {
-      if (myAppsUnsubscribe) {
-        myAppsUnsubscribe();
-        myAppsUnsubscribe = null;
-      }
-    }
-
-    function startMyAppsListener(uid) {
-      stopMyAppsListener();
-      myAppsUnsubscribe = onSnapshot(
-        query(collection(db, "candidatures"), where("applicantUid", "==", uid)),
-        (snap) => {
-          const apps = [];
-          snap.forEach((d) => apps.push({ id: d.id, ...(d.data() || {}) }));
-          myAppsListEl.innerHTML = '';
-
-          if (apps.length === 0) {
-            myAppsListEl.innerHTML = '<div class="rec-empty">Aucune candidature envoyée pour le moment.</div>';
-            return;
-          }
-
-          apps.forEach((app) => {
-            const row = document.createElement('div');
-            row.className = 'rec-app-item';
-
-            const left = document.createElement('div');
-            const titleEl = document.createElement('strong');
-            titleEl.textContent = app.role || 'Poste';
-            titleEl.style.display = 'block';
-
-            const metaEl = document.createElement('span');
-            metaEl.textContent = `${app.applicantName || 'Candidat'} • ${app.jspStatus || 'JSP'} • ${app.contact || ''}`;
-            metaEl.style.fontSize = '0.8rem';
-            metaEl.style.color = 'var(--muted)';
-
-            left.appendChild(titleEl);
-            left.appendChild(metaEl);
-
-            const st = formatStatusBadge(app.status);
-            const badge = document.createElement('span');
-            badge.className = `rec-app-badge ${st.cls}`;
-            badge.textContent = st.label;
-
-            row.appendChild(left);
-            row.appendChild(badge);
-            myAppsListEl.appendChild(row);
-          });
-        },
-        () => {
-          myAppsListEl.innerHTML = '<div class="rec-empty">Impossible de charger tes candidatures.</div>';
+    function syncMyChatListeners() {
+      const validIds = new Set(myApps.map((a) => a.id));
+      Object.keys(myChatSubs).forEach((appId) => {
+        if (!validIds.has(appId)) {
+          try { myChatSubs[appId](); } catch (_) {}
+          delete myChatSubs[appId];
         }
-      );
+      });
+
+      myApps.forEach((a) => {
+        if (!myChatSubs[a.id]) {
+          const q = query(collection(db, 'candidatures', a.id, 'messages'), orderBy('createdAt', 'asc'));
+          myChatSubs[a.id] = onSnapshot(q, (snap) => {
+            const list = [];
+            snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+            messagesByApp[a.id] = list;
+            renderMyApps();
+          }, () => {});
+        }
+      });
     }
 
-    applyForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      hideAlert();
+    function getUnreadFromAdmin(appId) {
+      const list = messagesByApp[appId] || [];
+      return list.filter((m) => m.fromAdmin === true && m.readByApplicant !== true).length;
+    }
+
+    async function markAdminMessagesRead(appId) {
+      const list = messagesByApp[appId] || [];
+      const unread = list.filter((m) => m.fromAdmin === true && m.readByApplicant !== true);
+      for (const m of unread) {
+        await updateDoc(doc(db, 'candidatures', appId, 'messages', m.id), { readByApplicant: true }).catch(() => {});
+      }
+    }
+
+    function renderMyApps() {
+      statMyApps.textContent = String(myApps.length);
+      myAppsList.innerHTML = '';
 
       if (!currentUser) {
-        showAlert('Connecte-toi pour envoyer ta candidature.');
-        return;
-      }
-      if (!validateStep(1) || !validateStep(2) || !validateStep(3)) {
-        return;
-      }
-      if (!commitCheck.checked) {
-        showAlert('Coche l’engagement avant d’envoyer ta candidature.');
+        myAppsList.innerHTML = '<div class="my-app-card"><span class="my-app-meta">Connecte-toi pour voir tes candidatures et discuter avec l\'équipe.</span></div>';
         return;
       }
 
-      const ageVal = Number(ageInput.value);
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Envoi en cours...';
+      if (!myApps.length) {
+        myAppsList.innerHTML = '<div class="my-app-card"><span class="my-app-meta">Tu n\'as pas encore envoyé de candidature.</span></div>';
+        return;
+      }
+
+      myApps.forEach((a) => {
+        const roleName = a.roleTitle || a.role || 'Poste';
+        const unread = openChats.has(a.id) ? 0 : getUnreadFromAdmin(a.id);
+
+        const card = document.createElement('div');
+        card.className = 'my-app-card';
+
+        const head = document.createElement('div');
+        head.className = 'my-app-head';
+
+        const left = document.createElement('div');
+        left.innerHTML = `
+          <span class="my-app-title">${roleName}</span>
+          <div class="my-app-meta">Statut : <strong>${a.status || 'en_attente'}</strong> • Contact : ${a.contact || '—'}</div>
+        `;
+
+        const chatBtn = document.createElement('button');
+        chatBtn.type = 'button';
+        chatBtn.className = 'btn btn-secondary btn-small';
+        chatBtn.innerHTML = `Discuter${unread > 0 ? `<span class="msg-count-badge">${unread}</span>` : ''}`;
+
+        head.append(left, chatBtn);
+        card.appendChild(head);
+
+        const det = document.createElement('div');
+        det.className = 'my-app-details';
+        det.innerHTML = `
+          ${a.ageOrProfile ? `<p><strong>Profil :</strong> ${a.ageOrProfile}</p>` : ''}
+          ${a.availability ? `<p><strong>Disponibilités :</strong> ${a.availability}</p>` : ''}
+          ${a.motivation ? `<p><strong>Motivation :</strong> ${a.motivation}</p>` : ''}
+        `;
+        card.appendChild(det);
+
+        const chatBox = document.createElement('div');
+        chatBox.className = `app-chat-box ${openChats.has(a.id) ? 'open' : ''}`;
+
+        const msgsEl = document.createElement('div');
+        msgsEl.className = 'app-chat-msgs';
+        const msgs = messagesByApp[a.id] || [];
+        if (!msgs.length) {
+          msgsEl.innerHTML = '<span class="my-app-meta">Aucun message pour l\'instant. Pose ta question à l\'équipe ici.</span>';
+        } else {
+          msgs.forEach((m) => {
+            const b = document.createElement('div');
+            b.className = `app-chat-msg ${m.senderUid === currentUser.uid ? 'mine' : ''}`;
+            b.innerHTML = `<span class="app-chat-author">${m.senderName || (m.fromAdmin ? 'Équipe Admin' : currentMemberPseudo)}</span>${m.text || ''}`;
+            msgsEl.appendChild(b);
+          });
+        }
+
+        const cForm = document.createElement('form');
+        cForm.className = 'app-chat-form';
+        const cInput = document.createElement('input');
+        cInput.type = 'text';
+        cInput.placeholder = 'Écrire à l\'équipe...';
+        cInput.required = true;
+        const cSend = document.createElement('button');
+        cSend.type = 'submit';
+        cSend.className = 'btn btn-small';
+        cSend.textContent = 'Envoyer';
+
+        cForm.addEventListener('submit', async (ev) => {
+          ev.preventDefault();
+          const txt = cInput.value.trim();
+          if (!txt || !currentUser) return;
+          await addDoc(collection(db, 'candidatures', a.id, 'messages'), {
+            text: txt,
+            senderUid: currentUser.uid,
+            senderName: currentMemberPseudo,
+            fromAdmin: false,
+            readByAdmin: false,
+            readByApplicant: true,
+            createdAt: serverTimestamp()
+          });
+          cInput.value = '';
+        });
+
+        cForm.append(cInput, cSend);
+        chatBox.append(msgsEl, cForm);
+        card.appendChild(chatBox);
+
+        chatBtn.addEventListener('click', async () => {
+          if (openChats.has(a.id)) {
+            openChats.delete(a.id);
+          } else {
+            openChats.add(a.id);
+            await markAdminMessagesRead(a.id);
+          }
+          renderMyApps();
+        });
+
+        myAppsList.appendChild(card);
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) {
+        showAlert('Connecte-toi à ton compte avant d\'envoyer ta candidature.');
+        return;
+      }
+      if (isBannedUser) {
+        showAlert('Ton compte est suspendu.');
+        return;
+      }
+      if (!selectedRole) {
+        showAlert('Choisis un poste avant d\'envoyer.');
+        return;
+      }
+      if (!appCommitInput.checked) {
+        showAlert('Coche l\'engagement avant d\'envoyer.');
+        return;
+      }
+
+      appSubmitBtn.disabled = true;
+      appSubmitBtn.textContent = 'Envoi...';
 
       try {
-        await addDoc(collection(db, "candidatures"), {
-          role: roleSelectEl.value.trim(),
-          applicantName: nameInput.value.trim(),
-          age: ageVal,
-          jspStatus: jspStatusSelect.value,
-          contact: contactInput.value.trim(),
-          availability: availInput.value.trim(),
-          experience: expInput.value.trim(),
-          motivation: motivationInput.value.trim(),
+        await addDoc(collection(db, 'candidatures'), {
           applicantUid: currentUser.uid,
-          applicantEmail: currentUser.email || '',
+          applicantName: appNameInput.value.trim(),
+          ageOrProfile: appProfileInput.value.trim(),
+          contact: appContactInput.value.trim(),
+          availability: appAvailInput.value.trim(),
+          motivation: appMotivationInput.value.trim(),
+          roleTitle: selectedRole,
+          role: selectedRole,
           status: 'en_attente',
           createdAt: serverTimestamp()
         });
 
-        applyForm.reset();
-        commitCheck.checked = false;
+        appMotivationInput.value = '';
+        appCommitInput.checked = false;
         setStep(1);
-        showAlert('Candidature envoyée avec succès ! Elle apparaît dans "Mes candidatures".', true);
+        showAlert('Candidature envoyée ! Tu peux suivre son statut et discuter avec l\'équipe juste en dessous.', true);
       } catch (err) {
-        showAlert('Impossible d’envoyer la candidature : ' + (err.code || err.message));
+        showAlert('Impossible d\'envoyer la candidature : ' + (err.code || err.message));
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Envoyer ma candidature';
+        appSubmitBtn.disabled = false;
+        appSubmitBtn.textContent = 'Envoyer ma candidature';
       }
     });
 
-    function sanitizeIpDocId(ip) {
-      return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
-    }
-
-    async function redirectIfIpBanned() {
-      try {
-        const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
-        if (!res.ok) return false;
-        const data = await res.json();
-        const ip = data && data.ip ? String(data.ip).trim() : '';
-        if (!ip) return false;
-        const snap = await getDoc(doc(db, "banned_ips", sanitizeIpDocId(ip)));
-        if (snap.exists()) {
-          window.location.replace('ban.html');
-          return true;
-        }
-      } catch (_) {}
-      return false;
-    }
-
-    drawerLogoutBtn.addEventListener('click', async () => {
-      stopMyAppsListener();
-      await signOut(auth);
-      window.location.replace('recrutement.html');
+    onSnapshot(collection(db, 'recrutement_postes'), (snap) => {
+      const list = [];
+      snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+      firestoreRoles = list;
+      renderRoles();
     });
 
-    startRolesListener();
-    setStep(1);
-
-    onAuthStateChanged(auth, async (user) => {
-      if (userUnsubscribe) {
-        userUnsubscribe();
-        userUnsubscribe = null;
-      }
-      stopMyAppsListener();
-
-      if (await redirectIfIpBanned()) return;
-
+    onAuthStateChanged(auth, (user) => {
+      if (authSub) { authSub(); authSub = null; }
+      if (myAppsSub) { myAppsSub(); myAppsSub = null; }
+      stopMyChatSubs();
+      myApps = [];
+      messagesByApp = {};
       currentUser = user || null;
 
       if (!user) {
+        isBannedUser = false;
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
         drawerMailLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
-        authLockEl.style.display = 'block';
-        applyForm.style.display = 'none';
-        myAppsBox.style.display = 'none';
+        renderMyApps();
         return;
       }
 
       drawerAuthBtn.style.display = 'none';
       drawerLogoutBtn.style.display = 'inline-flex';
-      authLockEl.style.display = 'none';
-      applyForm.style.display = 'block';
-      myAppsBox.style.display = 'block';
+      const fallback = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      if (!appNameInput.value.trim()) appNameInput.value = fallback;
+      if (!appContactInput.value.trim() && user.email) appContactInput.value = user.email;
 
-      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-      if (!nameInput.value.trim()) {
-        nameInput.value = fallbackName;
-      }
-      if (!contactInput.value.trim() && user.email) {
-        contactInput.value = user.email;
-      }
-
-      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
-        const data = snap.exists() ? (snap.data() || {}) : {};
-        if (data.banned === true) {
-          stopMyAppsListener();
+      authSub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
+        const d = snap.exists() ? (snap.data() || {}) : {};
+        isBannedUser = d.banned === true;
+        if (isBannedUser) {
           window.location.replace('ban.html');
           return;
         }
 
-        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
+        const rawRole = String(d.role || d.grade || 'membre').toLowerCase();
         const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
         const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
-        const pseudo = isAdmin
-          ? formatAdminPseudo(data, fallbackName)
-          : (data.pseudo || fallbackName);
-        const photoDataUrl = data.photoDataUrl || '';
+        const pseudo = isAdmin ? formatAdminPseudo(d, fallback) : (d.pseudo || fallback);
+        currentMemberPseudo = pseudo;
 
         profileBox.style.display = 'flex';
-        paintAvatar(profileAvatar, photoDataUrl, pseudo);
+        paintAvatar(profileAvatar, d.photoDataUrl || '', pseudo);
         profileName.textContent = pseudo;
         profileRole.textContent = roleLabel;
         profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
         drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
         drawerMailLink.style.display = isAdmin ? 'block' : 'none';
 
-        if (!nameInput.value.trim() || nameInput.value === fallbackName) {
-          nameInput.value = pseudo;
+        if (!appNameInput.value.trim() || appNameInput.value === fallback) {
+          appNameInput.value = pseudo;
         }
       });
 
-      startMyAppsListener(user.uid);
+      const qApps = query(collection(db, 'candidatures'), where('applicantUid', '==', user.uid));
+      myAppsSub = onSnapshot(qApps, (snap) => {
+        const list = [];
+        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+        myApps = list;
+        syncMyChatListeners();
+        renderMyApps();
+      });
     });
+
+    drawerLogoutBtn.addEventListener('click', async () => {
+      stopMyChatSubs();
+      await signOut(auth);
+      window.location.replace('recrutement.html');
+    });
+
+    renderRoles();
+    renderMyApps();
   </script>
 </body>
 </html>

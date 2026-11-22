@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/style.css">
   <style>
     .res-page {
-      max-width: 1120px;
+      max-width: 1140px;
       margin: 2rem auto 4rem;
       display: flex;
       flex-direction: column;
@@ -39,7 +39,7 @@
       margin: 0;
       color: var(--muted);
       font-size: 0.94rem;
-      max-width: 600px;
+      max-width: 620px;
       line-height: 1.55;
     }
 
@@ -51,7 +51,119 @@
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 1.1rem;
+      gap: 1.15rem;
+    }
+
+    .jsp-folders-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.9rem;
+    }
+
+    @media (max-width: 860px) {
+      .jsp-folders-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .jsp-folders-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .jsp-folder-btn {
+      appearance: none;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 1.1rem 1.15rem;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .jsp-folder-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(225, 29, 42, 0.4);
+    }
+
+    .jsp-folder-btn.active {
+      border-color: var(--primary);
+      background: rgba(225, 29, 42, 0.08);
+    }
+
+    .jsp-folder-icon {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+
+    .jsp-folder-name {
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    .jsp-folder-count {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .subfolders-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .sub-chip {
+      appearance: none;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 0.48rem 0.9rem;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .sub-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .sub-del-x {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      cursor: pointer;
+      padding-left: 0.15rem;
+    }
+
+    .create-sub-form {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.8rem 0.95rem;
+    }
+
+    .create-sub-form input {
+      flex: 1;
+      min-width: 210px;
     }
 
     .res-editor-grid {
@@ -63,6 +175,18 @@
 
     @media (max-width: 860px) {
       .res-editor-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .res-two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 600px) {
+      .res-two-cols {
         grid-template-columns: 1fr;
       }
     }
@@ -79,30 +203,19 @@
 
     .scan-frame {
       position: relative;
-      background: #fff;
-      border: 1px solid #d7dce3;
+      background: #eef2f6;
+      border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
-      min-height: 210px;
+      min-height: 220px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
-    }
-
-    .scan-frame::before {
-      content: "";
-      position: absolute;
-      inset: 8px;
-      border: 1.5px solid rgba(225, 29, 42, 0.35);
-      border-radius: 9px;
-      pointer-events: none;
-      z-index: 2;
     }
 
     .scan-frame img {
       width: 100%;
-      max-height: 310px;
+      max-height: 320px;
       object-fit: contain;
       display: block;
     }
@@ -112,30 +225,6 @@
       font-size: 0.85rem;
       text-align: center;
       padding: 1.5rem;
-    }
-
-    .res-filters {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .res-filter-btn {
-      appearance: none;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      color: var(--text);
-      font-weight: 800;
-      font-size: 0.82rem;
-      padding: 0.5rem 0.9rem;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-
-    .res-filter-btn.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff;
     }
 
     .res-grid {
@@ -191,20 +280,18 @@
     }
 
     .res-scanned-sheet {
-      background: #ffffff;
-      color: #111827;
-      border: 1px solid #cbd5e1;
+      background: #eef2f6;
+      border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 0.55rem;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      padding: 0.45rem;
       position: relative;
       cursor: zoom-in;
     }
 
     .res-scanned-badge {
       position: absolute;
-      top: 0.95rem;
-      left: 0.95rem;
+      top: 0.85rem;
+      left: 0.85rem;
       background: rgba(15, 23, 42, 0.82);
       color: #fff;
       font-size: 0.68rem;
@@ -254,7 +341,7 @@
     .res-modal-inner img {
       width: 100%;
       border-radius: 14px;
-      background: #fff;
+      background: #eef2f6;
     }
   </style>
 </head>
@@ -317,43 +404,72 @@
     <div class="res-page">
       <header class="res-hero">
         <div>
-          <span class="badge">Fiches &amp; Cours JSP • Vos JSP</span>
+          <span class="badge">Dossiers JSP1 à JSP4 • Vos JSP</span>
           <h1>Ressources &amp; Fiches numérisées</h1>
-          <p>Retrouve les fiches de cours, manœuvres et supports partagés. Les <strong>Rédacteur Fiches &amp; Cours JSP</strong>, <strong>admin</strong> et <strong>superadmin</strong> peuvent ajouter du texte et prendre une photo numérisée automatiquement.</p>
+          <p>Navigue par année dans les dossiers <strong>JSP1</strong>, <strong>JSP2</strong>, <strong>JSP3</strong> et <strong>JSP4</strong>. Les <strong>Rédacteur Fiches &amp; Cours JSP</strong>, <strong>admin</strong> et <strong>superadmin</strong> peuvent créer des sous-dossiers et publier des fiches avec numérisation auto.</p>
         </div>
         <span class="badge" id="res-perm-badge">Lecture seule</span>
       </header>
 
       <div id="res-alert" class="alert"></div>
 
-      <!-- ESPACE AJOUT RÉSERVÉ AUX RÔLES AUTORISÉS -->
+      <!-- DOSSIERS JSP1 / JSP2 / JSP3 / JSP4 + SOUS-DOSSIERS -->
+      <section class="res-card">
+        <div>
+          <h2>Dossiers par année JSP</h2>
+          <p class="res-item-meta">Sélectionne un dossier JSP pour voir ses sous-dossiers et ses fiches.</p>
+        </div>
+
+        <div class="jsp-folders-grid" id="jsp-folders-grid"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <strong id="current-folder-heading">Dossier : JSP1</strong>
+          <span class="res-item-meta" id="current-subfolder-label">Sous-dossier : Tous</span>
+        </div>
+
+        <div class="subfolders-bar" id="subfolders-bar"></div>
+
+        <form class="create-sub-form" id="create-sub-form" style="display: none;">
+          <input type="text" id="new-sub-name" required placeholder="Nom du sous-dossier (ex. : Incendie, Secourisme, Topographie...)">
+          <button type="submit" class="btn btn-small" id="create-sub-btn">+ Créer sous-dossier</button>
+        </form>
+      </section>
+
+      <!-- FORMULAIRE AJOUT RESSOURCE (RÉSERVÉ AUX RÔLES AUTORISÉS) -->
       <section class="res-card" id="res-editor-card" style="display: none;">
         <div>
-          <h2>Ajouter une fiche / ressource</h2>
-          <p class="res-item-meta">Rédige le texte et prends une photo : elle passe automatiquement en rendu numérisé propre.</p>
+          <h2>Ajouter une fiche / un cours</h2>
+          <p class="res-item-meta">Choisis le dossier JSP et le sous-dossier, écris le texte et prends une photo pour numérisation automatique.</p>
         </div>
 
         <form id="res-form">
           <div class="res-editor-grid">
             <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+              <div class="res-two-cols">
+                <div class="form-group">
+                  <label for="res-jsp-level">Dossier JSP</label>
+                  <select id="res-jsp-level">
+                    <option value="JSP1">JSP1</option>
+                    <option value="JSP2">JSP2</option>
+                    <option value="JSP3">JSP3</option>
+                    <option value="JSP4">JSP4</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="res-subfolder">Sous-dossier</label>
+                  <select id="res-subfolder"></select>
+                </div>
+              </div>
+
               <div class="form-group">
                 <label for="res-title">Titre de la fiche / du cours</label>
-                <input type="text" id="res-title" required placeholder="Ex. : Bilan primaire & PLS — Fiche JSP2">
+                <input type="text" id="res-title" required placeholder="Ex. : Lot de sauvetage et protection individuelle">
               </div>
 
               <div class="form-group">
-                <label for="res-cat">Catégorie</label>
-                <select id="res-cat">
-                  <option value="Cours JSP">Cours JSP</option>
-                  <option value="Secourisme">Secourisme</option>
-                  <option value="Manœuvres & Incendie">Manœuvres &amp; Incendie</option>
-                  <option value="Fiches Révision">Fiches Révision</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="res-text">Texte / Contenu de la ressource</label>
-                <textarea id="res-text" rows="6" required placeholder="Écris le texte, les points clés ou les explications de la fiche..."></textarea>
+                <label for="res-text">Texte / Contenu de la fiche</label>
+                <textarea id="res-text" rows="6" required placeholder="Écris le texte, les points clés ou les notes de cours..."></textarea>
               </div>
 
               <div class="form-group">
@@ -374,27 +490,18 @@
               </div>
 
               <div class="scan-frame" id="scan-preview-frame">
-                <div class="scan-placeholder">Prends une photo ou choisis une image pour voir le rendu numérisé automatique.</div>
+                <div class="scan-placeholder">Prends une photo ou choisis une image pour lancer la numérisation automatique.</div>
               </div>
             </div>
           </div>
         </form>
       </section>
 
-      <!-- LISTE DES RESSOURCES -->
+      <!-- LISTE DES RESSOURCES DU DOSSIER / SOUS-DOSSIER ACTIF -->
       <section class="res-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
-          <div>
-            <h2>Fiches &amp; cours disponibles</h2>
-            <p class="res-item-meta">Clique sur une photo numérisée pour l'agrandir.</p>
-          </div>
-          <div class="res-filters" id="res-filters">
-            <button type="button" class="res-filter-btn active" data-cat="all">Tout</button>
-            <button type="button" class="res-filter-btn" data-cat="Cours JSP">Cours JSP</button>
-            <button type="button" class="res-filter-btn" data-cat="Secourisme">Secourisme</button>
-            <button type="button" class="res-filter-btn" data-cat="Manœuvres & Incendie">Manœuvres &amp; Incendie</button>
-            <button type="button" class="res-filter-btn" data-cat="Fiches Révision">Fiches Révision</button>
-          </div>
+        <div>
+          <h2 id="res-list-title">Fiches dans JSP1</h2>
+          <p class="res-item-meta">Clique sur une image numérisée pour l'afficher en grand.</p>
         </div>
 
         <div class="res-grid" id="res-list"></div>
@@ -448,6 +555,8 @@
       collection, doc, addDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
+    const JSP_FOLDERS = ['JSP1', 'JSP2', 'JSP3', 'JSP4'];
+
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
     const profileName = document.getElementById('drawer-profile-name');
@@ -459,16 +568,26 @@
 
     const alertEl = document.getElementById('res-alert');
     const permBadge = document.getElementById('res-perm-badge');
+    const jspFoldersGrid = document.getElementById('jsp-folders-grid');
+    const currentFolderHeading = document.getElementById('current-folder-heading');
+    const currentSubfolderLabel = document.getElementById('current-subfolder-label');
+    const subfoldersBar = document.getElementById('subfolders-bar');
+    const createSubForm = document.getElementById('create-sub-form');
+    const newSubNameInput = document.getElementById('new-sub-name');
+    const createSubBtn = document.getElementById('create-sub-btn');
+
     const editorCard = document.getElementById('res-editor-card');
     const resForm = document.getElementById('res-form');
+    const resJspLevelSelect = document.getElementById('res-jsp-level');
+    const resSubfolderSelect = document.getElementById('res-subfolder');
     const resTitleInput = document.getElementById('res-title');
-    const resCatSelect = document.getElementById('res-cat');
     const resTextInput = document.getElementById('res-text');
     const resPhotoInput = document.getElementById('res-photo');
     const resSubmitBtn = document.getElementById('res-submit');
     const resClearBtn = document.getElementById('res-clear');
     const scanStatus = document.getElementById('scan-status');
     const scanPreviewFrame = document.getElementById('scan-preview-frame');
+    const resListTitle = document.getElementById('res-list-title');
     const resListEl = document.getElementById('res-list');
 
     const modalEl = document.getElementById('res-modal');
@@ -479,10 +598,12 @@
 
     let currentUser = null;
     let currentPseudo = 'Membre';
-    let canPublish = false;
+    let canManageFoldersAndRes = false;
     let isSystemAdmin = false;
     let scannedDataUrl = '';
-    let activeFilter = 'all';
+    let activeJsp = 'JSP1';
+    let activeSubfolder = 'all';
+    let allSubfolders = [];
     let allRessources = [];
     let authSub = null;
 
@@ -519,7 +640,159 @@
       }
     }
 
-    // Numérisation automatique : contraste document + recadrage léger + cadre scan
+    function getSubfoldersForJsp(jspLevel) {
+      return allSubfolders.filter((s) => (s.jspLevel || 'JSP1') === jspLevel);
+    }
+
+    function populateSubfolderSelect(jspLevel, preferredValue = '') {
+      const subs = getSubfoldersForJsp(jspLevel);
+      resSubfolderSelect.innerHTML = '';
+
+      const generalOpt = document.createElement('option');
+      generalOpt.value = 'Général';
+      generalOpt.textContent = 'Général (sans sous-dossier)';
+      resSubfolderSelect.appendChild(generalOpt);
+
+      subs.forEach((s) => {
+        const opt = document.createElement('option');
+        opt.value = s.name;
+        opt.textContent = s.name;
+        resSubfolderSelect.appendChild(opt);
+      });
+
+      if (preferredValue && Array.from(resSubfolderSelect.options).some((o) => o.value === preferredValue)) {
+        resSubfolderSelect.value = preferredValue;
+      } else if (activeSubfolder && activeSubfolder !== 'all' && jspLevel === activeJsp && Array.from(resSubfolderSelect.options).some((o) => o.value === activeSubfolder)) {
+        resSubfolderSelect.value = activeSubfolder;
+      } else {
+        resSubfolderSelect.value = 'Général';
+      }
+    }
+
+    function renderFoldersAndSubfolders() {
+      jspFoldersGrid.innerHTML = '';
+      JSP_FOLDERS.forEach((lvl) => {
+        const countRes = allRessources.filter((r) => (r.jspLevel || 'JSP1') === lvl).length;
+        const countSub = getSubfoldersForJsp(lvl).length;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `jsp-folder-btn ${activeJsp === lvl ? 'active' : ''}`;
+        btn.innerHTML = `
+          <span class="jsp-folder-icon">Dossier JSP</span>
+          <span class="jsp-folder-name">${lvl}</span>
+          <span class="jsp-folder-count">${countSub} sous-dossier(s) • ${countRes} fiche(s)</span>
+        `;
+        btn.addEventListener('click', () => {
+          activeJsp = lvl;
+          activeSubfolder = 'all';
+          resJspLevelSelect.value = lvl;
+          populateSubfolderSelect(lvl);
+          renderAll();
+        });
+        jspFoldersGrid.appendChild(btn);
+      });
+
+      currentFolderHeading.textContent = `Dossier : ${activeJsp}`;
+      currentSubfolderLabel.textContent = `Sous-dossier : ${activeSubfolder === 'all' ? 'Tous' : activeSubfolder}`;
+      createSubForm.style.display = canManageFoldersAndRes ? 'flex' : 'none';
+
+      const subs = getSubfoldersForJsp(activeJsp);
+      if (activeSubfolder !== 'all' && activeSubfolder !== 'Général' && !subs.some((s) => s.name === activeSubfolder)) {
+        activeSubfolder = 'all';
+      }
+
+      subfoldersBar.innerHTML = '';
+
+      const allChip = document.createElement('button');
+      allChip.type = 'button';
+      allChip.className = `sub-chip ${activeSubfolder === 'all' ? 'active' : ''}`;
+      allChip.textContent = 'Tous les sous-dossiers';
+      allChip.addEventListener('click', () => {
+        activeSubfolder = 'all';
+        renderAll();
+      });
+      subfoldersBar.appendChild(allChip);
+
+      const genChip = document.createElement('button');
+      genChip.type = 'button';
+      genChip.className = `sub-chip ${activeSubfolder === 'Général' ? 'active' : ''}`;
+      genChip.textContent = 'Général';
+      genChip.addEventListener('click', () => {
+        activeSubfolder = 'Général';
+        populateSubfolderSelect(activeJsp, 'Général');
+        renderAll();
+      });
+      subfoldersBar.appendChild(genChip);
+
+      subs.forEach((s) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = `sub-chip ${activeSubfolder === s.name ? 'active' : ''}`;
+
+        const labelSpan = document.createElement('span');
+        labelSpan.textContent = s.name;
+        labelSpan.addEventListener('click', () => {
+          activeSubfolder = s.name;
+          populateSubfolderSelect(activeJsp, s.name);
+          renderAll();
+        });
+        chip.appendChild(labelSpan);
+
+        const canDelSub = Boolean(currentUser && (isSystemAdmin || (canManageFoldersAndRes && s.authorUid === currentUser.uid)));
+        if (canDelSub) {
+          const delSpan = document.createElement('span');
+          delSpan.className = 'sub-del-x';
+          delSpan.title = 'Supprimer ce sous-dossier';
+          delSpan.textContent = '×';
+          delSpan.addEventListener('click', async (ev) => {
+            ev.stopPropagation();
+            await deleteDoc(doc(db, 'ressources_dossiers', s.id));
+            if (activeSubfolder === s.name) activeSubfolder = 'all';
+            showAlert('Sous-dossier supprimé.', true);
+            renderAll();
+          });
+          chip.appendChild(delSpan);
+        }
+
+        subfoldersBar.appendChild(chip);
+      });
+    }
+
+    createSubForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser || !canManageFoldersAndRes) {
+        showAlert('Seuls les Rédacteur Fiches & Cours JSP, admin et superadmin peuvent créer des sous-dossiers.');
+        return;
+      }
+      const name = newSubNameInput.value.trim();
+      if (!name) return;
+
+      createSubBtn.disabled = true;
+      try {
+        await addDoc(collection(db, 'ressources_dossiers'), {
+          name,
+          jspLevel: activeJsp,
+          author: currentPseudo,
+          authorUid: currentUser.uid,
+          createdAt: serverTimestamp()
+        });
+        newSubNameInput.value = '';
+        activeSubfolder = name;
+        populateSubfolderSelect(activeJsp, name);
+        showAlert(`Sous-dossier « ${name} » créé dans ${activeJsp}.`, true);
+      } catch (err) {
+        showAlert('Erreur création sous-dossier : ' + (err.code || err.message));
+      } finally {
+        createSubBtn.disabled = false;
+      }
+    });
+
+    resJspLevelSelect.addEventListener('change', () => {
+      populateSubfolderSelect(resJspLevelSelect.value);
+    });
+
+    // Numérisation automatique pixel par pixel façon scan de document propre
     function autoScanImageFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -528,40 +801,121 @@
           const img = new Image();
           img.onerror = reject;
           img.onload = () => {
-            const maxW = 1100;
+            const maxW = 1200;
             const scale = img.width > maxW ? maxW / img.width : 1;
-            const srcW = Math.round(img.width * scale);
-            const srcH = Math.round(img.height * scale);
+            const rawW = Math.round(img.width * scale);
+            const rawH = Math.round(img.height * scale);
 
-            // Léger crop de 3% pour éliminer les bords parasites de photo
-            const padX = Math.round(srcW * 0.03);
-            const padY = Math.round(srcH * 0.03);
-            const w = Math.max(100, srcW - padX * 2);
-            const h = Math.max(100, srcH - padY * 2);
+            const workCanvas = document.createElement('canvas');
+            workCanvas.width = rawW;
+            workCanvas.height = rawH;
+            const workCtx = workCanvas.getContext('2d');
+            workCtx.drawImage(img, 0, 0, rawW, rawH);
 
-            const canvas = document.createElement('canvas');
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
+            const imgData = workCtx.getImageData(0, 0, rawW, rawH);
+            const data = imgData.data;
 
-            // Filtre rendu "document numérisé" (contraste + luminosité propre)
-            ctx.filter = 'contrast(1.28) brightness(1.07) saturate(0.85)';
-            ctx.drawImage(img, -padX, -padY, srcW, srcH);
-            ctx.filter = 'none';
+            let minX = rawW, minY = rawH, maxX = 0, maxY = 0;
+            let foundBright = false;
 
-            // Bordure fine façon scan de fiche
-            ctx.strokeStyle = 'rgba(225, 29, 42, 0.25)';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(10, 10, w - 20, h - 20);
+            for (let y = 0; y < rawH; y += 2) {
+              for (let x = 0; x < rawW; x += 2) {
+                const idx = (y * rawW + x) * 4;
+                const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+                if (lum > 118) {
+                  foundBright = true;
+                  if (x < minX) minX = x;
+                  if (y < minY) minY = y;
+                  if (x > maxX) maxX = x;
+                  if (y > maxY) maxY = y;
+                }
+              }
+            }
 
-            // Bandeau discret de numérisation en bas à droite
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
-            ctx.fillRect(w - 190, h - 34, 178, 24);
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 11px sans-serif';
-            ctx.fillText('NUMÉRISÉ • VOS JSP', w - 178, h - 18);
+            if (!foundBright || maxX - minX < rawW * 0.35 || maxY - minY < rawH * 0.35) {
+              minX = Math.round(rawW * 0.04);
+              minY = Math.round(rawH * 0.04);
+              maxX = Math.round(rawW * 0.96);
+              maxY = Math.round(rawH * 0.96);
+            } else {
+              const padX = Math.round((maxX - minX) * 0.02);
+              const padY = Math.round((maxY - minY) * 0.02);
+              minX = Math.max(0, minX - padX);
+              minY = Math.max(0, minY - padY);
+              maxX = Math.min(rawW, maxX + padX);
+              maxY = Math.min(rawH, maxY + padY);
+            }
 
-            resolve(canvas.toDataURL('image/jpeg', 0.82));
+            const cropW = Math.max(120, maxX - minX);
+            const cropH = Math.max(120, maxY - minY);
+
+            const pageCanvas = document.createElement('canvas');
+            pageCanvas.width = cropW;
+            pageCanvas.height = cropH;
+            const pageCtx = pageCanvas.getContext('2d');
+            pageCtx.drawImage(workCanvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+
+            const pageData = pageCtx.getImageData(0, 0, cropW, cropH);
+            const p = pageData.data;
+
+            for (let i = 0; i < p.length; i += 4) {
+              const r = p[i];
+              const g = p[i + 1];
+              const b = p[i + 2];
+              const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+
+              if (lum > 172) {
+                const maxC = Math.max(r, g, b);
+                const minC = Math.min(r, g, b);
+                const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
+                if (sat < 0.22) {
+                  p[i] = 252;
+                  p[i + 1] = 252;
+                  p[i + 2] = 250;
+                } else {
+                  p[i] = Math.min(255, Math.round(r * 1.12));
+                  p[i + 1] = Math.min(255, Math.round(g * 1.12));
+                  p[i + 2] = Math.min(255, Math.round(b * 1.12));
+                }
+              } else {
+                const factor = 1.38;
+                p[i] = Math.max(0, Math.min(255, Math.round((r - 128) * factor + 128)));
+                p[i + 1] = Math.max(0, Math.min(255, Math.round((g - 128) * factor + 128)));
+                p[i + 2] = Math.max(0, Math.min(255, Math.round((b - 128) * factor + 128)));
+              }
+            }
+
+            pageCtx.putImageData(pageData, 0, 0);
+
+            const outCanvas = document.createElement('canvas');
+            const margin = 28;
+            outCanvas.width = cropW + margin * 2;
+            outCanvas.height = cropH + margin * 2;
+            const outCtx = outCanvas.getContext('2d');
+
+            outCtx.fillStyle = '#eef2f6';
+            outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+
+            outCtx.shadowColor = 'rgba(15, 23, 42, 0.16)';
+            outCtx.shadowBlur = 18;
+            outCtx.shadowOffsetY = 6;
+            outCtx.fillStyle = '#ffffff';
+            outCtx.fillRect(margin, margin, cropW, cropH);
+
+            outCtx.shadowColor = 'transparent';
+            outCtx.drawImage(pageCanvas, margin, margin);
+
+            outCtx.strokeStyle = 'rgba(15, 23, 42, 0.14)';
+            outCtx.lineWidth = 1.5;
+            outCtx.strokeRect(margin, margin, cropW, cropH);
+
+            outCtx.fillStyle = 'rgba(15, 23, 42, 0.78)';
+            outCtx.fillRect(outCanvas.width - 196, outCanvas.height - 34, 172, 22);
+            outCtx.fillStyle = '#ffffff';
+            outCtx.font = 'bold 11px sans-serif';
+            outCtx.fillText('NUMÉRISÉ • VOS JSP', outCanvas.width - 184, outCanvas.height - 19);
+
+            resolve(outCanvas.toDataURL('image/jpeg', 0.85));
           };
           img.src = reader.result;
         };
@@ -573,7 +927,7 @@
       scanPreviewFrame.innerHTML = '';
       if (!scannedDataUrl) {
         scanStatus.textContent = 'En attente de photo';
-        scanPreviewFrame.innerHTML = '<div class="scan-placeholder">Prends une photo ou choisis une image pour voir le rendu numérisé automatique.</div>';
+        scanPreviewFrame.innerHTML = '<div class="scan-placeholder">Prends une photo ou choisis une image pour lancer la numérisation automatique.</div>';
         return;
       }
       scanStatus.textContent = 'Numérisation prête';
@@ -597,6 +951,8 @@
 
     function resetEditor() {
       resForm.reset();
+      resJspLevelSelect.value = activeJsp;
+      populateSubfolderSelect(activeJsp);
       scannedDataUrl = '';
       renderScanPreview();
     }
@@ -604,12 +960,13 @@
 
     resForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!currentUser || !canPublish) {
-        showAlert('Seuls les rôles Rédacteur Fiches & Cours JSP, admin et superadmin peuvent publier.');
+      if (!currentUser || !canManageFoldersAndRes) {
+        showAlert('Seuls les Rédacteur Fiches & Cours JSP, admin et superadmin peuvent publier.');
         return;
       }
+      const jspLevel = resJspLevelSelect.value || activeJsp;
+      const subfolder = resSubfolderSelect.value || 'Général';
       const title = resTitleInput.value.trim();
-      const category = resCatSelect.value;
       const content = resTextInput.value.trim();
       if (!title || !content) {
         showAlert('Remplis au moins le titre et le texte.');
@@ -620,16 +977,19 @@
       resSubmitBtn.textContent = 'Publication...';
       try {
         await addDoc(collection(db, 'ressources'), {
+          jspLevel,
+          subfolder,
           title,
-          category,
           content,
           scannedImageUrl: scannedDataUrl || '',
           author: currentPseudo,
           authorUid: currentUser.uid,
           createdAt: serverTimestamp()
         });
+        activeJsp = jspLevel;
+        activeSubfolder = subfolder;
         resetEditor();
-        showAlert('Ressource publiée avec numérisation !', true);
+        showAlert(`Fiche publiée dans ${jspLevel} / ${subfolder}.`, true);
       } catch (err) {
         showAlert('Erreur de publication : ' + (err.code || err.message));
       } finally {
@@ -638,22 +998,22 @@
       }
     });
 
-    document.querySelectorAll('.res-filter-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        activeFilter = btn.dataset.cat;
-        document.querySelectorAll('.res-filter-btn').forEach((b) => b.classList.toggle('active', b === btn));
-        renderRessources();
+    function renderRessourcesList() {
+      const filtered = allRessources.filter((r) => {
+        const lvl = r.jspLevel || 'JSP1';
+        const sub = r.subfolder || 'Général';
+        if (lvl !== activeJsp) return false;
+        if (activeSubfolder !== 'all' && sub !== activeSubfolder) return false;
+        return true;
       });
-    });
 
-    function renderRessources() {
-      const filtered = activeFilter === 'all'
-        ? allRessources
-        : allRessources.filter((r) => (r.category || '') === activeFilter);
+      resListTitle.textContent = activeSubfolder === 'all'
+        ? `Fiches dans ${activeJsp}`
+        : `Fiches dans ${activeJsp} › ${activeSubfolder}`;
 
       resListEl.innerHTML = '';
       if (!filtered.length) {
-        resListEl.innerHTML = '<div class="res-item"><span class="res-item-meta">Aucune ressource dans cette catégorie pour le moment.</span></div>';
+        resListEl.innerHTML = '<div class="res-item"><span class="res-item-meta">Aucune fiche dans ce dossier pour le moment.</span></div>';
         return;
       }
 
@@ -667,7 +1027,7 @@
         const left = document.createElement('div');
         const badge = document.createElement('span');
         badge.className = 'badge';
-        badge.textContent = r.category || 'Cours JSP';
+        badge.textContent = `${r.jspLevel || 'JSP1'} • ${r.subfolder || 'Général'}`;
 
         const h3 = document.createElement('h3');
         h3.className = 'res-item-title';
@@ -688,7 +1048,7 @@
           delBtn.textContent = 'Suppr.';
           delBtn.addEventListener('click', async () => {
             await deleteDoc(doc(db, 'ressources', r.id));
-            showAlert('Ressource supprimée.', true);
+            showAlert('Fiche supprimée.', true);
           });
           top.appendChild(delBtn);
         }
@@ -714,7 +1074,7 @@
 
           sheet.append(scanTag, img);
           sheet.addEventListener('click', () => {
-            modalTitle.textContent = r.title || 'Fiche numérisée';
+            modalTitle.textContent = `${r.title || 'Fiche numérisée'} (${r.jspLevel || 'JSP1'} › ${r.subfolder || 'Général'})`;
             modalImg.src = r.scannedImageUrl;
             modalEl.classList.add('open');
           });
@@ -725,21 +1085,37 @@
       });
     }
 
+    function renderAll() {
+      renderFoldersAndSubfolders();
+      renderRessourcesList();
+    }
+
+    onSnapshot(collection(db, 'ressources_dossiers'), (snap) => {
+      const list = [];
+      snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+      allSubfolders = list;
+      populateSubfolderSelect(resJspLevelSelect.value || activeJsp, resSubfolderSelect.value);
+      renderAll();
+    }, () => {
+      renderAll();
+    });
+
     onSnapshot(query(collection(db, 'ressources'), orderBy('createdAt', 'desc')), (snap) => {
       const list = [];
       snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
       allRessources = list;
-      renderRessources();
+      renderAll();
     }, () => {
-      renderRessources();
+      renderAll();
     });
 
     onAuthStateChanged(auth, (user) => {
       if (authSub) { authSub(); authSub = null; }
       currentUser = user || null;
-      canPublish = false;
+      canManageFoldersAndRes = false;
       isSystemAdmin = false;
       editorCard.style.display = 'none';
+      createSubForm.style.display = 'none';
       permBadge.textContent = 'Lecture seule';
 
       if (!user) {
@@ -748,7 +1124,7 @@
         drawerAdminLink.style.display = 'none';
         drawerMailLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
-        renderRessources();
+        renderAll();
         return;
       }
 
@@ -767,12 +1143,16 @@
         const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
         isSystemAdmin = isAdmin;
         const staffRoles = Array.isArray(d.staffRoles) ? d.staffRoles : [];
-        const hasRedacRole = staffRoles.some((r) => String(r || '').toLowerCase().includes('rédacteur fiches') || String(r || '').toLowerCase().includes('redacteur fiches'));
+        const hasRedacRole = staffRoles.some((r) => {
+          const s = String(r || '').toLowerCase();
+          return s.includes('rédacteur fiches') || s.includes('redacteur fiches');
+        });
 
-        canPublish = isAdmin || hasRedacRole;
-        editorCard.style.display = canPublish ? 'flex' : 'none';
-        permBadge.textContent = canPublish
-          ? (isAdmin ? `Publication autorisée (${rawRole})` : 'Rédacteur Fiches & Cours JSP')
+        canManageFoldersAndRes = isAdmin || hasRedacRole;
+        editorCard.style.display = canManageFoldersAndRes ? 'flex' : 'none';
+        createSubForm.style.display = canManageFoldersAndRes ? 'flex' : 'none';
+        permBadge.textContent = canManageFoldersAndRes
+          ? (isAdmin ? `Publication & dossiers (${rawRole})` : 'Rédacteur Fiches & Cours JSP')
           : 'Lecture seule';
 
         const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
@@ -786,7 +1166,7 @@
         profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
         drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
         drawerMailLink.style.display = isAdmin ? 'block' : 'none';
-        renderRessources();
+        renderAll();
       });
     });
 
@@ -795,8 +1175,9 @@
       window.location.replace('ressources.html');
     });
 
+    populateSubfolderSelect(activeJsp);
     renderScanPreview();
-    renderRessources();
+    renderAll();
   </script>
 </body>
 </html>

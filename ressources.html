@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Ressources &amp; Fiches</title>
+  <title>Vos JSP — Explorateur Ressources</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     .res-page {
@@ -54,100 +54,121 @@
       gap: 1.15rem;
     }
 
-    .jsp-folders-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.9rem;
+    .explorer-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.75rem 1rem;
     }
 
-    @media (max-width: 860px) {
-      .jsp-folders-grid {
+    .explorer-path {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .path-seg {
+      appearance: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 0.32rem 0.65rem;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .path-seg.current {
+      background: rgba(225, 29, 42, 0.1);
+      border-color: rgba(225, 29, 42, 0.35);
+      color: var(--primary);
+    }
+
+    .explorer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.95rem;
+    }
+
+    @media (max-width: 920px) {
+      .explorer-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 480px) {
-      .jsp-folders-grid {
+    @media (max-width: 520px) {
+      .explorer-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .jsp-folder-btn {
-      appearance: none;
+    .folder-tile {
+      position: relative;
       background: var(--bg);
       border: 1.5px solid var(--border);
       border-radius: 20px;
-      padding: 1.1rem 1.15rem;
-      text-align: left;
-      cursor: pointer;
-      color: var(--text);
+      padding: 1.15rem 1.2rem;
       display: flex;
       flex-direction: column;
-      gap: 0.3rem;
-      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+      gap: 0.4rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
     }
 
-    .jsp-folder-btn:hover {
-      transform: translateY(-2px);
-      border-color: rgba(225, 29, 42, 0.4);
+    .folder-tile:hover {
+      transform: translateY(-3px);
+      border-color: rgba(225, 29, 42, 0.42);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.05);
     }
 
-    .jsp-folder-btn.active {
-      border-color: var(--primary);
-      background: rgba(225, 29, 42, 0.08);
+    .folder-tile-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .jsp-folder-icon {
+    .folder-tab-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
       font-size: 0.72rem;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       color: var(--primary);
+      background: rgba(225, 29, 42, 0.1);
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
     }
 
-    .jsp-folder-name {
-      font-size: 1.15rem;
+    .folder-tile-title {
+      font-size: 1.08rem;
       font-weight: 900;
+      margin-top: 0.15rem;
     }
 
-    .jsp-folder-count {
+    .folder-tile-sub {
       font-size: 0.78rem;
       color: var(--muted);
     }
 
-    .subfolders-bar {
+    .folder-tile-actions {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .sub-chip {
-      appearance: none;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      color: var(--text);
-      font-weight: 800;
-      font-size: 0.82rem;
-      padding: 0.48rem 0.9rem;
-      border-radius: 999px;
-      cursor: pointer;
-      display: inline-flex;
+      justify-content: space-between;
       align-items: center;
       gap: 0.4rem;
-    }
-
-    .sub-chip.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff;
-    }
-
-    .sub-del-x {
-      font-size: 0.75rem;
-      opacity: 0.8;
-      cursor: pointer;
-      padding-left: 0.15rem;
+      margin-top: 0.25rem;
     }
 
     .create-sub-form {
@@ -404,33 +425,26 @@
     <div class="res-page">
       <header class="res-hero">
         <div>
-          <span class="badge">Dossiers JSP1 à JSP4 • Vos JSP</span>
-          <h1>Ressources &amp; Fiches numérisées</h1>
-          <p>Navigue par année dans les dossiers <strong>JSP1</strong>, <strong>JSP2</strong>, <strong>JSP3</strong> et <strong>JSP4</strong>. Les <strong>Rédacteur Fiches &amp; Cours JSP</strong>, <strong>admin</strong> et <strong>superadmin</strong> peuvent créer des sous-dossiers et publier des fiches avec numérisation auto.</p>
+          <span class="badge">Explorateur JSP1 – JSP4 • Vos JSP</span>
+          <h1>Explorateur de Ressources &amp; Fiches</h1>
+          <p><strong>Double-clique</strong> sur un dossier (<strong>JSP1</strong>, <strong>JSP2</strong>, <strong>JSP3</strong>, <strong>JSP4</strong>) puis sur un sous-dossier pour ouvrir son contenu. Les <strong>Rédacteur Fiches &amp; Cours JSP</strong>, <strong>admin</strong> et <strong>superadmin</strong> peuvent créer des sous-dossiers et publier des fiches avec numérisation auto.</p>
         </div>
         <span class="badge" id="res-perm-badge">Lecture seule</span>
       </header>
 
       <div id="res-alert" class="alert"></div>
 
-      <!-- DOSSIERS JSP1 / JSP2 / JSP3 / JSP4 + SOUS-DOSSIERS -->
+      <!-- EXPLORATEUR DE DOSSIERS & SOUS-DOSSIERS -->
       <section class="res-card">
-        <div>
-          <h2>Dossiers par année JSP</h2>
-          <p class="res-item-meta">Sélectionne un dossier JSP pour voir ses sous-dossiers et ses fiches.</p>
+        <div class="explorer-toolbar">
+          <div class="explorer-path" id="explorer-path"></div>
+          <button type="button" class="btn btn-secondary btn-small" id="explorer-back-btn" disabled>&larr; Retour</button>
         </div>
 
-        <div class="jsp-folders-grid" id="jsp-folders-grid"></div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-          <strong id="current-folder-heading">Dossier : JSP1</strong>
-          <span class="res-item-meta" id="current-subfolder-label">Sous-dossier : Tous</span>
-        </div>
-
-        <div class="subfolders-bar" id="subfolders-bar"></div>
+        <div class="explorer-grid" id="explorer-grid"></div>
 
         <form class="create-sub-form" id="create-sub-form" style="display: none;">
-          <input type="text" id="new-sub-name" required placeholder="Nom du sous-dossier (ex. : Incendie, Secourisme, Topographie...)">
+          <input type="text" id="new-sub-name" required placeholder="Nom du sous-dossier à créer dans le dossier JSP actuel...">
           <button type="submit" class="btn btn-small" id="create-sub-btn">+ Créer sous-dossier</button>
         </form>
       </section>
@@ -464,7 +478,7 @@
 
               <div class="form-group">
                 <label for="res-title">Titre de la fiche / du cours</label>
-                <input type="text" id="res-title" required placeholder="Ex. : Lot de sauvetage et protection individuelle">
+                <input type="text" id="res-title" required placeholder="Ex. : Protection individuelle et collective">
               </div>
 
               <div class="form-group">
@@ -497,11 +511,11 @@
         </form>
       </section>
 
-      <!-- LISTE DES RESSOURCES DU DOSSIER / SOUS-DOSSIER ACTIF -->
+      <!-- FICHES DU DOSSIER / SOUS-DOSSIER COURANT -->
       <section class="res-card">
         <div>
-          <h2 id="res-list-title">Fiches dans JSP1</h2>
-          <p class="res-item-meta">Clique sur une image numérisée pour l'afficher en grand.</p>
+          <h2 id="res-list-title">Fiches dans ce dossier</h2>
+          <p class="res-item-meta" id="res-list-sub">Double-clique sur un dossier ou sous-dossier ci-dessus pour naviguer.</p>
         </div>
 
         <div class="res-grid" id="res-list"></div>
@@ -555,7 +569,7 @@
       collection, doc, addDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    const JSP_FOLDERS = ['JSP1', 'JSP2', 'JSP3', 'JSP4'];
+    const ROOT_FOLDERS = ['JSP1', 'JSP2', 'JSP3', 'JSP4'];
 
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
@@ -568,10 +582,9 @@
 
     const alertEl = document.getElementById('res-alert');
     const permBadge = document.getElementById('res-perm-badge');
-    const jspFoldersGrid = document.getElementById('jsp-folders-grid');
-    const currentFolderHeading = document.getElementById('current-folder-heading');
-    const currentSubfolderLabel = document.getElementById('current-subfolder-label');
-    const subfoldersBar = document.getElementById('subfolders-bar');
+    const explorerPath = document.getElementById('explorer-path');
+    const explorerBackBtn = document.getElementById('explorer-back-btn');
+    const explorerGrid = document.getElementById('explorer-grid');
     const createSubForm = document.getElementById('create-sub-form');
     const newSubNameInput = document.getElementById('new-sub-name');
     const createSubBtn = document.getElementById('create-sub-btn');
@@ -588,6 +601,7 @@
     const scanStatus = document.getElementById('scan-status');
     const scanPreviewFrame = document.getElementById('scan-preview-frame');
     const resListTitle = document.getElementById('res-list-title');
+    const resListSub = document.getElementById('res-list-sub');
     const resListEl = document.getElementById('res-list');
 
     const modalEl = document.getElementById('res-modal');
@@ -601,8 +615,11 @@
     let canManageFoldersAndRes = false;
     let isSystemAdmin = false;
     let scannedDataUrl = '';
-    let activeJsp = 'JSP1';
-    let activeSubfolder = 'all';
+
+    // null = racine (JSP1..JSP4), 'JSP1'..'JSP4' = dans dossier JSP, { jspLevel, subName } = dans sous-dossier
+    let currentJspFolder = null;
+    let currentSubFolder = null;
+
     let allSubfolders = [];
     let allRessources = [];
     let authSub = null;
@@ -662,107 +679,207 @@
 
       if (preferredValue && Array.from(resSubfolderSelect.options).some((o) => o.value === preferredValue)) {
         resSubfolderSelect.value = preferredValue;
-      } else if (activeSubfolder && activeSubfolder !== 'all' && jspLevel === activeJsp && Array.from(resSubfolderSelect.options).some((o) => o.value === activeSubfolder)) {
-        resSubfolderSelect.value = activeSubfolder;
+      } else if (currentSubFolder && jspLevel === currentJspFolder && Array.from(resSubfolderSelect.options).some((o) => o.value === currentSubFolder)) {
+        resSubfolderSelect.value = currentSubFolder;
       } else {
         resSubfolderSelect.value = 'Général';
       }
     }
 
-    function renderFoldersAndSubfolders() {
-      jspFoldersGrid.innerHTML = '';
-      JSP_FOLDERS.forEach((lvl) => {
-        const countRes = allRessources.filter((r) => (r.jspLevel || 'JSP1') === lvl).length;
-        const countSub = getSubfoldersForJsp(lvl).length;
+    function enterJspFolder(lvl) {
+      currentJspFolder = lvl;
+      currentSubFolder = null;
+      resJspLevelSelect.value = lvl;
+      populateSubfolderSelect(lvl);
+      renderExplorer();
+      renderRessourcesList();
+    }
 
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `jsp-folder-btn ${activeJsp === lvl ? 'active' : ''}`;
-        btn.innerHTML = `
-          <span class="jsp-folder-icon">Dossier JSP</span>
-          <span class="jsp-folder-name">${lvl}</span>
-          <span class="jsp-folder-count">${countSub} sous-dossier(s) • ${countRes} fiche(s)</span>
-        `;
-        btn.addEventListener('click', () => {
-          activeJsp = lvl;
-          activeSubfolder = 'all';
-          resJspLevelSelect.value = lvl;
-          populateSubfolderSelect(lvl);
-          renderAll();
-        });
-        jspFoldersGrid.appendChild(btn);
+    function enterSubFolder(subName) {
+      currentSubFolder = subName;
+      if (currentJspFolder) populateSubfolderSelect(currentJspFolder, subName);
+      renderExplorer();
+      renderRessourcesList();
+    }
+
+    function goBackExplorer() {
+      if (currentSubFolder) {
+        currentSubFolder = null;
+      } else if (currentJspFolder) {
+        currentJspFolder = null;
+      }
+      renderExplorer();
+      renderRessourcesList();
+    }
+
+    explorerBackBtn.addEventListener('click', goBackExplorer);
+
+    function renderPathBar() {
+      explorerPath.innerHTML = '';
+
+      const rootBtn = document.createElement('button');
+      rootBtn.type = 'button';
+      rootBtn.className = `path-seg ${!currentJspFolder ? 'current' : ''}`;
+      rootBtn.textContent = 'Dossiers';
+      rootBtn.addEventListener('click', () => {
+        currentJspFolder = null;
+        currentSubFolder = null;
+        renderExplorer();
+        renderRessourcesList();
       });
+      explorerPath.appendChild(rootBtn);
 
-      currentFolderHeading.textContent = `Dossier : ${activeJsp}`;
-      currentSubfolderLabel.textContent = `Sous-dossier : ${activeSubfolder === 'all' ? 'Tous' : activeSubfolder}`;
-      createSubForm.style.display = canManageFoldersAndRes ? 'flex' : 'none';
+      if (currentJspFolder) {
+        const sep1 = document.createElement('span');
+        sep1.textContent = '/';
+        sep1.style.color = 'var(--muted)';
+        explorerPath.appendChild(sep1);
 
-      const subs = getSubfoldersForJsp(activeJsp);
-      if (activeSubfolder !== 'all' && activeSubfolder !== 'Général' && !subs.some((s) => s.name === activeSubfolder)) {
-        activeSubfolder = 'all';
+        const jspBtn = document.createElement('button');
+        jspBtn.type = 'button';
+        jspBtn.className = `path-seg ${currentJspFolder && !currentSubFolder ? 'current' : ''}`;
+        jspBtn.textContent = currentJspFolder;
+        jspBtn.addEventListener('click', () => {
+          currentSubFolder = null;
+          renderExplorer();
+          renderRessourcesList();
+        });
+        explorerPath.appendChild(jspBtn);
       }
 
-      subfoldersBar.innerHTML = '';
+      if (currentSubFolder) {
+        const sep2 = document.createElement('span');
+        sep2.textContent = '/';
+        sep2.style.color = 'var(--muted)';
+        explorerPath.appendChild(sep2);
 
-      const allChip = document.createElement('button');
-      allChip.type = 'button';
-      allChip.className = `sub-chip ${activeSubfolder === 'all' ? 'active' : ''}`;
-      allChip.textContent = 'Tous les sous-dossiers';
-      allChip.addEventListener('click', () => {
-        activeSubfolder = 'all';
-        renderAll();
-      });
-      subfoldersBar.appendChild(allChip);
+        const subBtn = document.createElement('button');
+        subBtn.type = 'button';
+        subBtn.className = 'path-seg current';
+        subBtn.textContent = currentSubFolder;
+        explorerPath.appendChild(subBtn);
+      }
 
-      const genChip = document.createElement('button');
-      genChip.type = 'button';
-      genChip.className = `sub-chip ${activeSubfolder === 'Général' ? 'active' : ''}`;
-      genChip.textContent = 'Général';
-      genChip.addEventListener('click', () => {
-        activeSubfolder = 'Général';
-        populateSubfolderSelect(activeJsp, 'Général');
-        renderAll();
-      });
-      subfoldersBar.appendChild(genChip);
+      explorerBackBtn.disabled = !currentJspFolder && !currentSubFolder;
+    }
 
-      subs.forEach((s) => {
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.className = `sub-chip ${activeSubfolder === s.name ? 'active' : ''}`;
+    function renderExplorer() {
+      renderPathBar();
+      explorerGrid.innerHTML = '';
 
-        const labelSpan = document.createElement('span');
-        labelSpan.textContent = s.name;
-        labelSpan.addEventListener('click', () => {
-          activeSubfolder = s.name;
-          populateSubfolderSelect(activeJsp, s.name);
-          renderAll();
-        });
-        chip.appendChild(labelSpan);
+      // Création de sous-dossier uniquement quand on est dans un dossier JSP1..JSP4
+      createSubForm.style.display = (canManageFoldersAndRes && currentJspFolder) ? 'flex' : 'none';
 
-        const canDelSub = Boolean(currentUser && (isSystemAdmin || (canManageFoldersAndRes && s.authorUid === currentUser.uid)));
-        if (canDelSub) {
-          const delSpan = document.createElement('span');
-          delSpan.className = 'sub-del-x';
-          delSpan.title = 'Supprimer ce sous-dossier';
-          delSpan.textContent = '×';
-          delSpan.addEventListener('click', async (ev) => {
+      // NIVEAU 0 : RACINE (JSP1, JSP2, JSP3, JSP4)
+      if (!currentJspFolder) {
+        ROOT_FOLDERS.forEach((lvl) => {
+          const subsCount = getSubfoldersForJsp(lvl).length;
+          const filesCount = allRessources.filter((r) => (r.jspLevel || 'JSP1') === lvl).length;
+
+          const tile = document.createElement('div');
+          tile.className = 'folder-tile';
+          tile.addEventListener('dblclick', () => enterJspFolder(lvl));
+
+          const top = document.createElement('div');
+          top.className = 'folder-tile-top';
+          top.innerHTML = `<span class="folder-tab-icon">Dossier</span><span class="res-item-meta">Double-clic</span>`;
+
+          const title = document.createElement('div');
+          title.className = 'folder-tile-title';
+          title.textContent = lvl;
+
+          const sub = document.createElement('div');
+          sub.className = 'folder-tile-sub';
+          sub.textContent = `${subsCount} sous-dossier(s) • ${filesCount} fiche(s)`;
+
+          const actions = document.createElement('div');
+          actions.className = 'folder-tile-actions';
+          const openBtn = document.createElement('button');
+          openBtn.type = 'button';
+          openBtn.className = 'btn btn-secondary btn-small';
+          openBtn.textContent = 'Ouvrir';
+          openBtn.addEventListener('click', (ev) => {
             ev.stopPropagation();
-            await deleteDoc(doc(db, 'ressources_dossiers', s.id));
-            if (activeSubfolder === s.name) activeSubfolder = 'all';
-            showAlert('Sous-dossier supprimé.', true);
-            renderAll();
+            enterJspFolder(lvl);
           });
-          chip.appendChild(delSpan);
+          actions.appendChild(openBtn);
+
+          tile.append(top, title, sub, actions);
+          explorerGrid.appendChild(tile);
+        });
+        return;
+      }
+
+      // NIVEAU 1 : DANS UN DOSSIER JSP (ex: JSP1) -> affiche ses sous-dossiers
+      if (!currentSubFolder) {
+        const subs = getSubfoldersForJsp(currentJspFolder);
+        if (!subs.length) {
+          explorerGrid.innerHTML = `<div class="res-item"><span class="res-item-meta">Aucun sous-dossier créé dans ${currentJspFolder} pour le moment.</span></div>`;
+          return;
         }
 
-        subfoldersBar.appendChild(chip);
-      });
+        subs.forEach((s) => {
+          const countInSub = allRessources.filter(
+            (r) => (r.jspLevel || 'JSP1') === currentJspFolder && (r.subfolder || 'Général') === s.name
+          ).length;
+
+          const tile = document.createElement('div');
+          tile.className = 'folder-tile';
+          tile.addEventListener('dblclick', () => enterSubFolder(s.name));
+
+          const top = document.createElement('div');
+          top.className = 'folder-tile-top';
+          top.innerHTML = `<span class="folder-tab-icon">Sous-dossier</span><span class="res-item-meta">Double-clic</span>`;
+
+          const title = document.createElement('div');
+          title.className = 'folder-tile-title';
+          title.textContent = s.name;
+
+          const sub = document.createElement('div');
+          sub.className = 'folder-tile-sub';
+          sub.textContent = `${countInSub} fiche(s) • Par ${s.author || 'Équipe'}`;
+
+          const actions = document.createElement('div');
+          actions.className = 'folder-tile-actions';
+
+          const openBtn = document.createElement('button');
+          openBtn.type = 'button';
+          openBtn.className = 'btn btn-secondary btn-small';
+          openBtn.textContent = 'Ouvrir';
+          openBtn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            enterSubFolder(s.name);
+          });
+          actions.appendChild(openBtn);
+
+          const canDelSub = Boolean(currentUser && (isSystemAdmin || (canManageFoldersAndRes && s.authorUid === currentUser.uid)));
+          if (canDelSub) {
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'btn btn-secondary btn-small';
+            delBtn.textContent = 'Suppr.';
+            delBtn.addEventListener('click', async (ev) => {
+              ev.stopPropagation();
+              await deleteDoc(doc(db, 'ressources_dossiers', s.id));
+              showAlert('Sous-dossier supprimé.', true);
+            });
+            actions.appendChild(delBtn);
+          }
+
+          tile.append(top, title, sub, actions);
+          explorerGrid.appendChild(tile);
+        });
+        return;
+      }
+
+      // NIVEAU 2 : DANS UN SOUS-DOSSIER PRÉCIS
+      explorerGrid.innerHTML = `<div class="res-item"><span class="res-item-meta">Tu es dans <strong>${currentJspFolder} / ${currentSubFolder}</strong>. Utilise le bouton Retour ou la barre du haut pour remonter.</span></div>`;
     }
 
     createSubForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!currentUser || !canManageFoldersAndRes) {
-        showAlert('Seuls les Rédacteur Fiches & Cours JSP, admin et superadmin peuvent créer des sous-dossiers.');
+      if (!currentUser || !canManageFoldersAndRes || !currentJspFolder) {
+        showAlert('Entre dans un dossier JSP et vérifie que tu as les droits.');
         return;
       }
       const name = newSubNameInput.value.trim();
@@ -772,15 +889,14 @@
       try {
         await addDoc(collection(db, 'ressources_dossiers'), {
           name,
-          jspLevel: activeJsp,
+          jspLevel: currentJspFolder,
           author: currentPseudo,
           authorUid: currentUser.uid,
           createdAt: serverTimestamp()
         });
         newSubNameInput.value = '';
-        activeSubfolder = name;
-        populateSubfolderSelect(activeJsp, name);
-        showAlert(`Sous-dossier « ${name} » créé dans ${activeJsp}.`, true);
+        populateSubfolderSelect(currentJspFolder, name);
+        showAlert(`Sous-dossier « ${name} » créé dans ${currentJspFolder}.`, true);
       } catch (err) {
         showAlert('Erreur création sous-dossier : ' + (err.code || err.message));
       } finally {
@@ -792,7 +908,6 @@
       populateSubfolderSelect(resJspLevelSelect.value);
     });
 
-    // Numérisation automatique pixel par pixel façon scan de document propre
     function autoScanImageFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -950,9 +1065,10 @@
     });
 
     function resetEditor() {
+      const targetLvl = currentJspFolder || 'JSP1';
       resForm.reset();
-      resJspLevelSelect.value = activeJsp;
-      populateSubfolderSelect(activeJsp);
+      resJspLevelSelect.value = targetLvl;
+      populateSubfolderSelect(targetLvl, currentSubFolder || 'Général');
       scannedDataUrl = '';
       renderScanPreview();
     }
@@ -964,7 +1080,7 @@
         showAlert('Seuls les Rédacteur Fiches & Cours JSP, admin et superadmin peuvent publier.');
         return;
       }
-      const jspLevel = resJspLevelSelect.value || activeJsp;
+      const jspLevel = resJspLevelSelect.value || 'JSP1';
       const subfolder = resSubfolderSelect.value || 'Général';
       const title = resTitleInput.value.trim();
       const content = resTextInput.value.trim();
@@ -986,9 +1102,11 @@
           authorUid: currentUser.uid,
           createdAt: serverTimestamp()
         });
-        activeJsp = jspLevel;
-        activeSubfolder = subfolder;
+        currentJspFolder = jspLevel;
+        currentSubFolder = subfolder === 'Général' ? null : subfolder;
         resetEditor();
+        renderExplorer();
+        renderRessourcesList();
         showAlert(`Fiche publiée dans ${jspLevel} / ${subfolder}.`, true);
       } catch (err) {
         showAlert('Erreur de publication : ' + (err.code || err.message));
@@ -999,21 +1117,25 @@
     });
 
     function renderRessourcesList() {
-      const filtered = allRessources.filter((r) => {
-        const lvl = r.jspLevel || 'JSP1';
-        const sub = r.subfolder || 'Général';
-        if (lvl !== activeJsp) return false;
-        if (activeSubfolder !== 'all' && sub !== activeSubfolder) return false;
-        return true;
-      });
-
-      resListTitle.textContent = activeSubfolder === 'all'
-        ? `Fiches dans ${activeJsp}`
-        : `Fiches dans ${activeJsp} › ${activeSubfolder}`;
+      let filtered = allRessources;
+      if (currentJspFolder && currentSubFolder) {
+        filtered = allRessources.filter(
+          (r) => (r.jspLevel || 'JSP1') === currentJspFolder && (r.subfolder || 'Général') === currentSubFolder
+        );
+        resListTitle.textContent = `Fiches dans ${currentJspFolder} / ${currentSubFolder}`;
+        resListSub.textContent = 'Contenu du sous-dossier sélectionné.';
+      } else if (currentJspFolder) {
+        filtered = allRessources.filter((r) => (r.jspLevel || 'JSP1') === currentJspFolder);
+        resListTitle.textContent = `Toutes les fiches de ${currentJspFolder}`;
+        resListSub.textContent = 'Double-clique sur un sous-dossier ci-dessus pour filtrer ou ouvre une fiche.';
+      } else {
+        resListTitle.textContent = 'Dernières fiches (tous dossiers JSP)';
+        resListSub.textContent = 'Double-clique sur JSP1, JSP2, JSP3 ou JSP4 pour explorer ses sous-dossiers.';
+      }
 
       resListEl.innerHTML = '';
       if (!filtered.length) {
-        resListEl.innerHTML = '<div class="res-item"><span class="res-item-meta">Aucune fiche dans ce dossier pour le moment.</span></div>';
+        resListEl.innerHTML = '<div class="res-item"><span class="res-item-meta">Aucune fiche dans cet emplacement pour le moment.</span></div>';
         return;
       }
 
@@ -1074,7 +1196,7 @@
 
           sheet.append(scanTag, img);
           sheet.addEventListener('click', () => {
-            modalTitle.textContent = `${r.title || 'Fiche numérisée'} (${r.jspLevel || 'JSP1'} › ${r.subfolder || 'Général'})`;
+            modalTitle.textContent = `${r.title || 'Fiche numérisée'} (${r.jspLevel || 'JSP1'} / ${r.subfolder || 'Général'})`;
             modalImg.src = r.scannedImageUrl;
             modalEl.classList.add('open');
           });
@@ -1085,28 +1207,24 @@
       });
     }
 
-    function renderAll() {
-      renderFoldersAndSubfolders();
-      renderRessourcesList();
-    }
-
     onSnapshot(collection(db, 'ressources_dossiers'), (snap) => {
       const list = [];
       snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
       allSubfolders = list;
-      populateSubfolderSelect(resJspLevelSelect.value || activeJsp, resSubfolderSelect.value);
-      renderAll();
+      populateSubfolderSelect(resJspLevelSelect.value || currentJspFolder || 'JSP1', resSubfolderSelect.value);
+      renderExplorer();
     }, () => {
-      renderAll();
+      renderExplorer();
     });
 
     onSnapshot(query(collection(db, 'ressources'), orderBy('createdAt', 'desc')), (snap) => {
       const list = [];
       snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
       allRessources = list;
-      renderAll();
+      renderExplorer();
+      renderRessourcesList();
     }, () => {
-      renderAll();
+      renderRessourcesList();
     });
 
     onAuthStateChanged(auth, (user) => {
@@ -1124,7 +1242,8 @@
         drawerAdminLink.style.display = 'none';
         drawerMailLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
-        renderAll();
+        renderExplorer();
+        renderRessourcesList();
         return;
       }
 
@@ -1150,7 +1269,6 @@
 
         canManageFoldersAndRes = isAdmin || hasRedacRole;
         editorCard.style.display = canManageFoldersAndRes ? 'flex' : 'none';
-        createSubForm.style.display = canManageFoldersAndRes ? 'flex' : 'none';
         permBadge.textContent = canManageFoldersAndRes
           ? (isAdmin ? `Publication & dossiers (${rawRole})` : 'Rédacteur Fiches & Cours JSP')
           : 'Lecture seule';
@@ -1166,7 +1284,8 @@
         profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
         drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
         drawerMailLink.style.display = isAdmin ? 'block' : 'none';
-        renderAll();
+        renderExplorer();
+        renderRessourcesList();
       });
     });
 
@@ -1175,9 +1294,10 @@
       window.location.replace('ressources.html');
     });
 
-    populateSubfolderSelect(activeJsp);
+    populateSubfolderSelect('JSP1');
     renderScanPreview();
-    renderAll();
+    renderExplorer();
+    renderRessourcesList();
   </script>
 </body>
 </html>

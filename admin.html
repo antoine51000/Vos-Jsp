@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/style.css">
   <style>
     .adm-wrap {
-      max-width: 1080px;
+      max-width: 1040px;
       margin: 1.8rem auto 3.5rem;
       display: flex;
       flex-direction: column;
@@ -67,11 +67,6 @@
       border-radius: 18px;
       cursor: pointer;
       text-align: center;
-      transition: all 0.15s ease;
-    }
-
-    .adm-nav-btn:hover {
-      border-color: var(--primary);
     }
 
     .adm-nav-btn.active {
@@ -91,7 +86,7 @@
       gap: 1.2rem;
     }
 
-    .adm-card-head {
+    .adm-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -104,7 +99,7 @@
       font-size: 1.2rem;
     }
 
-    .adm-card-sub {
+    .adm-sub {
       margin: 0;
       color: var(--muted);
       font-size: 0.86rem;
@@ -112,12 +107,12 @@
 
     .adm-two {
       display: grid;
-      grid-template-columns: 0.88fr 1.12fr;
+      grid-template-columns: 1fr 1fr;
       gap: 1rem;
       align-items: start;
     }
 
-    @media (max-width: 840px) {
+    @media (max-width: 780px) {
       .adm-two {
         grid-template-columns: 1fr;
       }
@@ -138,38 +133,52 @@
     .adm-rows {
       display: flex;
       flex-direction: column;
-      gap: 0.7rem;
+      gap: 0.65rem;
     }
 
     .adm-row {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      gap: 0.55rem;
     }
 
-    .adm-row-head {
+    .adm-row-top {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       gap: 0.75rem;
       flex-wrap: wrap;
     }
 
-    .adm-row-title {
+    .adm-title {
       font-weight: 800;
-      font-size: 0.94rem;
+      font-size: 0.92rem;
       display: block;
     }
 
-    .adm-row-sub {
+    .adm-meta {
       font-size: 0.78rem;
       color: var(--muted);
       display: block;
       margin-top: 0.15rem;
+    }
+
+    .app-details-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .app-details-box p {
+      margin: 0.2rem 0;
     }
 
     .adm-actions {
@@ -181,7 +190,7 @@
 
     .adm-empty {
       text-align: center;
-      padding: 1.2rem;
+      padding: 1.1rem;
       color: var(--muted);
       font-size: 0.85rem;
       border: 1px dashed var(--border);
@@ -203,83 +212,134 @@
       accent-color: var(--primary);
     }
 
-    /* Drawer / Panneau Attribution des Rôles */
-    .roles-drawer-box {
-      background: var(--bg);
-      border: 1.5px solid var(--primary);
-      border-radius: 20px;
-      padding: 1.25rem;
+    .roles-simple-box {
       display: none;
       flex-direction: column;
       gap: 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.15rem;
     }
 
-    .roles-drawer-box.open {
+    .roles-simple-box.open {
       display: flex;
     }
 
-    .roles-pills-bar {
+    .roles-btn-list {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
     }
 
-    .role-select-pill {
+    .role-pick-btn {
       appearance: none;
       background: var(--surface);
       border: 1.5px solid var(--border);
       color: var(--text);
-      font-weight: 700;
-      font-size: 0.85rem;
-      padding: 0.55rem 0.95rem;
-      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.86rem;
+      padding: 0.6rem 0.95rem;
+      border-radius: 14px;
       cursor: pointer;
-      transition: all 0.15s ease;
     }
 
-    .role-select-pill:hover {
-      border-color: var(--primary);
-    }
-
-    .role-select-pill.selected {
+    .role-pick-btn.active {
       background: var(--primary);
       border-color: var(--primary);
       color: #fff;
     }
 
-    .role-assign-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1rem 1.15rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .role-member-item {
+    .person-check-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.6rem 0.8rem;
-      background: var(--bg);
+      padding: 0.7rem 0.9rem;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       cursor: pointer;
-      font-size: 0.88rem;
       font-weight: 700;
+      font-size: 0.9rem;
     }
 
-    .role-member-item:hover {
-      border-color: var(--primary);
-    }
-
-    .role-member-item input {
+    .person-check-row input {
       width: 18px !important;
       height: 18px !important;
       margin: 0 !important;
       accent-color: var(--primary);
       cursor: pointer;
+    }
+
+    /* Badge compteur messages non lus (1, 2, 3...) */
+    .msg-count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 900;
+      margin-left: 0.35rem;
+    }
+
+    /* Zone chat candidature */
+    .app-chat-panel {
+      display: none;
+      flex-direction: column;
+      gap: 0.55rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.75rem;
+    }
+
+    .app-chat-panel.open {
+      display: flex;
+    }
+
+    .app-chat-messages {
+      max-height: 210px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .app-chat-bubble {
+      padding: 0.5rem 0.7rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .app-chat-bubble.mine {
+      border-color: var(--primary);
+    }
+
+    .app-chat-sender {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .app-chat-form {
+      display: flex;
+      gap: 0.45rem;
+    }
+
+    .app-chat-form input {
+      flex: 1;
+      padding: 0.5rem 0.7rem;
+      font-size: 0.84rem;
     }
   </style>
 </head>
@@ -343,7 +403,7 @@
 
       <div id="adm-denied" class="adm-card" style="display: none; text-align: center;">
         <h1>Accès admin uniquement</h1>
-        <p class="adm-card-sub">Connecte-toi avec un compte admin ou superadmin.</p>
+        <p class="adm-sub">Connecte-toi avec un compte admin ou superadmin.</p>
         <div><a href="login.html" class="btn btn-small">Connexion</a></div>
       </div>
 
@@ -352,7 +412,7 @@
           <div>
             <span class="badge" id="adm-role-badge">admin</span>
             <h1>Espace Admin</h1>
-            <p>Choisis une rubrique ci-dessous. Tout est simple et direct.</p>
+            <p>Simple, rapide, sans prise de tête.</p>
           </div>
           <div class="adm-actions">
             <a href="mail.html" class="btn btn-small">Messagerie</a>
@@ -360,7 +420,6 @@
           </div>
         </header>
 
-        <!-- MENU SIMPLE EN 4 BOUTONS -->
         <nav class="adm-menu">
           <button type="button" class="adm-nav-btn active" data-sec="membres">1. Membres &amp; Mails</button>
           <button type="button" class="adm-nav-btn" data-sec="actus">2. Actus &amp; Propositions</button>
@@ -370,31 +429,21 @@
 
         <!-- 1. MEMBRES & MAILS -->
         <section class="adm-card" id="sec-membres">
-          <div class="adm-card-head">
+          <div class="adm-head">
             <div>
               <h2>Membres &amp; adresses mail admin</h2>
-              <p class="adm-card-sub">Gère les comptes, les rôles d'équipe, les bans et les mails internes.</p>
+              <p class="adm-sub">Gère les comptes, les rôles et les mails.</p>
             </div>
-            <button type="button" id="toggle-roles-manager" class="btn btn-small">Voir les rôles</button>
+            <button type="button" id="btn-voir-roles" class="btn btn-small">Voir les rôles</button>
           </div>
 
-          <!-- PANNEAU ATTRIBUTION PAR RÔLE -->
-          <div id="roles-manager-panel" class="roles-drawer-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-              <div>
-                <strong style="font-size: 1rem;">1. Clique sur un rôle à attribuer :</strong>
-              </div>
-              <button type="button" id="close-roles-manager" class="btn btn-secondary btn-small">Fermer</button>
-            </div>
+          <div id="roles-simple-box" class="roles-simple-box">
+            <strong>Choisis un rôle :</strong>
+            <div class="roles-btn-list" id="roles-btn-list"></div>
 
-            <div class="roles-pills-bar" id="roles-pills-bar"></div>
-
-            <div class="role-assign-panel" id="role-assign-panel" style="display: none;">
-              <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                <strong id="selected-role-heading" style="font-size: 0.96rem;">Attribuer le rôle à :</strong>
-                <input type="search" id="role-member-search" placeholder="Filtrer un membre..." style="max-width: 220px; padding: 0.45rem 0.75rem;">
-              </div>
-              <div class="adm-rows" id="role-members-checklist"></div>
+            <div id="role-people-box" style="display: none; flex-direction: column; gap: 0.6rem;">
+              <strong id="role-people-title">Attribuer le rôle à :</strong>
+              <div class="adm-rows" id="role-people-list"></div>
             </div>
           </div>
 
@@ -422,7 +471,7 @@
             <div class="adm-box">
               <h3>Liste des membres</h3>
               <div class="form-group">
-                <input type="search" id="user-search" placeholder="Chercher un membre (pseudo, mail, rôle, IP)...">
+                <input type="search" id="user-search" placeholder="Chercher un membre...">
               </div>
               <div class="adm-rows" id="users-list"></div>
             </div>
@@ -433,7 +482,7 @@
         <section class="adm-card" id="sec-actus" style="display: none;">
           <div>
             <h2>Actualités &amp; Propositions</h2>
-            <p class="adm-card-sub">Publie une actu ou valide les propositions des membres.</p>
+            <p class="adm-sub">Publie une actu ou valide les propositions des membres.</p>
           </div>
 
           <div class="adm-two">
@@ -478,7 +527,7 @@
         <section class="adm-card" id="sec-mod" style="display: none;">
           <div>
             <h2>Forum &amp; Galerie</h2>
-            <p class="adm-card-sub">Supprime les publications qui ne respectent pas les règles.</p>
+            <p class="adm-sub">Supprime les publications qui ne respectent pas les règles.</p>
           </div>
 
           <div class="adm-two">
@@ -497,7 +546,7 @@
         <section class="adm-card" id="sec-recrut" style="display: none;">
           <div>
             <h2>Recrutement &amp; Candidatures</h2>
-            <p class="adm-card-sub">Les postes ajoutés ici apparaissent aussi dans « Voir les rôles ».</p>
+            <p class="adm-sub">Ajoute un poste, consulte les détails et discute avec les candidats.</p>
           </div>
 
           <div class="adm-two">
@@ -560,7 +609,7 @@
     import { auth, db } from './js/firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
-      collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp
+      collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const profileBox = document.getElementById('drawer-profile-box');
@@ -585,14 +634,13 @@
       recrut: document.getElementById('sec-recrut')
     };
 
-    const rolesManagerPanel = document.getElementById('roles-manager-panel');
-    const rolesPillsBar = document.getElementById('roles-pills-bar');
-    const roleAssignPanel = document.getElementById('role-assign-panel');
-    const selectedRoleHeading = document.getElementById('selected-role-heading');
-    const roleMemberSearch = document.getElementById('role-member-search');
-    const roleMembersChecklist = document.getElementById('role-members-checklist');
+    const rolesSimpleBox = document.getElementById('roles-simple-box');
+    const rolesBtnList = document.getElementById('roles-btn-list');
+    const rolePeopleBox = document.getElementById('role-people-box');
+    const rolePeopleTitle = document.getElementById('role-people-title');
+    const rolePeopleList = document.getElementById('role-people-list');
 
-    const BASE_RECRUTEMENT_ROLES = [
+    const DEFAULT_ROLES = [
       'Modérateur / Modératrice',
       'Rédacteur / Rédactrice Actus',
       'Animateur / Staff Discord'
@@ -603,7 +651,10 @@
     let adminLabel = 'Admin';
     let authSub = null;
     let dataSubs = [];
-    let selectedRoleToAssign = null;
+    let chatSubs = {};
+    let openAppChats = new Set();
+    let appMessagesMap = {};
+    let activeRole = null;
 
     let users = [], mails = [], props = [], actus = [], forum = [], galerie = [], roles = [], apps = [];
 
@@ -654,144 +705,102 @@
       return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
     }
 
-    function getAvailableTeamRoles() {
-      const set = new Set(BASE_RECRUTEMENT_ROLES);
-      roles.forEach((r) => {
-        if (r && r.title) set.add(String(r.title).trim());
-      });
+    function getAllRoles() {
+      const s = new Set(DEFAULT_ROLES);
+      roles.forEach((r) => { if (r && r.title) s.add(String(r.title).trim()); });
       users.forEach((u) => {
-        if (Array.isArray(u.staffRoles)) {
-          u.staffRoles.forEach((sr) => {
-            if (sr) set.add(String(sr).trim());
-          });
-        }
+        if (Array.isArray(u.staffRoles)) u.staffRoles.forEach((x) => { if (x) s.add(String(x).trim()); });
       });
-      return Array.from(set).filter(Boolean);
+      return Array.from(s);
     }
 
-    async function toggleMemberTeamRole(userObj, roleName, checked) {
-      const current = Array.isArray(userObj.staffRoles) ? [...userObj.staffRoles] : [];
-      const next = checked
-        ? Array.from(new Set([...current, roleName]))
-        : current.filter((item) => item !== roleName);
+    function renderRolesSimple() {
+      const allRoles = getAllRoles();
+      rolesBtnList.innerHTML = '';
 
-      await updateDoc(doc(db, 'users', userObj.id), { staffRoles: next });
-      notify(`${checked ? 'Rôle attribué' : 'Rôle retiré'} (${roleName}) à ${userObj.pseudo || 'ce membre'}.`, true);
-    }
-
-    function renderRoleAssigner() {
-      const teamRoles = getAvailableTeamRoles();
-      rolesPillsBar.innerHTML = '';
-
-      if (!teamRoles.length) {
-        rolesPillsBar.innerHTML = '<span style="color:var(--muted);font-size:0.85rem;">Aucun rôle configuré.</span>';
-        roleAssignPanel.style.display = 'none';
-        return;
-      }
-
-      teamRoles.forEach((rName) => {
-        const count = users.filter((u) => Array.isArray(u.staffRoles) && u.staffRoles.includes(rName)).length;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `role-select-pill ${selectedRoleToAssign === rName ? 'selected' : ''}`;
-        btn.textContent = `${rName} (${count})`;
-        btn.addEventListener('click', () => {
-          selectedRoleToAssign = rName;
-          renderRoleAssigner();
+      allRoles.forEach((rName) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = `role-pick-btn ${activeRole === rName ? 'active' : ''}`;
+        b.textContent = rName;
+        b.addEventListener('click', () => {
+          activeRole = rName;
+          renderRolesSimple();
         });
-        rolesPillsBar.appendChild(btn);
+        rolesBtnList.appendChild(b);
       });
 
-      if (!selectedRoleToAssign || !teamRoles.includes(selectedRoleToAssign)) {
-        roleAssignPanel.style.display = 'none';
+      if (!activeRole || !allRoles.includes(activeRole)) {
+        rolePeopleBox.style.display = 'none';
         return;
       }
 
-      roleAssignPanel.style.display = 'flex';
-      selectedRoleHeading.textContent = `Attribuer le rôle « ${selectedRoleToAssign} » à :`;
+      rolePeopleBox.style.display = 'flex';
+      rolePeopleTitle.textContent = `Attribuer le rôle « ${activeRole} » à :`;
+      rolePeopleList.innerHTML = '';
 
-      const q = (roleMemberSearch.value || '').trim().toLowerCase();
-      const filteredUsers = users.filter((u) => {
-        if (!q) return true;
-        return `${u.pseudo || ''} ${u.email || ''}`.toLowerCase().includes(q);
-      });
+      users.forEach((u) => {
+        const current = Array.isArray(u.staffRoles) ? u.staffRoles : [];
+        const hasIt = current.includes(activeRole);
 
-      roleMembersChecklist.innerHTML = '';
-      if (!filteredUsers.length) {
-        roleMembersChecklist.innerHTML = '<div class="adm-empty">Aucun membre trouvé.</div>';
-        return;
-      }
+        const row = document.createElement('label');
+        row.className = 'person-check-row';
 
-      filteredUsers.forEach((u) => {
-        const hasRole = Array.isArray(u.staffRoles) && u.staffRoles.includes(selectedRoleToAssign);
-        const label = document.createElement('label');
-        label.className = 'role-member-item';
-
-        const span = document.createElement('span');
-        span.textContent = `${u.pseudo || 'Membre'} (${u.email || 'sans e-mail'})`;
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = u.pseudo || u.email || 'Membre';
 
         const chk = document.createElement('input');
         chk.type = 'checkbox';
-        chk.checked = hasRole;
+        chk.checked = hasIt;
         chk.addEventListener('change', async () => {
-          await toggleMemberTeamRole(u, selectedRoleToAssign, chk.checked);
+          const next = chk.checked
+            ? Array.from(new Set([...current, activeRole]))
+            : current.filter((x) => x !== activeRole);
+          await updateDoc(doc(db, 'users', u.id), { staffRoles: next });
         });
 
-        label.append(span, chk);
-        roleMembersChecklist.appendChild(label);
+        row.append(nameSpan, chk);
+        rolePeopleList.appendChild(row);
       });
     }
 
-    document.getElementById('toggle-roles-manager').addEventListener('click', () => {
-      const isOpen = rolesManagerPanel.classList.toggle('open');
-      if (isOpen) renderRoleAssigner();
+    document.getElementById('btn-voir-roles').addEventListener('click', () => {
+      const open = rolesSimpleBox.classList.toggle('open');
+      if (open) renderRolesSimple();
     });
-
-    document.getElementById('close-roles-manager').addEventListener('click', () => {
-      rolesManagerPanel.classList.remove('open');
-    });
-
-    roleMemberSearch.addEventListener('input', renderRoleAssigner);
 
     function renderUsers() {
       const box = document.getElementById('users-list');
       const q = (document.getElementById('user-search').value || '').trim().toLowerCase();
-
       const list = users.filter((u) => {
         if (!q) return true;
-        const staffTxt = Array.isArray(u.staffRoles) ? u.staffRoles.join(' ') : '';
-        return `${u.pseudo || ''} ${u.email || ''} ${u.id || ''} ${u.lastIp || ''} ${u.ip || ''} ${staffTxt}`.toLowerCase().includes(q);
+        const rTxt = Array.isArray(u.staffRoles) ? u.staffRoles.join(' ') : '';
+        return `${u.pseudo || ''} ${u.email || ''} ${u.id || ''} ${u.lastIp || ''} ${u.ip || ''} ${rTxt}`.toLowerCase().includes(q);
       });
-
       box.innerHTML = '';
       if (!list.length) {
         box.innerHTML = '<div class="adm-empty">Aucun membre.</div>';
         return;
       }
-
       list.forEach((u) => {
         const role = String(u.role || u.grade || 'membre').toLowerCase();
         const banned = u.banned === true;
         const ip = u.lastIp || u.ip || '';
-        const memberTeamRoles = Array.isArray(u.staffRoles) ? u.staffRoles : [];
-
+        const teamRoles = Array.isArray(u.staffRoles) ? u.staffRoles : [];
         const row = document.createElement('div');
         row.className = 'adm-row';
 
-        const head = document.createElement('div');
-        head.className = 'adm-row-head';
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
 
         const info = document.createElement('div');
         const t = document.createElement('span');
-        t.className = 'adm-row-title';
+        t.className = 'adm-title';
         t.textContent = `${u.pseudo || 'Membre'} (${u.email || '—'})`;
         const s = document.createElement('span');
-        s.className = 'adm-row-sub';
-        s.textContent = `Accès : ${role}${memberTeamRoles.length ? ` • Rôles : ${memberTeamRoles.join(', ')}` : ''}${banned ? ' • BANNI' : ''}${ip ? ` • IP : ${ip}` : ''}`;
+        s.className = 'adm-meta';
+        s.textContent = `Rôle : ${role}${teamRoles.length ? ` • ${teamRoles.join(', ')}` : ''}${banned ? ' • BANNI' : ''}${ip ? ` • IP : ${ip}` : ''}`;
         info.append(t, s);
-
-        head.append(info);
-        row.append(head);
 
         const acts = document.createElement('div');
         acts.className = 'adm-actions';
@@ -800,11 +809,11 @@
           const roleBtn = document.createElement('button');
           roleBtn.type = 'button';
           roleBtn.className = 'btn btn-secondary btn-small';
-          roleBtn.textContent = role === 'admin' ? 'Rétrograder admin' : 'Passer admin';
+          roleBtn.textContent = role === 'admin' ? 'Rétrograder' : 'Passer admin';
           roleBtn.addEventListener('click', async () => {
             const next = role === 'admin' ? 'membre' : 'admin';
             await updateDoc(doc(db, 'users', u.id), { role: next, grade: next });
-            notify(`Accès changé : ${next}`, true);
+            notify(`Rôle changé : ${next}`, true);
           });
           acts.appendChild(roleBtn);
         }
@@ -868,7 +877,8 @@
           acts.appendChild(delBtn);
         }
 
-        row.appendChild(acts);
+        top.append(info, acts);
+        row.appendChild(top);
         box.appendChild(row);
       });
     }
@@ -885,10 +895,10 @@
       mails.forEach((m) => {
         const row = document.createElement('div');
         row.className = 'adm-row';
-        const head = document.createElement('div');
-        head.className = 'adm-row-head';
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
         const info = document.createElement('div');
-        info.innerHTML = `<span class="adm-row-title">${m.address || m.id}</span><span class="adm-row-sub">${m.holder || 'Admin'}</span>`;
+        info.innerHTML = `<span class="adm-title">${m.address || m.id}</span><span class="adm-meta">${m.holder || 'Admin'}</span>`;
         const del = document.createElement('button');
         del.type = 'button';
         del.className = 'btn btn-secondary btn-small';
@@ -897,8 +907,8 @@
           await deleteDoc(doc(db, 'admin_mails', m.id));
           notify('Adresse supprimée.', true);
         });
-        head.append(info, del);
-        row.appendChild(head);
+        top.append(info, del);
+        row.appendChild(top);
         box.appendChild(row);
       });
     }
@@ -929,10 +939,10 @@
         pending.forEach((p) => {
           const row = document.createElement('div');
           row.className = 'adm-row';
-          const head = document.createElement('div');
-          head.className = 'adm-row-head';
+          const top = document.createElement('div');
+          top.className = 'adm-row-top';
           const info = document.createElement('div');
-          info.innerHTML = `<span class="adm-row-title">${p.title || 'Proposition'}</span><span class="adm-row-sub">Par ${p.author || 'Membre'} • ${p.category || 'Actu'}</span>`;
+          info.innerHTML = `<span class="adm-title">${p.title || 'Proposition'}</span><span class="adm-meta">Par ${p.author || 'Membre'} • ${p.category || 'Actu'}</span>`;
           const acts = document.createElement('div');
           acts.className = 'adm-actions';
 
@@ -961,8 +971,8 @@
           });
 
           acts.append(okBtn, noBtn);
-          head.append(info, acts);
-          row.appendChild(head);
+          top.append(info, acts);
+          row.appendChild(top);
           pBox.appendChild(row);
         });
       }
@@ -974,17 +984,17 @@
         actus.forEach((a) => {
           const row = document.createElement('div');
           row.className = 'adm-row';
-          const head = document.createElement('div');
-          head.className = 'adm-row-head';
+          const top = document.createElement('div');
+          top.className = 'adm-row-top';
           const info = document.createElement('div');
-          info.innerHTML = `<span class="adm-row-title">${a.title || 'Actu'}</span><span class="adm-row-sub">${a.category || ''}</span>`;
+          info.innerHTML = `<span class="adm-title">${a.title || 'Actu'}</span><span class="adm-meta">${a.category || ''}</span>`;
           const del = document.createElement('button');
           del.type = 'button';
           del.className = 'btn btn-secondary btn-small';
           del.textContent = 'Supprimer';
           del.addEventListener('click', async () => { await deleteDoc(doc(db, 'actus', a.id)); });
-          head.append(info, del);
-          row.appendChild(head);
+          top.append(info, del);
+          row.appendChild(top);
           aBox.appendChild(row);
         });
       }
@@ -1013,27 +1023,62 @@
       forum.forEach((f) => {
         const row = document.createElement('div');
         row.className = 'adm-row';
-        const head = document.createElement('div');
-        head.className = 'adm-row-head';
-        head.innerHTML = `<div><span class="adm-row-title">${f.title || 'Sujet'}</span><span class="adm-row-sub">Par ${f.author || 'Membre'}</span></div>`;
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+        top.innerHTML = `<div><span class="adm-title">${f.title || 'Sujet'}</span><span class="adm-meta">Par ${f.author || 'Membre'}</span></div>`;
         const del = document.createElement('button');
         del.type = 'button'; del.className = 'btn btn-secondary btn-small'; del.textContent = 'Supprimer';
         del.addEventListener('click', async () => { await deleteDoc(doc(db, 'forum', f.id)); });
-        head.appendChild(del); row.appendChild(head); fBox.appendChild(row);
+        top.appendChild(del); row.appendChild(top); fBox.appendChild(row);
       });
 
       gBox.innerHTML = galerie.length ? '' : '<div class="adm-empty">Aucune photo.</div>';
       galerie.forEach((g) => {
         const row = document.createElement('div');
         row.className = 'adm-row';
-        const head = document.createElement('div');
-        head.className = 'adm-row-head';
-        head.innerHTML = `<div><span class="adm-row-title">${g.title || 'Photo'}</span><span class="adm-row-sub">Par ${g.author || 'Membre'}</span></div>`;
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+        top.innerHTML = `<div><span class="adm-title">${g.title || 'Photo'}</span><span class="adm-meta">Par ${g.author || 'Membre'}</span></div>`;
         const del = document.createElement('button');
         del.type = 'button'; del.className = 'btn btn-secondary btn-small'; del.textContent = 'Supprimer';
         del.addEventListener('click', async () => { await deleteDoc(doc(db, 'galerie', g.id)); });
-        head.appendChild(del); row.appendChild(head); gBox.appendChild(row);
+        top.appendChild(del); row.appendChild(top); gBox.appendChild(row);
       });
+    }
+
+    function syncAppChatListeners() {
+      const validIds = new Set(apps.map((a) => a.id));
+      Object.keys(chatSubs).forEach((appId) => {
+        if (!validIds.has(appId)) {
+          try { chatSubs[appId](); } catch (_) {}
+          delete chatSubs[appId];
+        }
+      });
+
+      apps.forEach((a) => {
+        if (!chatSubs[a.id]) {
+          const q = query(collection(db, 'candidatures', a.id, 'messages'), orderBy('createdAt', 'asc'));
+          chatSubs[a.id] = onSnapshot(q, (snap) => {
+            const list = [];
+            snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
+            appMessagesMap[a.id] = list;
+            renderRecrut();
+          }, () => {});
+        }
+      });
+    }
+
+    function getUnreadFromApplicant(appId) {
+      const list = appMessagesMap[appId] || [];
+      return list.filter((m) => m.fromAdmin !== true && m.readByAdmin !== true).length;
+    }
+
+    async function markApplicantMessagesRead(appId) {
+      const list = appMessagesMap[appId] || [];
+      const unread = list.filter((m) => m.fromAdmin !== true && m.readByAdmin !== true);
+      for (const m of unread) {
+        await updateDoc(doc(db, 'candidatures', appId, 'messages', m.id), { readByAdmin: true }).catch(() => {});
+      }
     }
 
     function renderRecrut() {
@@ -1045,9 +1090,9 @@
         const open = r.open !== false;
         const row = document.createElement('div');
         row.className = 'adm-row';
-        const head = document.createElement('div');
-        head.className = 'adm-row-head';
-        head.innerHTML = `<div><span class="adm-row-title">${r.title || 'Poste'}</span><span class="adm-row-sub">${open ? 'Ouvert' : 'Clôturé'}</span></div>`;
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+        top.innerHTML = `<div><span class="adm-title">${r.title || 'Poste'}</span><span class="adm-meta">${open ? 'Ouvert' : 'Clôturé'}</span></div>`;
         const acts = document.createElement('div'); acts.className = 'adm-actions';
         const tgl = document.createElement('button');
         tgl.type = 'button'; tgl.className = 'btn btn-secondary btn-small';
@@ -1056,33 +1101,131 @@
         const del = document.createElement('button');
         del.type = 'button'; del.className = 'btn btn-secondary btn-small'; del.textContent = 'Suppr.';
         del.addEventListener('click', async () => { await deleteDoc(doc(db, 'recrutement_postes', r.id)); });
-        acts.append(tgl, del); head.appendChild(acts); row.appendChild(head); rBox.appendChild(row);
+        acts.append(tgl, del); top.appendChild(acts); row.appendChild(top); rBox.appendChild(row);
       });
 
       apBox.innerHTML = apps.length ? '' : '<div class="adm-empty">Aucune candidature.</div>';
       apps.forEach((a) => {
+        const roleLabel = a.roleTitle || a.role || 'Poste';
+        const unreadCount = openAppChats.has(a.id) ? 0 : getUnreadFromApplicant(a.id);
+
         const row = document.createElement('div');
         row.className = 'adm-row';
-        const head = document.createElement('div');
-        head.className = 'adm-row-head';
-        head.innerHTML = `<div><span class="adm-row-title">${a.applicantName || 'Candidat'} — ${a.role || 'Poste'}</span><span class="adm-row-sub">${a.contact || ''} • Statut : ${a.status || 'en_attente'}</span></div>`;
-        const acts = document.createElement('div'); acts.className = 'adm-actions';
+
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+
+        const info = document.createElement('div');
+        info.innerHTML = `
+          <span class="adm-title">${a.applicantName || 'Candidat'} — ${roleLabel}</span>
+          <span class="adm-meta">${a.contact || ''} • Statut : ${a.status || 'en_attente'}</span>
+        `;
+
+        const acts = document.createElement('div');
+        acts.className = 'adm-actions';
+
         const ok = document.createElement('button');
-        ok.type = 'button'; ok.className = 'btn btn-small'; ok.textContent = 'Accepter';
+        ok.type = 'button';
+        ok.className = 'btn btn-small';
+        ok.textContent = 'Accepter';
         ok.addEventListener('click', async () => {
           await updateDoc(doc(db, 'candidatures', a.id), { status: 'acceptee' });
-          if (a.applicantUid && a.role) {
+          if (a.applicantUid && roleLabel) {
             const targetUser = users.find((u) => u.id === a.applicantUid);
             const prevRoles = targetUser && Array.isArray(targetUser.staffRoles) ? targetUser.staffRoles : [];
-            const nextRoles = Array.from(new Set([...prevRoles, a.role]));
+            const nextRoles = Array.from(new Set([...prevRoles, roleLabel]));
             await updateDoc(doc(db, 'users', a.applicantUid), { staffRoles: nextRoles }).catch(() => {});
           }
-          notify('Candidature acceptée et rôle attribué.', true);
+          notify('Candidature acceptée.', true);
         });
+
         const no = document.createElement('button');
-        no.type = 'button'; no.className = 'btn btn-secondary btn-small'; no.textContent = 'Refuser';
-        no.addEventListener('click', async () => { await updateDoc(doc(db, 'candidatures', a.id), { status: 'refusee' }); });
-        acts.append(ok, no); head.appendChild(acts); row.appendChild(head); apBox.appendChild(row);
+        no.type = 'button';
+        no.className = 'btn btn-secondary btn-small';
+        no.textContent = 'Refuser';
+        no.addEventListener('click', async () => {
+          await updateDoc(doc(db, 'candidatures', a.id), { status: 'refusee' });
+        });
+
+        const chatBtn = document.createElement('button');
+        chatBtn.type = 'button';
+        chatBtn.className = 'btn btn-secondary btn-small';
+        chatBtn.innerHTML = `Discuter${unreadCount > 0 ? `<span class="msg-count-badge">${unreadCount}</span>` : ''}`;
+
+        top.append(info, acts);
+        acts.append(ok, no, chatBtn);
+        row.appendChild(top);
+
+        // Détails de la candidature
+        const detailsBox = document.createElement('div');
+        detailsBox.className = 'app-details-box';
+        detailsBox.innerHTML = `
+          ${a.ageOrProfile ? `<p><strong>Profil / Âge :</strong> ${a.ageOrProfile}</p>` : ''}
+          ${a.availability ? `<p><strong>Disponibilités :</strong> ${a.availability}</p>` : ''}
+          ${a.motivation ? `<p><strong>Motivation :</strong> ${a.motivation}</p>` : ''}
+        `;
+        row.appendChild(detailsBox);
+
+        // Chat en direct candidat <-> admin
+        const chatPanel = document.createElement('div');
+        chatPanel.className = `app-chat-panel ${openAppChats.has(a.id) ? 'open' : ''}`;
+
+        const msgsList = document.createElement('div');
+        msgsList.className = 'app-chat-messages';
+        const msgs = appMessagesMap[a.id] || [];
+        if (!msgs.length) {
+          msgsList.innerHTML = '<span class="adm-meta">Aucun message dans cette discussion.</span>';
+        } else {
+          msgs.forEach((m) => {
+            const bubble = document.createElement('div');
+            bubble.className = `app-chat-bubble ${m.senderUid === (currentUser && currentUser.uid) ? 'mine' : ''}`;
+            bubble.innerHTML = `<span class="app-chat-sender">${m.senderName || (m.fromAdmin ? 'Admin' : 'Candidat')}</span>${m.text || ''}`;
+            msgsList.appendChild(bubble);
+          });
+        }
+
+        const chatForm = document.createElement('form');
+        chatForm.className = 'app-chat-form';
+        const chatInput = document.createElement('input');
+        chatInput.type = 'text';
+        chatInput.placeholder = 'Écrire au candidat...';
+        chatInput.required = true;
+        const chatSend = document.createElement('button');
+        chatSend.type = 'submit';
+        chatSend.className = 'btn btn-small';
+        chatSend.textContent = 'Envoyer';
+
+        chatForm.addEventListener('submit', async (ev) => {
+          ev.preventDefault();
+          const txt = chatInput.value.trim();
+          if (!txt || !currentUser) return;
+          await addDoc(collection(db, 'candidatures', a.id, 'messages'), {
+            text: txt,
+            senderUid: currentUser.uid,
+            senderName: adminLabel,
+            fromAdmin: true,
+            readByAdmin: true,
+            readByApplicant: false,
+            createdAt: serverTimestamp()
+          });
+          chatInput.value = '';
+        });
+
+        chatForm.append(chatInput, chatSend);
+        chatPanel.append(msgsList, chatForm);
+        row.appendChild(chatPanel);
+
+        chatBtn.addEventListener('click', async () => {
+          if (openAppChats.has(a.id)) {
+            openAppChats.delete(a.id);
+          } else {
+            openAppChats.add(a.id);
+            await markApplicantMessagesRead(a.id);
+          }
+          renderRecrut();
+        });
+
+        apBox.appendChild(row);
       });
     }
 
@@ -1100,19 +1243,21 @@
     function stopDataSubs() {
       dataSubs.forEach((u) => { try { u(); } catch (_) {} });
       dataSubs = [];
+      Object.values(chatSubs).forEach((u) => { try { u(); } catch (_) {} });
+      chatSubs = {};
     }
 
     function startDataSubs() {
       stopDataSubs();
       const map = [
-        ['users', (l) => { users = l; renderUsers(); if (rolesManagerPanel.classList.contains('open')) renderRoleAssigner(); }],
+        ['users', (l) => { users = l; renderUsers(); if (rolesSimpleBox.classList.contains('open')) renderRolesSimple(); }],
         ['admin_mails', (l) => { mails = l; renderMails(); }],
         ['propositions', (l) => { props = l; renderActusAndProps(); }],
         ['actus', (l) => { actus = l; renderActusAndProps(); }],
         ['forum', (l) => { forum = l; renderMod(); }],
         ['galerie', (l) => { galerie = l; renderMod(); }],
-        ['recrutement_postes', (l) => { roles = l; renderRecrut(); renderUsers(); if (rolesManagerPanel.classList.contains('open')) renderRoleAssigner(); }],
-        ['candidatures', (l) => { apps = l; renderRecrut(); }]
+        ['recrutement_postes', (l) => { roles = l; renderRecrut(); if (rolesSimpleBox.classList.contains('open')) renderRolesSimple(); }],
+        ['candidatures', (l) => { apps = l; syncAppChatListeners(); renderRecrut(); }]
       ];
       map.forEach(([colName, cb]) => {
         dataSubs.push(onSnapshot(collection(db, colName), (snap) => {

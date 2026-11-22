@@ -3,21 +3,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — À propos &amp; Contact</title>
+  <title>Vos JSP — À propos, Contact &amp; Suggestions</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .admins-badges {
+    .ap-page {
+      max-width: 1100px;
+      margin: 1.8rem auto 3.8rem;
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
+      flex-direction: column;
+      gap: 1.45rem;
     }
 
-    .cta-row {
+    .ap-hero {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 2rem 2.1rem;
+      box-shadow: var(--shadow);
       display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1.4rem;
       flex-wrap: wrap;
+    }
+
+    .ap-hero h1 {
+      margin: 0.5rem 0 0.4rem;
+      font-size: 1.95rem;
+      letter-spacing: -0.025em;
+      line-height: 1.12;
+    }
+
+    .ap-hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 630px;
+      line-height: 1.55;
+    }
+
+    .ap-quick-nav {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .ap-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 860px) {
+      .ap-grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ap-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.55rem 1.65rem;
+      box-shadow: var(--shadow);
+    }
+
+    .ap-card h2 {
+      margin: 0 0 0.35rem;
+      font-size: 1.28rem;
+      letter-spacing: -0.015em;
+    }
+
+    .ap-card-sub {
+      margin: 0 0 1.2rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .ap-value-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.15rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .ap-value-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--primary);
+    }
+
+    .ap-value-box h3 {
+      margin: 0;
+      font-size: 1.02rem;
+    }
+
+    .ap-value-box p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.48;
+    }
+
+    .ap-notice {
+      margin-top: 1.15rem;
+      background: rgba(225, 29, 42, 0.06);
+      border: 1px solid rgba(225, 29, 42, 0.22);
+      border-radius: 16px;
+      padding: 0.95rem 1.15rem;
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .ap-forms-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    @media (max-width: 880px) {
+      .ap-forms-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ap-card textarea {
+      width: 100%;
+      min-height: 105px;
+      resize: vertical;
+      border-radius: 14px;
+      padding: 0.8rem 0.95rem;
+      font-family: inherit;
+    }
+
+    .ap-info-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.15rem;
+    }
+
+    @media (max-width: 680px) {
+      .ap-info-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ap-info-pill {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.75rem 0.9rem;
+    }
+
+    .ap-info-pill small {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .ap-info-pill strong {
+      display: block;
+      font-size: 0.88rem;
+      margin-top: 0.15rem;
+      color: var(--text);
+    }
+
+    .ap-faq-list {
+      display: flex;
+      flex-direction: column;
       gap: 0.65rem;
-      margin-top: 1rem;
+    }
+
+    .ap-faq-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.95rem 1.15rem;
+    }
+
+    .ap-faq-item summary {
+      font-weight: 800;
+      font-size: 0.94rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .ap-faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .ap-faq-item p {
+      margin: 0.6rem 0 0;
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.52;
     }
   </style>
 </head>
@@ -34,7 +223,7 @@
         <div>VOS <span>JSP</span></div>
       </a>
     </div>
-    <a href="actus.html" class="btn btn-secondary btn-small">Actualités</a>
+    <a href="index.html" class="btn btn-secondary btn-small">Accueil</a>
   </div>
 
   <div class="nav-backdrop" id="nav-backdrop"></div>
@@ -76,77 +265,184 @@
   </aside>
 
   <main>
-    <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
-      <span class="badge">À propos de Vos JSP</span>
-      <h1>La communauté dédiée aux Jeunes Sapeurs-Pompiers</h1>
-      <p class="subtitle" style="margin-bottom: 0;">Présentation du projet, de l'équipe d'administration et formulaire de contact direct.</p>
-    </section>
+    <div class="ap-page">
+      <header class="ap-hero">
+        <div>
+          <span class="badge">Présentation • Contact • Idées</span>
+          <h1>À propos de Vos JSP</h1>
+          <p>Découvre le projet, notre fonctionnement, comment contacter l'équipe d'administration ou proposer une amélioration pour faire évoluer le site.</p>
+        </div>
+        <div class="ap-quick-nav">
+          <a href="#qui-sommes-nous" class="btn btn-secondary btn-small">Qui sommes-nous</a>
+          <a href="#nous-contacter" class="btn btn-secondary btn-small">Nous contacter</a>
+          <a href="#suggestions-site" class="btn btn-small">Suggérer une idée</a>
+        </div>
+      </header>
 
-    <div class="card" style="margin-bottom: 1.5rem;">
-      <h2 style="font-size: 1.25rem; margin-top: 0;">1. Qu'est-ce que Vos JSP ?</h2>
-      <p>Vos JSP est une plateforme communautaire indépendante dédiée à l'univers des Jeunes Sapeurs-Pompiers (JSP). Elle permet de suivre des actualités, de partager des photos dans la galerie, de proposer des contenus et d'échanger dans un cadre clair et respectueux. Elle ne représente pas un site officiel d'un SDIS ni d'une administration.</p>
+      <!-- QUI SOMMES-NOUS -->
+      <section class="ap-card" id="qui-sommes-nous">
+        <h2>Qui sommes-nous ?</h2>
+        <p class="ap-card-sub">Vos JSP est une plateforme communautaire indépendante créée par et pour les Jeunes Sapeurs-Pompiers, anciens JSP, encadrants et passionnés de sécurité civile.</p>
 
-      <h2 style="font-size: 1.25rem; margin-top: 1.4rem;">2. Qui sont vos admins ?</h2>
-      <p>La gestion et la modération de la plateforme sont assurées par l'équipe d'administration active :</p>
-      <div id="admins-badges-list" class="admins-badges">
-        <span class="card-meta">Chargement des administrateurs...</span>
+        <div class="ap-grid-3">
+          <article class="ap-value-box">
+            <span class="ap-value-tag">01 • Partage</span>
+            <h3>Valoriser les sections</h3>
+            <p>Mettre en avant les manœuvres, la cohésion, les événements et le quotidien des sections JSP partout en France à travers les actualités et la galerie.</p>
+          </article>
+
+          <article class="ap-value-box">
+            <span class="ap-value-tag">02 • Entraide</span>
+            <h3>Réviser et échanger</h3>
+            <p>Offrir un forum clair pour poser ses questions sur le cursus JSP1 à JSP4, le Brevet National, les manœuvres incendie ou le secourisme.</p>
+          </article>
+
+          <article class="ap-value-box">
+            <span class="ap-value-tag">03 • Encadrement</span>
+            <h3>Un cadre sain et modéré</h3>
+            <p>Une équipe de modération et de rédaction veille au respect des valeurs sapeurs-pompiers, de la confidentialité et des règles de la communauté.</p>
+          </article>
+        </div>
+
+        <div class="ap-notice">
+          <strong>Mention d'indépendance :</strong> Vos JSP est une initiative communautaire indépendante. Le site n'est ni affilié, ni géré par un SDIS, la FNSPF, la BSPP, le BMPM ou le ministère de l'Intérieur.
+        </div>
+      </section>
+
+      <!-- ÉQUIPE & REJOINDRE -->
+      <section class="ap-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <div>
+            <h2>L'équipe &amp; contribution</h2>
+            <p class="ap-card-sub" style="margin-bottom: 0;">Le site fonctionne grâce à des bénévoles répartis entre l'administration, la rédaction d'actualités et la modération.</p>
+          </div>
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <a href="proposer.html" class="btn btn-secondary btn-small">Proposer un article</a>
+            <a href="recrutement.html" class="btn btn-small">Rejoindre l'équipe</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- NOUS CONTACTER + SUGGESTIONS SITE -->
+      <div class="ap-forms-grid">
+        <!-- FORMULAIRE CONTACT -->
+        <section class="ap-card" id="nous-contacter">
+          <h2>Nous contacter</h2>
+          <p class="ap-card-sub">Une question sur le site, un signalement, un partenariat ou une demande administrative ? Envoie un message directement à la boîte mail de l'équipe.</p>
+
+          <div class="ap-info-strip">
+            <div class="ap-info-pill">
+              <small>Boîte interne</small>
+              <strong>contact@vos-jsp.com</strong>
+            </div>
+            <div class="ap-info-pill">
+              <small>Délai moyen</small>
+              <strong>Sous 24 à 48h</strong>
+            </div>
+            <div class="ap-info-pill">
+              <small>Sanction / Ban</small>
+              <strong><a href="contester.html" style="color: var(--primary);">Page Contester</a></strong>
+            </div>
+          </div>
+
+          <div id="contact-alert" class="alert"></div>
+
+          <form id="contact-form">
+            <div class="form-group">
+              <label for="contact-name">Ton pseudo ou nom</label>
+              <input type="text" id="contact-name" maxlength="80" required placeholder="Ex. : Léo">
+            </div>
+
+            <div class="form-group">
+              <label for="contact-reply">Adresse e-mail ou contact de réponse</label>
+              <input type="text" id="contact-reply" maxlength="120" required placeholder="Ex. : tonmail@exemple.fr ou @discord">
+            </div>
+
+            <div class="form-group">
+              <label for="contact-topic">Sujet de la demande</label>
+              <select id="contact-topic" required>
+                <option value="Question générale">Question générale</option>
+                <option value="Signalement de contenu / compte">Signalement de contenu / compte</option>
+                <option value="Partenariat / Section JSP">Partenariat / Section JSP</option>
+                <option value="Problème technique sur mon compte">Problème technique sur mon compte</option>
+                <option value="Autre demande">Autre demande</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="contact-message">Message</label>
+              <textarea id="contact-message" maxlength="1500" required placeholder="Explique ta demande le plus clairement possible..."></textarea>
+            </div>
+
+            <button type="submit" id="contact-submit" class="btn" style="width: 100%;">Envoyer le message</button>
+          </form>
+        </section>
+
+        <!-- FORMULAIRE SUGGESTIONS POUR LE SITE -->
+        <section class="ap-card" id="suggestions-site">
+          <h2>Faire une suggestion pour le site</h2>
+          <p class="ap-card-sub">Une idée de nouvelle fonctionnalité, une amélioration de design, une rubrique à ajouter ou un bug à signaler ? Partage-le ici.</p>
+
+          <div id="suggest-alert" class="alert"></div>
+
+          <form id="suggest-form">
+            <div class="form-group">
+              <label for="suggest-author">Ton pseudo</label>
+              <input type="text" id="suggest-author" maxlength="80" required placeholder="Ton pseudo">
+            </div>
+
+            <div class="form-group">
+              <label for="suggest-type">Type de suggestion</label>
+              <select id="suggest-type" required>
+                <option value="Nouvelle fonctionnalité">Nouvelle fonctionnalité</option>
+                <option value="Amélioration du design / ergonomie">Amélioration du design / ergonomie</option>
+                <option value="Nouvelle catégorie (Forum / Galerie / Actus)">Nouvelle catégorie (Forum / Galerie / Actus)</option>
+                <option value="Signalement de bug">Signalement de bug</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="suggest-title">Titre court de l'idée</label>
+              <input type="text" id="suggest-title" maxlength="100" required placeholder="Ex. : Ajouter un espace quiz révisions JSP">
+            </div>
+
+            <div class="form-group">
+              <label for="suggest-details">Détails de la suggestion</label>
+              <textarea id="suggest-details" maxlength="1500" required placeholder="Décris ton idée et comment elle aiderait les membres..."></textarea>
+            </div>
+
+            <button type="submit" id="suggest-submit" class="btn btn-secondary" style="width: 100%;">Envoyer la suggestion</button>
+          </form>
+        </section>
       </div>
 
-      <h2 style="font-size: 1.25rem; margin-top: 1.4rem;">3. Fonctionnement de la communauté</h2>
-      <ul>
-        <li><strong>Actualités &amp; propositions :</strong> les membres peuvent proposer des sujets relus avant publication par l'administration.</li>
-        <li><strong>Galerie photo :</strong> les comptes connectés peuvent publier des photos liées à la vie JSP, aux manœuvres ou au matériel.</li>
-        <li><strong>Modération &amp; contestation :</strong> tout manquement peut entraîner une sanction, avec la possibilité de contester un bannissement si le compte est concerné.</li>
-      </ul>
+      <!-- FAQ -->
+      <section class="ap-card">
+        <h2>Questions fréquentes</h2>
+        <p class="ap-card-sub">Les réponses rapides aux questions les plus posées sur le fonctionnement de Vos JSP.</p>
 
-      <h2 style="font-size: 1.25rem; margin-top: 1.4rem;">4. Contact &amp; demandes pertinentes</h2>
-      <p>Utilise le formulaire ci-dessous pour envoyer ta demande directement dans le panel admin. Si ta demande est pertinente (y compris pour connaître l'éditeur du site, non divulgué publiquement pour des raisons de sécurité), nous te répondrons.</p>
+        <div class="ap-faq-list">
+          <details class="ap-faq-item">
+            <summary>Comment publier une actualité sur le site ?</summary>
+            <p>Rends-toi sur la page <a href="proposer.html" style="color: var(--primary); font-weight: 700;">Proposer</a>, rédige ton article et envoie-le. Un membre de l'équipe le relit et le publie ensuite dans le fil des actualités.</p>
+          </details>
 
-      <div class="cta-row">
-        <a href="#contact-form-section" class="btn btn-small">Aller au formulaire</a>
-        <a href="actus.html" class="btn btn-secondary btn-small">Voir les actualités</a>
-        <a href="galerie.html" class="btn btn-secondary btn-small">Explorer la galerie</a>
-        <a href="mentions-legales.html" class="btn btn-secondary btn-small">Mentions légales</a>
-      </div>
-    </div>
+          <details class="ap-faq-item">
+            <summary>Comment rejoindre l'équipe de modération ou de rédaction ?</summary>
+            <p>Consulte les postes ouverts sur la page <a href="recrutement.html" style="color: var(--primary); font-weight: 700;">Recrutement</a> et complète le formulaire en 4 étapes depuis ton compte connecté.</p>
+          </details>
 
-    <div id="contact-form-section" class="card">
-      <span class="card-meta">Formulaire de contact</span>
-      <h2 style="font-size: 1.35rem; margin: 0.35rem 0 0.25rem;">Envoyer un message à l'administration</h2>
-      <p style="color: var(--muted); font-size: 0.9rem; margin-top: 0;">Remplis les champs ci-dessous : ton message arrive directement dans le panel admin.</p>
+          <details class="ap-faq-item">
+            <summary>Quelles photos peut-on partager dans la galerie ?</summary>
+            <p>Tu peux publier des photos de manœuvres, d'engins, de matériel ou de vie de section, en veillant toujours à respecter le droit à l'image des personnes présentes et les consignes de sécurité de ton centre de secours.</p>
+          </details>
 
-      <div id="contact-alert" class="alert"></div>
-
-      <form id="contact-form">
-        <div class="form-group">
-          <label for="contact-name">Nom ou pseudo</label>
-          <input type="text" id="contact-name" placeholder="Ton nom ou pseudo" required>
+          <details class="ap-faq-item">
+            <summary>Que faire si mon compte a été suspendu par erreur ?</summary>
+            <p>Utilise la page <a href="contester.html" style="color: var(--primary); font-weight: 700;">Contester</a> pour transmettre une explication calme et précise à l'équipe d'administration.</p>
+          </details>
         </div>
-
-        <div class="form-group">
-          <label for="contact-email">Adresse e-mail</label>
-          <input type="email" id="contact-email" placeholder="exemple@mail.com" required>
-        </div>
-
-        <div class="form-group">
-          <label for="contact-target">Destinataire admin (optionnel)</label>
-          <select id="contact-target">
-            <option value="">Administration générale (Panel Admin)</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="contact-subject">Sujet</label>
-          <input type="text" id="contact-subject" placeholder="Sujet de ta demande" required>
-        </div>
-
-        <div class="form-group">
-          <label for="contact-message">Message</label>
-          <textarea id="contact-message" rows="5" placeholder="Écris ton message ici..." required></textarea>
-        </div>
-
-        <button type="submit" id="contact-submit-btn" class="btn" style="width: 100%;">Envoyer le message</button>
-      </form>
+      </section>
     </div>
   </main>
 
@@ -186,11 +482,8 @@
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
       collection,
-      getDocs,
-      doc,
-      getDoc,
       addDoc,
-      deleteDoc,
+      doc,
       onSnapshot,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
@@ -204,22 +497,37 @@
     const adminLink = document.getElementById('drawer-admin-link');
     const mailLink = document.getElementById('drawer-mail-link');
 
-    const adminsBadgesEl = document.getElementById('admins-badges-list');
-    const targetSelect = document.getElementById('contact-target');
     const contactForm = document.getElementById('contact-form');
-    const contactSubmitBtn = document.getElementById('contact-submit-btn');
-    const contactAlertEl = document.getElementById('contact-alert');
+    const contactNameInput = document.getElementById('contact-name');
+    const contactReplyInput = document.getElementById('contact-reply');
+    const contactTopicSelect = document.getElementById('contact-topic');
+    const contactMessageInput = document.getElementById('contact-message');
+    const contactSubmitBtn = document.getElementById('contact-submit');
+    const contactAlert = document.getElementById('contact-alert');
 
+    const suggestForm = document.getElementById('suggest-form');
+    const suggestAuthorInput = document.getElementById('suggest-author');
+    const suggestTypeSelect = document.getElementById('suggest-type');
+    const suggestTitleInput = document.getElementById('suggest-title');
+    const suggestDetailsInput = document.getElementById('suggest-details');
+    const suggestSubmitBtn = document.getElementById('suggest-submit');
+    const suggestAlert = document.getElementById('suggest-alert');
+
+    let currentUser = null;
     let unsubscribeUser = null;
+
+    function showBoxAlert(box, msg, isSuccess = false) {
+      box.style.display = 'block';
+      box.className = isSuccess ? 'alert success' : 'alert';
+      box.textContent = msg;
+    }
 
     function getInitials(label) {
       const clean = String(label || 'JS')
         .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
         .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
     }
 
@@ -230,125 +538,26 @@
       return `[ ADMIN ] ${firstName}`;
     }
 
-    function showContactAlert(msg, isSuccess = false) {
-      contactAlertEl.style.display = 'block';
-      contactAlertEl.className = isSuccess ? 'alert success' : 'alert';
-      contactAlertEl.textContent = msg;
-    }
-
-    async function loadActiveAdmins() {
-      const activeAdmins = [];
-
-      try {
-        const pubSnap = await getDocs(collection(db, "public_admins"));
-        for (const d of pubSnap.docs) {
-          const uid = d.id;
-          const pubData = d.data() || {};
-
-          let existsInUsers = false;
-          let userData = null;
-          try {
-            const uSnap = await getDoc(doc(db, "users", uid));
-            if (uSnap.exists()) {
-              existsInUsers = true;
-              userData = uSnap.data() || {};
-            }
-          } catch (_) {}
-
-          if (existsInUsers) {
-            const role = String(userData.role || userData.grade || '').toLowerCase();
-            if (userData.banned === true || (role !== 'admin' && role !== 'superadmin')) {
-              try { await deleteDoc(doc(db, "public_admins", uid)); } catch (_) {}
-              continue;
-            }
-            activeAdmins.push({
-              uid,
-              pseudo: userData.pseudo || pubData.pseudo || 'Admin'
-            });
-          } else {
-            try { await deleteDoc(doc(db, "public_admins", uid)); } catch (_) {}
-          }
-        }
-      } catch (_) {}
-
-      adminsBadgesEl.textContent = '';
-      targetSelect.innerHTML = '<option value="">Administration générale (Panel Admin)</option>';
-
-      if (activeAdmins.length === 0) {
-        const span = document.createElement('span');
-        span.className = 'card-meta';
-        span.textContent = 'Équipe Vos JSP';
-        adminsBadgesEl.appendChild(span);
-        return;
+    function paintAvatar(el, src, pseudo) {
+      el.innerHTML = '';
+      if (src) {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = pseudo || 'Avatar';
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;';
+        el.appendChild(img);
+      } else {
+        el.textContent = getInitials(pseudo);
       }
-
-      activeAdmins.forEach(adm => {
-        const badge = document.createElement('span');
-        badge.className = 'card-meta';
-        badge.textContent = adm.pseudo;
-        adminsBadgesEl.appendChild(badge);
-
-        const opt = document.createElement('option');
-        opt.value = adm.uid;
-        opt.textContent = adm.pseudo;
-        targetSelect.appendChild(opt);
-      });
     }
-
-    contactForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('contact-name').value.trim();
-      const email = document.getElementById('contact-email').value.trim();
-      const toUid = targetSelect.value;
-      const subject = document.getElementById('contact-subject').value.trim();
-      const message = document.getElementById('contact-message').value.trim();
-
-      contactSubmitBtn.disabled = true;
-      contactSubmitBtn.textContent = 'Envoi...';
-
-      try {
-        if (toUid) {
-          await addDoc(collection(db, "admin_mails"), {
-            isExternal: true,
-            fromUid: null,
-            toUid,
-            fromName: name,
-            fromEmail: email,
-            subject,
-            body: message,
-            read: false,
-            createdAt: serverTimestamp()
-          });
-        } else {
-          await addDoc(collection(db, "contacts"), {
-            name,
-            email,
-            subject,
-            message,
-            createdAt: serverTimestamp()
-          });
-        }
-
-        contactForm.reset();
-        showContactAlert("Ton message a bien été envoyé à l'administration.", true);
-      } catch (err) {
-        showContactAlert('Envoi impossible : ' + (err.code || err.message));
-      } finally {
-        contactSubmitBtn.disabled = false;
-        contactSubmitBtn.textContent = 'Envoyer le message';
-      }
-    });
-
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.reload();
-    });
 
     onAuthStateChanged(auth, (user) => {
       if (unsubscribeUser) {
         unsubscribeUser();
         unsubscribeUser = null;
       }
+
+      currentUser = user || null;
 
       if (!user) {
         profileBox.style.display = 'none';
@@ -363,40 +572,144 @@
       logoutBtn.style.display = 'inline-flex';
 
       const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      if (!contactNameInput.value.trim()) contactNameInput.value = fallbackName;
+      if (!suggestAuthorInput.value.trim()) suggestAuthorInput.value = fallbackName;
+      if (!contactReplyInput.value.trim() && user.email) contactReplyInput.value = user.email;
 
       unsubscribeUser = onSnapshot(doc(db, "users", user.uid), (snap) => {
-        const d = snap.exists() ? (snap.data() || {}) : {};
-        if (d.banned === true) {
+        const data = snap.exists() ? (snap.data() || {}) : {};
+        if (data.banned === true) {
           window.location.replace('ban.html');
           return;
         }
 
-        const rawRole = String(d.role || d.grade || 'membre').toLowerCase();
+        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
         const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
         const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
-        const pseudo = isAdmin
-          ? formatAdminPseudo(d, fallbackName)
-          : (d.pseudo || fallbackName);
+        const pseudo = isAdmin ? formatAdminPseudo(data, fallbackName) : (data.pseudo || fallbackName);
 
         profileBox.style.display = 'flex';
-        profileAvatar.textContent = getInitials(pseudo);
+        paintAvatar(profileAvatar, data.photoDataUrl || '', pseudo);
         profileName.textContent = pseudo;
         profileRole.textContent = roleLabel;
         profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
         adminLink.style.display = isAdmin ? 'block' : 'none';
         mailLink.style.display = isAdmin ? 'block' : 'none';
-      }, () => {
-        profileBox.style.display = 'flex';
-        profileAvatar.textContent = getInitials(fallbackName);
-        profileName.textContent = fallbackName;
-        profileRole.textContent = 'membre';
-        profileRole.className = 'profile-tag';
-        adminLink.style.display = 'none';
-        mailLink.style.display = 'none';
+
+        if (!contactNameInput.value.trim() || contactNameInput.value === fallbackName) {
+          contactNameInput.value = pseudo;
+        }
+        if (!suggestAuthorInput.value.trim() || suggestAuthorInput.value === fallbackName) {
+          suggestAuthorInput.value = pseudo;
+        }
       });
     });
 
-    loadActiveAdmins();
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.replace('a-propos.html');
+    });
+
+    // Envoi formulaire Contact -> admin_messages (boîte contact@vos-jsp.com)
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      contactAlert.style.display = 'none';
+
+      const name = contactNameInput.value.trim();
+      const reply = contactReplyInput.value.trim();
+      const topic = contactTopicSelect.value;
+      const message = contactMessageInput.value.trim();
+
+      if (!name || !reply || !message) {
+        showBoxAlert(contactAlert, 'Remplis tous les champs avant d’envoyer.');
+        return;
+      }
+
+      contactSubmitBtn.disabled = true;
+      contactSubmitBtn.textContent = 'Envoi en cours...';
+
+      try {
+        await addDoc(collection(db, "admin_messages"), {
+          from: reply,
+          fromName: name,
+          to: 'contact@vos-jsp.com',
+          subject: `[Contact Site] ${topic} — ${name}`,
+          body: `Expéditeur : ${name}\nContact de réponse : ${reply}\nSujet : ${topic}\n\n${message}`,
+          senderUid: currentUser ? currentUser.uid : null,
+          direction: 'received',
+          read: false,
+          archived: false,
+          createdAt: serverTimestamp()
+        });
+
+        contactForm.reset();
+        if (currentUser) {
+          contactNameInput.value = profileName.textContent || '';
+          if (currentUser.email) contactReplyInput.value = currentUser.email;
+        }
+        showBoxAlert(contactAlert, 'Ton message a bien été transmis à l’équipe Vos JSP.', true);
+      } catch (err) {
+        showBoxAlert(contactAlert, 'Envoi impossible : ' + (err.code || err.message));
+      } finally {
+        contactSubmitBtn.disabled = false;
+        contactSubmitBtn.textContent = 'Envoyer le message';
+      }
+    });
+
+    // Envoi formulaire Suggestion -> suggestions_site + notification dans admin_messages
+    suggestForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      suggestAlert.style.display = 'none';
+
+      const author = suggestAuthorInput.value.trim();
+      const type = suggestTypeSelect.value;
+      const title = suggestTitleInput.value.trim();
+      const details = suggestDetailsInput.value.trim();
+
+      if (!author || !title || !details) {
+        showBoxAlert(suggestAlert, 'Remplis tous les champs de la suggestion.');
+        return;
+      }
+
+      suggestSubmitBtn.disabled = true;
+      suggestSubmitBtn.textContent = 'Envoi en cours...';
+
+      try {
+        await addDoc(collection(db, "suggestions_site"), {
+          author,
+          type,
+          title,
+          details,
+          authorUid: currentUser ? currentUser.uid : null,
+          status: 'nouvelle',
+          createdAt: serverTimestamp()
+        });
+
+        await addDoc(collection(db, "admin_messages"), {
+          from: currentUser && currentUser.email ? currentUser.email : author,
+          fromName: author,
+          to: 'contact@vos-jsp.com',
+          subject: `[Suggestion Site] ${title}`,
+          body: `Auteur : ${author}\nCatégorie : ${type}\nTitre : ${title}\n\n${details}`,
+          senderUid: currentUser ? currentUser.uid : null,
+          direction: 'received',
+          read: false,
+          archived: false,
+          createdAt: serverTimestamp()
+        });
+
+        suggestForm.reset();
+        if (currentUser) {
+          suggestAuthorInput.value = profileName.textContent || '';
+        }
+        showBoxAlert(suggestAlert, 'Merci ! Ta suggestion a bien été enregistrée pour l’équipe.', true);
+      } catch (err) {
+        showBoxAlert(suggestAlert, 'Envoi impossible : ' + (err.code || err.message));
+      } finally {
+        suggestSubmitBtn.disabled = false;
+        suggestSubmitBtn.textContent = 'Envoyer la suggestion';
+      }
+    });
   </script>
 </body>
 </html>

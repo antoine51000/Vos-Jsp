@@ -224,7 +224,7 @@
 
     .scan-frame {
       position: relative;
-      background: #eef2f6;
+      background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
@@ -301,7 +301,7 @@
     }
 
     .res-scanned-sheet {
-      background: #eef2f6;
+      background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 0.45rem;
@@ -313,7 +313,7 @@
       position: absolute;
       top: 0.85rem;
       left: 0.85rem;
-      background: rgba(15, 23, 42, 0.82);
+      background: rgba(15, 23, 42, 0.85);
       color: #fff;
       font-size: 0.68rem;
       font-weight: 800;
@@ -362,7 +362,7 @@
     .res-modal-inner img {
       width: 100%;
       border-radius: 14px;
-      background: #eef2f6;
+      background: #f8fafc;
     }
   </style>
 </head>
@@ -616,7 +616,6 @@
     let isSystemAdmin = false;
     let scannedDataUrl = '';
 
-    // null = racine (JSP1..JSP4), 'JSP1'..'JSP4' = dans dossier JSP, { jspLevel, subName } = dans sous-dossier
     let currentJspFolder = null;
     let currentSubFolder = null;
 
@@ -766,11 +765,8 @@
     function renderExplorer() {
       renderPathBar();
       explorerGrid.innerHTML = '';
-
-      // Création de sous-dossier uniquement quand on est dans un dossier JSP1..JSP4
       createSubForm.style.display = (canManageFoldersAndRes && currentJspFolder) ? 'flex' : 'none';
 
-      // NIVEAU 0 : RACINE (JSP1, JSP2, JSP3, JSP4)
       if (!currentJspFolder) {
         ROOT_FOLDERS.forEach((lvl) => {
           const subsCount = getSubfoldersForJsp(lvl).length;
@@ -810,7 +806,6 @@
         return;
       }
 
-      // NIVEAU 1 : DANS UN DOSSIER JSP (ex: JSP1) -> affiche ses sous-dossiers
       if (!currentSubFolder) {
         const subs = getSubfoldersForJsp(currentJspFolder);
         if (!subs.length) {
@@ -872,7 +867,6 @@
         return;
       }
 
-      // NIVEAU 2 : DANS UN SOUS-DOSSIER PRÉCIS
       explorerGrid.innerHTML = `<div class="res-item"><span class="res-item-meta">Tu es dans <strong>${currentJspFolder} / ${currentSubFolder}</strong>. Utilise le bouton Retour ou la barre du haut pour remonter.</span></div>`;
     }
 
@@ -916,7 +910,7 @@
           const img = new Image();
           img.onerror = reject;
           img.onload = () => {
-            const maxW = 1200;
+            const maxW = 1240;
             const scale = img.width > maxW ? maxW / img.width : 1;
             const rawW = Math.round(img.width * scale);
             const rawH = Math.round(img.height * scale);
@@ -927,110 +921,124 @@
             const workCtx = workCanvas.getContext('2d');
             workCtx.drawImage(img, 0, 0, rawW, rawH);
 
-            const imgData = workCtx.getImageData(0, 0, rawW, rawH);
-            const data = imgData.data;
+            const data = workCtx.getImageData(0, 0, rawW, rawH).data;
 
-            let minX = rawW, minY = rawH, maxX = 0, maxY = 0;
-            let foundBright = false;
+            const isPagePixel = (x, y) => {
+              const idx = (y * rawW + x) * 4;
+              const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+              return lum > 105;
+            };
 
-            for (let y = 0; y < rawH; y += 2) {
-              for (let x = 0; x < rawW; x += 2) {
-                const idx = (y * rawW + x) * 4;
-                const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
-                if (lum > 118) {
-                  foundBright = true;
-                  if (x < minX) minX = x;
-                  if (y < minY) minY = y;
-                  if (x > maxX) maxX = x;
-                  if (y > maxY) maxY = y;
-                }
+            let topY = 0;
+            for (let y = 0; y < rawH * 0.45; y += 2) {
+              let hits = 0;
+              for (let x = Math.round(rawW * 0.2); x < Math.round(rawW * 0.8); x += 8) {
+                if (isPagePixel(x, y)) hits++;
               }
+              if (hits >= 12) { topY = y; break; }
             }
 
-            if (!foundBright || maxX - minX < rawW * 0.35 || maxY - minY < rawH * 0.35) {
-              minX = Math.round(rawW * 0.04);
-              minY = Math.round(rawH * 0.04);
-              maxX = Math.round(rawW * 0.96);
-              maxY = Math.round(rawH * 0.96);
-            } else {
-              const padX = Math.round((maxX - minX) * 0.02);
-              const padY = Math.round((maxY - minY) * 0.02);
-              minX = Math.max(0, minX - padX);
-              minY = Math.max(0, minY - padY);
-              maxX = Math.min(rawW, maxX + padX);
-              maxY = Math.min(rawH, maxY + padY);
+            let botY = rawH;
+            for (let y = rawH - 1; y > rawH * 0.55; y -= 2) {
+              let hits = 0;
+              for (let x = Math.round(rawW * 0.2); x < Math.round(rawW * 0.8); x += 8) {
+                if (isPagePixel(x, y)) hits++;
+              }
+              if (hits >= 12) { botY = Math.min(rawH, y + 4); break; }
             }
 
-            const cropW = Math.max(120, maxX - minX);
-            const cropH = Math.max(120, maxY - minY);
+            let leftX = 0;
+            for (let x = 0; x < rawW * 0.45; x += 2) {
+              let hits = 0;
+              for (let y = Math.round(rawH * 0.2); y < Math.round(rawH * 0.8); y += 8) {
+                if (isPagePixel(x, y)) hits++;
+              }
+              if (hits >= 12) { leftX = x; break; }
+            }
+
+            let rightX = rawW;
+            for (let x = rawW - 1; x > rawW * 0.55; x -= 2) {
+              let hits = 0;
+              for (let y = Math.round(rawH * 0.2); y < Math.round(rawH * 0.8); y += 8) {
+                if (isPagePixel(x, y)) hits++;
+              }
+              if (hits >= 12) { rightX = Math.min(rawW, x + 4); break; }
+            }
+
+            const cropW = Math.max(160, rightX - leftX);
+            const cropH = Math.max(160, botY - topY);
 
             const pageCanvas = document.createElement('canvas');
             pageCanvas.width = cropW;
             pageCanvas.height = cropH;
             const pageCtx = pageCanvas.getContext('2d');
-            pageCtx.drawImage(workCanvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+            pageCtx.drawImage(workCanvas, leftX, topY, cropW, cropH, 0, 0, cropW, cropH);
 
-            const pageData = pageCtx.getImageData(0, 0, cropW, cropH);
-            const p = pageData.data;
+            const pageImg = pageCtx.getImageData(0, 0, cropW, cropH);
+            const p = pageImg.data;
 
             for (let i = 0; i < p.length; i += 4) {
-              const r = p[i];
-              const g = p[i + 1];
-              const b = p[i + 2];
+              let r = p[i];
+              let g = p[i + 1];
+              let b = p[i + 2];
+
+              const maxC = Math.max(r, g, b);
+              const minC = Math.min(r, g, b);
+              const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
               const lum = 0.299 * r + 0.587 * g + 0.114 * b;
 
-              if (lum > 172) {
-                const maxC = Math.max(r, g, b);
-                const minC = Math.min(r, g, b);
-                const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
-                if (sat < 0.22) {
-                  p[i] = 252;
-                  p[i + 1] = 252;
-                  p[i + 2] = 250;
-                } else {
-                  p[i] = Math.min(255, Math.round(r * 1.12));
-                  p[i + 1] = Math.min(255, Math.round(g * 1.12));
-                  p[i + 2] = Math.min(255, Math.round(b * 1.12));
-                }
+              if (sat < 0.18 && lum > 155) {
+                r = 255;
+                g = 255;
+                b = 255;
+              } else if (sat < 0.2 && lum <= 155) {
+                const darkFactor = 1.55;
+                r = Math.max(0, Math.min(255, Math.round((r - 120) * darkFactor + 100)));
+                g = Math.max(0, Math.min(255, Math.round((g - 120) * darkFactor + 100)));
+                b = Math.max(0, Math.min(255, Math.round((b - 120) * darkFactor + 100)));
               } else {
-                const factor = 1.38;
-                p[i] = Math.max(0, Math.min(255, Math.round((r - 128) * factor + 128)));
-                p[i + 1] = Math.max(0, Math.min(255, Math.round((g - 128) * factor + 128)));
-                p[i + 2] = Math.max(0, Math.min(255, Math.round((b - 128) * factor + 128)));
+                r = Math.max(0, Math.min(255, Math.round((r - 128) * 1.22 + 138)));
+                g = Math.max(0, Math.min(255, Math.round((g - 128) * 1.22 + 138)));
+                b = Math.max(0, Math.min(255, Math.round((b - 128) * 1.22 + 138)));
               }
+
+              p[i] = r;
+              p[i + 1] = g;
+              p[i + 2] = b;
             }
 
-            pageCtx.putImageData(pageData, 0, 0);
+            pageCtx.putImageData(pageImg, 0, 0);
 
+            const headerH = 42;
+            const pad = 24;
             const outCanvas = document.createElement('canvas');
-            const margin = 28;
-            outCanvas.width = cropW + margin * 2;
-            outCanvas.height = cropH + margin * 2;
+            outCanvas.width = cropW + pad * 2;
+            outCanvas.height = cropH + pad * 2 + headerH;
             const outCtx = outCanvas.getContext('2d');
 
-            outCtx.fillStyle = '#eef2f6';
+            outCtx.fillStyle = '#f8fafc';
             outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
 
-            outCtx.shadowColor = 'rgba(15, 23, 42, 0.16)';
-            outCtx.shadowBlur = 18;
-            outCtx.shadowOffsetY = 6;
             outCtx.fillStyle = '#ffffff';
-            outCtx.fillRect(margin, margin, cropW, cropH);
+            outCtx.fillRect(0, 0, outCanvas.width, headerH);
+            outCtx.fillStyle = '#e11d2a';
+            outCtx.fillRect(0, headerH - 2, outCanvas.width, 2);
 
-            outCtx.shadowColor = 'transparent';
-            outCtx.drawImage(pageCanvas, margin, margin);
+            outCtx.fillStyle = '#0f172a';
+            outCtx.font = 'bold 13px sans-serif';
+            outCtx.fillText('FICHE NUMÉRISÉE • VOS JSP', pad, 26);
 
-            outCtx.strokeStyle = 'rgba(15, 23, 42, 0.14)';
+            outCtx.fillStyle = '#64748b';
+            outCtx.font = '600 11px sans-serif';
+            outCtx.fillText('Texte & schémas nettoyés', Math.max(pad + 190, outCanvas.width - pad - 145), 26);
+
+            outCtx.drawImage(pageCanvas, pad, pad + headerH);
+
+            outCtx.strokeStyle = '#cbd5e1';
             outCtx.lineWidth = 1.5;
-            outCtx.strokeRect(margin, margin, cropW, cropH);
+            outCtx.strokeRect(pad, pad + headerH, cropW, cropH);
 
-            outCtx.fillStyle = 'rgba(15, 23, 42, 0.78)';
-            outCtx.fillRect(outCanvas.width - 196, outCanvas.height - 34, 172, 22);
-            outCtx.fillStyle = '#ffffff';
-            outCtx.font = 'bold 11px sans-serif';
-            outCtx.fillText('NUMÉRISÉ • VOS JSP', outCanvas.width - 184, outCanvas.height - 19);
-
-            resolve(outCanvas.toDataURL('image/jpeg', 0.85));
+            resolve(outCanvas.toDataURL('image/jpeg', 0.86));
           };
           img.src = reader.result;
         };

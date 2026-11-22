@@ -271,7 +271,6 @@
       cursor: pointer;
     }
 
-    /* Badge compteur messages non lus (1, 2, 3...) */
     .msg-count-badge {
       display: inline-flex;
       align-items: center;
@@ -287,7 +286,6 @@
       margin-left: 0.35rem;
     }
 
-    /* Zone chat candidature */
     .app-chat-panel {
       display: none;
       flex-direction: column;
@@ -1081,6 +1079,21 @@
       }
     }
 
+    async function deleteCandidatureWithMessages(appId) {
+      if (chatSubs[appId]) {
+        try { chatSubs[appId](); } catch (_) {}
+        delete chatSubs[appId];
+      }
+      const msgs = appMessagesMap[appId] || [];
+      for (const m of msgs) {
+        await deleteDoc(doc(db, 'candidatures', appId, 'messages', m.id)).catch(() => {});
+      }
+      delete appMessagesMap[appId];
+      openAppChats.delete(appId);
+      await deleteDoc(doc(db, 'candidatures', appId));
+      notify('Candidature supprimée.', true);
+    }
+
     function renderRecrut() {
       const rBox = document.getElementById('roles-list');
       const apBox = document.getElementById('apps-list');
@@ -1152,11 +1165,18 @@
         chatBtn.className = 'btn btn-secondary btn-small';
         chatBtn.innerHTML = `Discuter${unreadCount > 0 ? `<span class="msg-count-badge">${unreadCount}</span>` : ''}`;
 
+        const delApp = document.createElement('button');
+        delApp.type = 'button';
+        delApp.className = 'btn btn-secondary btn-small';
+        delApp.textContent = 'Suppr.';
+        delApp.addEventListener('click', async () => {
+          await deleteCandidatureWithMessages(a.id);
+        });
+
         top.append(info, acts);
-        acts.append(ok, no, chatBtn);
+        acts.append(ok, no, chatBtn, delApp);
         row.appendChild(top);
 
-        // Détails de la candidature
         const detailsBox = document.createElement('div');
         detailsBox.className = 'app-details-box';
         detailsBox.innerHTML = `
@@ -1166,7 +1186,6 @@
         `;
         row.appendChild(detailsBox);
 
-        // Chat en direct candidat <-> admin
         const chatPanel = document.createElement('div');
         chatPanel.className = `app-chat-panel ${openAppChats.has(a.id) ? 'open' : ''}`;
 

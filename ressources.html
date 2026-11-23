@@ -3,378 +3,467 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Explorateur Ressources</title>
+  <title>Vos JSP — Nuage &amp; Ressources</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .res-page {
-      max-width: 1140px;
-      margin: 2rem auto 4rem;
+    :root {
+      --fire: #e11d2a;
+      --fire-soft: rgba(225, 29, 42, 0.14);
+      --fire-border: rgba(225, 29, 42, 0.35);
+      --amber: #f59e0b;
+    }
+
+    .cloud-page {
+      max-width: 1200px;
+      margin: 1.75rem auto 4rem;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1.35rem;
     }
 
-    .res-hero {
-      background:
-        radial-gradient(circle at top right, rgba(225, 29, 42, 0.14), transparent 45%),
-        linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
-      border: 1px solid var(--border);
-      border-radius: 26px;
-      padding: 1.9rem 2rem;
-      box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1.2rem;
-      flex-wrap: wrap;
-    }
-
-    .res-hero h1 {
-      margin: 0.45rem 0 0.35rem;
-      font-size: clamp(1.75rem, 3.8vw, 2.35rem);
-      letter-spacing: -0.025em;
-    }
-
-    .res-hero p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.94rem;
-      max-width: 620px;
-      line-height: 1.55;
-    }
-
-    .res-card {
+    .cloud-shell {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 1.6rem 1.75rem;
+      border-radius: 22px;
       box-shadow: var(--shadow);
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 1.15rem;
     }
 
-    .explorer-toolbar {
+    .cloud-topbar-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 0.75rem;
       flex-wrap: wrap;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 0.75rem 1rem;
+      padding: 0.95rem 1.25rem;
+      background:
+        linear-gradient(90deg, rgba(225, 29, 42, 0.14) 0%, transparent 55%),
+        var(--bg);
+      border-bottom: 1px solid var(--border);
     }
 
-    .explorer-path {
+    .cloud-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    .cloud-title-group h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .cloud-nav-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-wrap: wrap;
+    }
+
+    .cloud-breadcrumb {
+      flex: 1;
+      min-width: 220px;
       display: flex;
       align-items: center;
       gap: 0.35rem;
       flex-wrap: wrap;
-      font-size: 0.88rem;
-      font-weight: 800;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.42rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
     }
 
-    .path-seg {
+    .crumb-btn {
       appearance: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: transparent;
+      border: none;
       color: var(--text);
       font-weight: 800;
-      font-size: 0.82rem;
-      padding: 0.32rem 0.65rem;
-      border-radius: 10px;
+      font-size: 0.84rem;
       cursor: pointer;
+      padding: 0.15rem 0.35rem;
+      border-radius: 6px;
     }
 
-    .path-seg.current {
-      background: rgba(225, 29, 42, 0.1);
-      border-color: rgba(225, 29, 42, 0.35);
-      color: var(--primary);
+    .crumb-btn:hover {
+      background: var(--fire-soft);
+      color: var(--fire);
     }
 
-    .explorer-grid {
+    .crumb-btn.active {
+      color: var(--fire);
+    }
+
+    .cloud-body {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.95rem;
+      grid-template-columns: 220px 1fr 250px;
+      min-height: 430px;
     }
 
-    @media (max-width: 920px) {
-      .explorer-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 520px) {
-      .explorer-grid {
+    @media (max-width: 980px) {
+      .cloud-body {
         grid-template-columns: 1fr;
       }
     }
 
-    .folder-tile {
-      position: relative;
+    .cloud-sidebar {
+      border-right: 1px solid var(--border);
+      padding: 0.95rem 0.85rem;
       background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      padding: 1.15rem 1.2rem;
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+      gap: 0.35rem;
     }
 
-    .folder-tile:hover {
-      transform: translateY(-3px);
-      border-color: rgba(225, 29, 42, 0.42);
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.05);
+    @media (max-width: 980px) {
+      .cloud-sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
     }
 
-    .folder-tile-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .folder-tab-icon {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.72rem;
+    .side-label {
+      font-size: 0.7rem;
       font-weight: 900;
       text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      padding: 0.25rem 0.55rem;
+      width: 100%;
+    }
+
+    .side-folder-item {
+      appearance: none;
+      width: 100%;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 0.52rem 0.65rem;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.86rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    @media (max-width: 980px) {
+      .side-folder-item {
+        width: auto;
+      }
+    }
+
+    .side-folder-item:hover {
+      background: var(--surface);
+      border-color: var(--border);
+    }
+
+    .side-folder-item.active {
+      background: var(--fire-soft);
+      border-color: var(--fire-border);
+      color: var(--fire);
+    }
+
+    .mini-folder-ico {
+      width: 16px;
+      height: 12px;
+      border-radius: 3px;
+      background: var(--amber);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .mini-folder-ico.fire {
+      background: var(--fire);
+    }
+
+    .cloud-main-pane {
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .explorer-table-head {
+      display: grid;
+      grid-template-columns: 1.5fr 0.75fr 0.8fr auto;
+      gap: 0.6rem;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
       letter-spacing: 0.04em;
-      color: var(--primary);
-      background: rgba(225, 29, 42, 0.1);
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
     }
 
-    .folder-tile-title {
-      font-size: 1.08rem;
-      font-weight: 900;
-      margin-top: 0.15rem;
+    @media (max-width: 680px) {
+      .explorer-table-head {
+        display: none;
+      }
     }
 
-    .folder-tile-sub {
+    .explorer-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .explorer-row {
+      display: grid;
+      grid-template-columns: 1.5fr 0.75fr 0.8fr auto;
+      gap: 0.6rem;
+      align-items: center;
+      padding: 0.62rem 0.75rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.14s ease, border-color 0.14s ease;
+    }
+
+    @media (max-width: 680px) {
+      .explorer-row {
+        grid-template-columns: 1fr auto;
+      }
+      .row-col-hide {
+        display: none;
+      }
+    }
+
+    .explorer-row:hover {
+      background: var(--bg);
+      border-color: var(--border);
+    }
+
+    .explorer-row.selected {
+      background: var(--fire-soft);
+      border-color: var(--fire-border);
+    }
+
+    .row-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 800;
+      font-size: 0.9rem;
+      min-width: 0;
+    }
+
+    .row-name-cell span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .row-meta-cell {
       font-size: 0.78rem;
       color: var(--muted);
     }
 
-    .folder-tile-actions {
+    .row-actions-cell {
+      display: flex;
+      gap: 0.35rem;
+      justify-content: flex-end;
+    }
+
+    .cloud-inspector {
+      border-left: 1px solid var(--border);
+      padding: 1rem;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 980px) {
+      .cloud-inspector {
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+    }
+
+    .inspector-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .inspector-title {
+      font-weight: 900;
+      font-size: 0.95rem;
+    }
+
+    .inspector-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .cloud-statusbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 0.4rem;
-      margin-top: 0.25rem;
+      gap: 0.5rem;
+      padding: 0.55rem 1.25rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 0.76rem;
+      color: var(--muted);
     }
 
-    .create-sub-form {
+    .fiche-reader-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.2rem 1.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .fiche-reader-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .fiche-reader-text {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .fiche-photos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 0.65rem;
+    }
+
+    .fiche-photo-tile {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: zoom-in;
+      background: var(--surface);
+      aspect-ratio: 4 / 3;
+    }
+
+    .fiche-photo-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .staff-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.35rem 1.45rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .create-folder-inline {
       display: flex;
       gap: 0.6rem;
       flex-wrap: wrap;
       align-items: center;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 0.8rem 0.95rem;
     }
 
-    .create-sub-form input {
+    .create-folder-inline input {
       flex: 1;
-      min-width: 210px;
+      min-width: 220px;
     }
 
-    .res-editor-grid {
-      display: grid;
-      grid-template-columns: 1.12fr 0.88fr;
-      gap: 1.35rem;
-      align-items: start;
-    }
-
-    @media (max-width: 860px) {
-      .res-editor-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .res-two-cols {
+    .editor-two-cols {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.75rem;
     }
 
-    @media (max-width: 600px) {
-      .res-two-cols {
+    @media (max-width: 640px) {
+      .editor-two-cols {
         grid-template-columns: 1fr;
       }
     }
 
-    .upload-drop-card {
-      background:
-        radial-gradient(circle at top right, rgba(225, 29, 42, 0.08), transparent 55%),
-        var(--bg);
-      border: 1.5px dashed rgba(225, 29, 42, 0.32);
-      border-radius: 20px;
-      padding: 1.1rem;
+    .multi-upload-box {
+      background: var(--bg);
+      border: 1.5px dashed var(--fire-border);
+      border-radius: 16px;
+      padding: 0.95rem;
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 0.75rem;
     }
 
-    .upload-actions-row {
-      display: flex;
-      gap: 0.55rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .upload-thumbs {
+    .thumbs-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 0.55rem;
     }
 
-    @media (max-width: 520px) {
-      .upload-thumbs {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    .upload-thumb-item {
+    .thumb-card {
       position: relative;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
       border: 1px solid var(--border);
-      background: var(--surface);
       aspect-ratio: 4 / 3;
+      background: var(--surface);
     }
 
-    .upload-thumb-item img {
+    .thumb-card img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .upload-thumb-remove {
+    .thumb-del {
       position: absolute;
-      top: 0.3rem;
-      right: 0.3rem;
-      width: 24px;
-      height: 24px;
+      top: 0.25rem;
+      right: 0.25rem;
+      width: 22px;
+      height: 22px;
       border-radius: 999px;
       border: none;
-      background: rgba(15, 23, 42, 0.82);
+      background: rgba(15, 23, 42, 0.85);
       color: #fff;
       font-weight: 900;
-      font-size: 0.85rem;
-      line-height: 1;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .upload-empty {
-      border-radius: 14px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 1.35rem 1rem;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.84rem;
-      line-height: 1.45;
-    }
-
-    .res-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.2rem;
-    }
-
-    @media (max-width: 820px) {
-      .res-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .res-item {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 1.3rem 1.35rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-      transition: transform 0.18s ease, border-color 0.18s ease;
-    }
-
-    .res-item:hover {
-      transform: translateY(-3px);
-      border-color: rgba(225, 29, 42, 0.32);
-    }
-
-    .res-item-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.6rem;
-    }
-
-    .res-item-title {
-      margin: 0.35rem 0 0;
-      font-size: 1.15rem;
-    }
-
-    .res-item-meta {
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .res-item-text {
-      margin: 0;
-      font-size: 0.9rem;
-      line-height: 1.55;
-      white-space: pre-line;
-    }
-
-    .res-photos-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.55rem;
-    }
-
-    .res-photos-grid.single {
-      grid-template-columns: 1fr;
-    }
-
-    .res-photo-box {
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      cursor: zoom-in;
-      background: var(--surface);
-      aspect-ratio: 16 / 10;
-    }
-
-    .res-photos-grid.single .res-photo-box {
-      aspect-ratio: 16 / 9;
-    }
-
-    .res-photo-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+      line-height: 1;
     }
 
     .res-modal {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.82);
       display: none;
       align-items: center;
       justify-content: center;
@@ -389,20 +478,20 @@
     .res-modal-inner {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 22px;
+      border-radius: 20px;
       max-width: 860px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
-      padding: 1.25rem;
+      padding: 1.15rem;
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 0.8rem;
     }
 
     .res-modal-inner img {
       width: 100%;
-      border-radius: 14px;
+      border-radius: 12px;
     }
   </style>
 </head>
@@ -462,106 +551,118 @@
   </aside>
 
   <main>
-    <div class="res-page">
-      <header class="res-hero">
-        <div>
-          <span class="badge">Explorateur JSP1 – JSP4 • Vos JSP</span>
-          <h1>Explorateur de Ressources &amp; Fiches</h1>
-          <p><strong>Double-clique</strong> sur un dossier (<strong>JSP1</strong>, <strong>JSP2</strong>, <strong>JSP3</strong>, <strong>JSP4</strong>) puis sur un sous-dossier pour ouvrir son contenu. Les <strong>Rédacteur Fiches &amp; Cours JSP</strong>, <strong>admin</strong> et <strong>superadmin</strong> peuvent créer des sous-dossiers et publier des fiches avec plusieurs photos.</p>
-        </div>
-        <span class="badge" id="res-perm-badge">Lecture seule</span>
-      </header>
-
+    <div class="cloud-page">
       <div id="res-alert" class="alert"></div>
 
-      <!-- EXPLORATEUR DE DOSSIERS & SOUS-DOSSIERS -->
-      <section class="res-card">
-        <div class="explorer-toolbar">
-          <div class="explorer-path" id="explorer-path"></div>
-          <button type="button" class="btn btn-secondary btn-small" id="explorer-back-btn" disabled>&larr; Retour</button>
+      <!-- EXPLORATEUR NUAGE VERSION POMPIER -->
+      <section class="cloud-shell">
+        <div class="cloud-topbar-bar">
+          <div class="cloud-title-group">
+            <span class="badge">Nuage JSP</span>
+            <h1>Explorateur de Cours &amp; Fiches</h1>
+          </div>
+          <span class="badge" id="res-perm-badge">Lecture seule</span>
         </div>
 
-        <div class="explorer-grid" id="explorer-grid"></div>
+        <div class="cloud-nav-strip">
+          <button type="button" class="btn btn-secondary btn-small" id="btn-back" disabled>&larr; Retour</button>
+          <div class="cloud-breadcrumb" id="breadcrumb-bar"></div>
+        </div>
 
-        <form class="create-sub-form" id="create-sub-form" style="display: none;">
-          <input type="text" id="new-sub-name" required placeholder="Nom du sous-dossier à créer dans le dossier JSP actuel...">
-          <button type="submit" class="btn btn-small" id="create-sub-btn">+ Créer sous-dossier</button>
-        </form>
+        <div class="cloud-body">
+          <aside class="cloud-sidebar" id="sidebar-folders"></aside>
+
+          <div class="cloud-main-pane">
+            <div class="explorer-table-head">
+              <div>Nom</div>
+              <div class="row-col-hide">Type</div>
+              <div class="row-col-hide">Détails</div>
+              <div>Action</div>
+            </div>
+            <div class="explorer-rows" id="explorer-rows"></div>
+            <div id="selected-fiche-view"></div>
+          </div>
+
+          <aside class="cloud-inspector">
+            <div class="side-label" style="padding: 0;">Aperçu &amp; Infos</div>
+            <div class="inspector-box" id="inspector-box">
+              <div class="inspector-title">Nuage Vos JSP</div>
+              <div class="inspector-desc">Double-clique sur un dossier JSP1–JSP4 puis sur un sous-dossier pour ouvrir son contenu.</div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="cloud-statusbar">
+          <span id="status-left">0 élément</span>
+          <span>Double-clic pour ouvrir un dossier ou une fiche</span>
+        </div>
       </section>
 
-      <!-- FORMULAIRE AJOUT RESSOURCE (RÉSERVÉ AUX RÔLES AUTORISÉS) -->
-      <section class="res-card" id="res-editor-card" style="display: none;">
+      <!-- PANNEAU CRÉATION SOUS-DOSSIER & AJOUT FICHE (RÔLES AUTORISÉS UNIQUEMENT) -->
+      <section class="staff-panel" id="staff-panel" style="display: none;">
         <div>
-          <h2>Ajouter une fiche / un cours</h2>
-          <p class="res-item-meta">Choisis le dossier JSP et le sous-dossier, écris le texte et ajoute une ou plusieurs photos.</p>
+          <h2>Gestion du Nuage (Sous-dossiers &amp; Fiches)</h2>
+          <p class="row-meta-cell" style="margin: 0.2rem 0 0;">Réservé aux rôles <strong>Rédacteur Fiches &amp; Cours JSP</strong>, <strong>admin</strong> et <strong>superadmin</strong>.</p>
         </div>
 
-        <form id="res-form">
-          <div class="res-editor-grid">
-            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
-              <div class="res-two-cols">
-                <div class="form-group">
-                  <label for="res-jsp-level">Dossier JSP</label>
-                  <select id="res-jsp-level">
-                    <option value="JSP1">JSP1</option>
-                    <option value="JSP2">JSP2</option>
-                    <option value="JSP3">JSP3</option>
-                    <option value="JSP4">JSP4</option>
-                  </select>
-                </div>
+        <form class="create-folder-inline" id="create-sub-form" style="display: none;">
+          <input type="text" id="new-sub-name" required placeholder="Nouveau sous-dossier dans le dossier JSP ouvert (ex. : Module 1 - Incendie)...">
+          <button type="submit" class="btn btn-small" id="create-sub-btn">+ Nouveau sous-dossier</button>
+        </form>
 
-                <div class="form-group">
-                  <label for="res-subfolder">Sous-dossier</label>
-                  <select id="res-subfolder"></select>
-                </div>
-              </div>
+        <hr style="border: none; border-top: 1px solid var(--border); margin: 0;">
 
-              <div class="form-group">
-                <label for="res-title">Titre de la fiche / du cours</label>
-                <input type="text" id="res-title" required placeholder="Ex. : Protection individuelle et collective">
-              </div>
-
-              <div class="form-group">
-                <label for="res-text">Texte / Contenu de la fiche</label>
-                <textarea id="res-text" rows="6" required placeholder="Écris le texte, les points clés ou les notes de cours..."></textarea>
-              </div>
-
-              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
-                <button type="submit" class="btn btn-small" id="res-submit">Publier la ressource</button>
-                <button type="button" class="btn btn-secondary btn-small" id="res-clear">Réinitialiser</button>
-              </div>
+        <form id="res-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
+          <div class="editor-two-cols">
+            <div class="form-group">
+              <label for="res-jsp-level">Dossier JSP</label>
+              <select id="res-jsp-level">
+                <option value="JSP1">JSP1</option>
+                <option value="JSP2">JSP2</option>
+                <option value="JSP3">JSP3</option>
+                <option value="JSP4">JSP4</option>
+              </select>
             </div>
 
-            <!-- ZONE MULTI-PHOTOS STYLÉE -->
-            <div class="upload-drop-card">
-              <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
-                <strong style="font-size: 0.92rem;">Photos de la fiche</strong>
-                <span class="badge" id="photos-count-badge">0 / 6 photo(s)</span>
-              </div>
-
-              <div class="upload-actions-row">
-                <button type="button" class="btn btn-small" id="btn-pick-multi">+ Ajouter des photos</button>
-                <button type="button" class="btn btn-secondary btn-small" id="btn-pick-camera">Prendre une photo</button>
-                <button type="button" class="btn btn-secondary btn-small" id="btn-clear-photos" style="display: none;">Tout retirer</button>
-              </div>
-
-              <input type="file" id="res-photos-multi" accept="image/*" multiple style="display: none;">
-              <input type="file" id="res-photo-camera" accept="image/*" capture="environment" style="display: none;">
-
-              <div id="photos-preview-area"></div>
+            <div class="form-group">
+              <label for="res-subfolder">Sous-dossier</label>
+              <select id="res-subfolder"></select>
             </div>
           </div>
+
+          <div class="form-group">
+            <label for="res-title">Titre de la fiche</label>
+            <input type="text" id="res-title" required placeholder="Ex. : Protection individuelle et collective">
+          </div>
+
+          <div class="form-group">
+            <label for="res-text">Texte / Contenu de la fiche</label>
+            <textarea id="res-text" rows="5" required placeholder="Écris le texte du cours ou de la fiche..."></textarea>
+          </div>
+
+          <div class="multi-upload-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <strong style="font-size: 0.88rem;">Photos (multi-ajout)</strong>
+              <span class="badge" id="photos-count-badge">0 / 6 photo(s)</span>
+            </div>
+
+            <div style="display: flex; gap: 0.55rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-small" id="btn-pick-multi">+ Ajouter des photos</button>
+              <button type="button" class="btn btn-secondary btn-small" id="btn-pick-camera">Prendre une photo</button>
+              <button type="button" class="btn btn-secondary btn-small" id="btn-clear-photos" style="display: none;">Tout retirer</button>
+            </div>
+
+            <input type="file" id="res-photos-multi" accept="image/*" multiple style="display: none;">
+            <input type="file" id="res-photo-camera" accept="image/*" capture="environment" style="display: none;">
+
+            <div id="thumbs-preview-area"></div>
+          </div>
+
+          <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-small" id="res-submit">Publier la fiche</button>
+            <button type="button" class="btn btn-secondary btn-small" id="res-clear">Réinitialiser</button>
+          </div>
         </form>
-      </section>
-
-      <!-- FICHES DU DOSSIER / SOUS-DOSSIER COURANT -->
-      <section class="res-card">
-        <div>
-          <h2 id="res-list-title">Fiches dans ce dossier</h2>
-          <p class="res-item-meta" id="res-list-sub">Double-clique sur un dossier ou sous-dossier ci-dessus pour naviguer.</p>
-        </div>
-
-        <div class="res-grid" id="res-list"></div>
       </section>
     </div>
   </main>
@@ -572,7 +673,7 @@
         <strong id="res-modal-title">Photo</strong>
         <button type="button" class="btn btn-secondary btn-small" id="res-modal-close">Fermer</button>
       </div>
-      <img id="res-modal-img" alt="Photo de la ressource">
+      <img id="res-modal-img" alt="Photo agrandie">
     </div>
   </div>
 
@@ -626,14 +727,19 @@
 
     const alertEl = document.getElementById('res-alert');
     const permBadge = document.getElementById('res-perm-badge');
-    const explorerPath = document.getElementById('explorer-path');
-    const explorerBackBtn = document.getElementById('explorer-back-btn');
-    const explorerGrid = document.getElementById('explorer-grid');
+    const btnBack = document.getElementById('btn-back');
+    const breadcrumbBar = document.getElementById('breadcrumb-bar');
+    const sidebarFolders = document.getElementById('sidebar-folders');
+    const explorerRows = document.getElementById('explorer-rows');
+    const selectedFicheView = document.getElementById('selected-fiche-view');
+    const inspectorBox = document.getElementById('inspector-box');
+    const statusLeft = document.getElementById('status-left');
+
+    const staffPanel = document.getElementById('staff-panel');
     const createSubForm = document.getElementById('create-sub-form');
     const newSubNameInput = document.getElementById('new-sub-name');
     const createSubBtn = document.getElementById('create-sub-btn');
 
-    const editorCard = document.getElementById('res-editor-card');
     const resForm = document.getElementById('res-form');
     const resJspLevelSelect = document.getElementById('res-jsp-level');
     const resSubfolderSelect = document.getElementById('res-subfolder');
@@ -648,11 +754,7 @@
     const inputPhotosMulti = document.getElementById('res-photos-multi');
     const inputPhotoCamera = document.getElementById('res-photo-camera');
     const photosCountBadge = document.getElementById('photos-count-badge');
-    const photosPreviewArea = document.getElementById('photos-preview-area');
-
-    const resListTitle = document.getElementById('res-list-title');
-    const resListSub = document.getElementById('res-list-sub');
-    const resListEl = document.getElementById('res-list');
+    const thumbsPreviewArea = document.getElementById('thumbs-preview-area');
 
     const modalEl = document.getElementById('res-modal');
     const modalTitle = document.getElementById('res-modal-title');
@@ -662,12 +764,13 @@
 
     let currentUser = null;
     let currentPseudo = 'Membre';
-    let canManageFoldersAndRes = false;
+    let canManage = false;
     let isSystemAdmin = false;
     let selectedPhotos = [];
 
-    let currentJspFolder = null;
-    let currentSubFolder = null;
+    let currentJsp = null;
+    let currentSub = null;
+    let openedFicheId = null;
 
     let allSubfolders = [];
     let allRessources = [];
@@ -710,13 +813,25 @@
       return allSubfolders.filter((s) => (s.jspLevel || 'JSP1') === jspLevel);
     }
 
-    function populateSubfolderSelect(jspLevel, preferredValue = '') {
+    function getFichesInSub(jspLevel, subName) {
+      return allRessources.filter(
+        (r) => (r.jspLevel || 'JSP1') === jspLevel && (r.subfolder || 'Général') === subName
+      );
+    }
+
+    function getPhotosOfFiche(r) {
+      if (Array.isArray(r.images) && r.images.length) return r.images;
+      if (r.scannedImageUrl) return [r.scannedImageUrl];
+      return [];
+    }
+
+    function populateSubfolderSelect(jspLevel, preferred = '') {
       const subs = getSubfoldersForJsp(jspLevel);
       resSubfolderSelect.innerHTML = '';
 
       const generalOpt = document.createElement('option');
       generalOpt.value = 'Général';
-      generalOpt.textContent = 'Général (sans sous-dossier)';
+      generalOpt.textContent = 'Général';
       resSubfolderSelect.appendChild(generalOpt);
 
       subs.forEach((s) => {
@@ -726,204 +841,373 @@
         resSubfolderSelect.appendChild(opt);
       });
 
-      if (preferredValue && Array.from(resSubfolderSelect.options).some((o) => o.value === preferredValue)) {
-        resSubfolderSelect.value = preferredValue;
-      } else if (currentSubFolder && jspLevel === currentJspFolder && Array.from(resSubfolderSelect.options).some((o) => o.value === currentSubFolder)) {
-        resSubfolderSelect.value = currentSubFolder;
+      if (preferred && Array.from(resSubfolderSelect.options).some((o) => o.value === preferred)) {
+        resSubfolderSelect.value = preferred;
+      } else if (currentSub && jspLevel === currentJsp && Array.from(resSubfolderSelect.options).some((o) => o.value === currentSub)) {
+        resSubfolderSelect.value = currentSub;
       } else {
         resSubfolderSelect.value = 'Général';
       }
     }
 
-    function enterJspFolder(lvl) {
-      currentJspFolder = lvl;
-      currentSubFolder = null;
+    function openJspFolder(lvl) {
+      currentJsp = lvl;
+      currentSub = null;
+      openedFicheId = null;
       resJspLevelSelect.value = lvl;
       populateSubfolderSelect(lvl);
       renderExplorer();
-      renderRessourcesList();
     }
 
-    function enterSubFolder(subName) {
-      currentSubFolder = subName;
-      if (currentJspFolder) populateSubfolderSelect(currentJspFolder, subName);
+    function openSubFolder(subName) {
+      currentSub = subName;
+      openedFicheId = null;
+      if (currentJsp) populateSubfolderSelect(currentJsp, subName);
       renderExplorer();
-      renderRessourcesList();
     }
 
-    function goBackExplorer() {
-      if (currentSubFolder) {
-        currentSubFolder = null;
-      } else if (currentJspFolder) {
-        currentJspFolder = null;
+    function goBack() {
+      if (openedFicheId) {
+        openedFicheId = null;
+      } else if (currentSub) {
+        currentSub = null;
+      } else if (currentJsp) {
+        currentJsp = null;
       }
       renderExplorer();
-      renderRessourcesList();
     }
 
-    explorerBackBtn.addEventListener('click', goBackExplorer);
+    btnBack.addEventListener('click', goBack);
 
-    function renderPathBar() {
-      explorerPath.innerHTML = '';
+    function renderSidebar() {
+      sidebarFolders.innerHTML = '<div class="side-label">Dossiers JSP</div>';
 
-      const rootBtn = document.createElement('button');
-      rootBtn.type = 'button';
-      rootBtn.className = `path-seg ${!currentJspFolder ? 'current' : ''}`;
-      rootBtn.textContent = 'Dossiers';
-      rootBtn.addEventListener('click', () => {
-        currentJspFolder = null;
-        currentSubFolder = null;
+      const rootItem = document.createElement('button');
+      rootItem.type = 'button';
+      rootItem.className = `side-folder-item ${!currentJsp ? 'active' : ''}`;
+      rootItem.innerHTML = `<span class="mini-folder-ico fire"></span><span>Racine (JSP1–4)</span>`;
+      rootItem.addEventListener('click', () => {
+        currentJsp = null;
+        currentSub = null;
+        openedFicheId = null;
         renderExplorer();
-        renderRessourcesList();
       });
-      explorerPath.appendChild(rootBtn);
+      sidebarFolders.appendChild(rootItem);
 
-      if (currentJspFolder) {
+      ROOT_FOLDERS.forEach((lvl) => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = `side-folder-item ${currentJsp === lvl ? 'active' : ''}`;
+        item.innerHTML = `<span class="mini-folder-ico"></span><span>${lvl}</span>`;
+        item.addEventListener('click', () => openJspFolder(lvl));
+        sidebarFolders.appendChild(item);
+      });
+    }
+
+    function renderBreadcrumb() {
+      breadcrumbBar.innerHTML = '';
+
+      const bRoot = document.createElement('button');
+      bRoot.type = 'button';
+      bRoot.className = `crumb-btn ${!currentJsp ? 'active' : ''}`;
+      bRoot.textContent = 'Nuage JSP';
+      bRoot.addEventListener('click', () => {
+        currentJsp = null;
+        currentSub = null;
+        openedFicheId = null;
+        renderExplorer();
+      });
+      breadcrumbBar.appendChild(bRoot);
+
+      if (currentJsp) {
         const sep1 = document.createElement('span');
-        sep1.textContent = '/';
+        sep1.textContent = '›';
         sep1.style.color = 'var(--muted)';
-        explorerPath.appendChild(sep1);
+        breadcrumbBar.appendChild(sep1);
 
-        const jspBtn = document.createElement('button');
-        jspBtn.type = 'button';
-        jspBtn.className = `path-seg ${currentJspFolder && !currentSubFolder ? 'current' : ''}`;
-        jspBtn.textContent = currentJspFolder;
-        jspBtn.addEventListener('click', () => {
-          currentSubFolder = null;
+        const bJsp = document.createElement('button');
+        bJsp.type = 'button';
+        bJsp.className = `crumb-btn ${currentJsp && !currentSub ? 'active' : ''}`;
+        bJsp.textContent = currentJsp;
+        bJsp.addEventListener('click', () => {
+          currentSub = null;
+          openedFicheId = null;
           renderExplorer();
-          renderRessourcesList();
         });
-        explorerPath.appendChild(jspBtn);
+        breadcrumbBar.appendChild(bJsp);
       }
 
-      if (currentSubFolder) {
+      if (currentSub) {
         const sep2 = document.createElement('span');
-        sep2.textContent = '/';
+        sep2.textContent = '›';
         sep2.style.color = 'var(--muted)';
-        explorerPath.appendChild(sep2);
+        breadcrumbBar.appendChild(sep2);
 
-        const subBtn = document.createElement('button');
-        subBtn.type = 'button';
-        subBtn.className = 'path-seg current';
-        subBtn.textContent = currentSubFolder;
-        explorerPath.appendChild(subBtn);
+        const bSub = document.createElement('button');
+        bSub.type = 'button';
+        bSub.className = `crumb-btn ${currentSub && !openedFicheId ? 'active' : ''}`;
+        bSub.textContent = currentSub;
+        bSub.addEventListener('click', () => {
+          openedFicheId = null;
+          renderExplorer();
+        });
+        breadcrumbBar.appendChild(bSub);
       }
 
-      explorerBackBtn.disabled = !currentJspFolder && !currentSubFolder;
+      btnBack.disabled = !currentJsp && !currentSub && !openedFicheId;
+    }
+
+    function setInspector(title, desc, extraHtml = '') {
+      inspectorBox.innerHTML = `
+        <div class="inspector-title">${title}</div>
+        <div class="inspector-desc">${desc}</div>
+        ${extraHtml}
+      `;
+    }
+
+    function renderOpenedFiche() {
+      selectedFicheView.innerHTML = '';
+      if (!openedFicheId) return;
+
+      const fiche = allRessources.find((r) => r.id === openedFicheId);
+      if (!fiche) {
+        openedFicheId = null;
+        return;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'fiche-reader-card';
+
+      const top = document.createElement('div');
+      top.className = 'fiche-reader-top';
+
+      const left = document.createElement('div');
+      left.innerHTML = `
+        <span class="badge">${fiche.jspLevel || 'JSP1'} • ${fiche.subfolder || 'Général'}</span>
+        <h3 style="margin: 0.4rem 0 0.2rem; font-size: 1.2rem;">${fiche.title || 'Fiche'}</h3>
+        <div class="row-meta-cell">Auteur : ${fiche.author || 'Équipe JSP'}</div>
+      `;
+      top.appendChild(left);
+
+      const rightBtns = document.createElement('div');
+      rightBtns.style.display = 'flex';
+      rightBtns.style.gap = '0.45rem';
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'btn btn-secondary btn-small';
+      closeBtn.textContent = 'Fermer la fiche';
+      closeBtn.addEventListener('click', () => {
+        openedFicheId = null;
+        renderExplorer();
+      });
+      rightBtns.appendChild(closeBtn);
+
+      const canDel = Boolean(currentUser && (isSystemAdmin || fiche.authorUid === currentUser.uid));
+      if (canDel) {
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn btn-secondary btn-small';
+        delBtn.textContent = 'Supprimer';
+        delBtn.addEventListener('click', async () => {
+          await deleteDoc(doc(db, 'ressources', fiche.id));
+          openedFicheId = null;
+          showAlert('Fiche supprimée.', true);
+          renderExplorer();
+        });
+        rightBtns.appendChild(delBtn);
+      }
+
+      top.appendChild(rightBtns);
+      card.appendChild(top);
+
+      const textP = document.createElement('p');
+      textP.className = 'fiche-reader-text';
+      textP.textContent = fiche.content || '';
+      card.appendChild(textP);
+
+      const photos = getPhotosOfFiche(fiche);
+      if (photos.length) {
+        const grid = document.createElement('div');
+        grid.className = 'fiche-photos-grid';
+        photos.forEach((src, i) => {
+          const box = document.createElement('div');
+          box.className = 'fiche-photo-tile';
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = `${fiche.title || 'Photo'} ${i + 1}`;
+          box.appendChild(img);
+          box.addEventListener('click', () => {
+            modalTitle.textContent = `${fiche.title || 'Photo'} (${i + 1}/${photos.length})`;
+            modalImg.src = src;
+            modalEl.classList.add('open');
+          });
+          grid.appendChild(box);
+        });
+        card.appendChild(grid);
+      }
+
+      selectedFicheView.appendChild(card);
     }
 
     function renderExplorer() {
-      renderPathBar();
-      explorerGrid.innerHTML = '';
-      createSubForm.style.display = (canManageFoldersAndRes && currentJspFolder) ? 'flex' : 'none';
+      renderSidebar();
+      renderBreadcrumb();
+      explorerRows.innerHTML = '';
+      selectedFicheView.innerHTML = '';
+      createSubForm.style.display = (canManage && currentJsp && !currentSub) ? 'flex' : 'none';
 
-      if (!currentJspFolder) {
+      // Niveau 0 : Racine (JSP1..JSP4)
+      if (!currentJsp) {
+        statusLeft.textContent = `${ROOT_FOLDERS.length} dossiers`;
+        setInspector('Dossiers JSP', 'Double-clique sur JSP1, JSP2, JSP3 ou JSP4 pour ouvrir le dossier.');
+
         ROOT_FOLDERS.forEach((lvl) => {
           const subsCount = getSubfoldersForJsp(lvl).length;
-          const filesCount = allRessources.filter((r) => (r.jspLevel || 'JSP1') === lvl).length;
+          const row = document.createElement('div');
+          row.className = 'explorer-row';
 
-          const tile = document.createElement('div');
-          tile.className = 'folder-tile';
-          tile.addEventListener('dblclick', () => enterJspFolder(lvl));
+          row.innerHTML = `
+            <div class="row-name-cell"><span class="mini-folder-ico"></span><span>${lvl}</span></div>
+            <div class="row-meta-cell row-col-hide">Dossier</div>
+            <div class="row-meta-cell row-col-hide">${subsCount} sous-dossier(s)</div>
+            <div class="row-actions-cell"></div>
+          `;
 
-          const top = document.createElement('div');
-          top.className = 'folder-tile-top';
-          top.innerHTML = `<span class="folder-tab-icon">Dossier</span><span class="res-item-meta">Double-clic</span>`;
-
-          const title = document.createElement('div');
-          title.className = 'folder-tile-title';
-          title.textContent = lvl;
-
-          const sub = document.createElement('div');
-          sub.className = 'folder-tile-sub';
-          sub.textContent = `${subsCount} sous-dossier(s) • ${filesCount} fiche(s)`;
-
-          const actions = document.createElement('div');
-          actions.className = 'folder-tile-actions';
           const openBtn = document.createElement('button');
           openBtn.type = 'button';
           openBtn.className = 'btn btn-secondary btn-small';
           openBtn.textContent = 'Ouvrir';
-          openBtn.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            enterJspFolder(lvl);
+          openBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openJspFolder(lvl);
           });
-          actions.appendChild(openBtn);
+          row.querySelector('.row-actions-cell').appendChild(openBtn);
 
-          tile.append(top, title, sub, actions);
-          explorerGrid.appendChild(tile);
+          row.addEventListener('click', () => {
+            explorerRows.querySelectorAll('.explorer-row').forEach((r) => r.classList.remove('selected'));
+            row.classList.add('selected');
+            setInspector(lvl, `Dossier principal ${lvl}. Contient ${subsCount} sous-dossier(s).`);
+          });
+          row.addEventListener('dblclick', () => openJspFolder(lvl));
+
+          explorerRows.appendChild(row);
         });
         return;
       }
 
-      if (!currentSubFolder) {
-        const subs = getSubfoldersForJsp(currentJspFolder);
+      // Niveau 1 : Dans un dossier JSP -> affiche ses sous-dossiers
+      if (!currentSub) {
+        const subs = getSubfoldersForJsp(currentJsp);
+        statusLeft.textContent = `${subs.length} sous-dossier(s) dans ${currentJsp}`;
+        setInspector(currentJsp, 'Double-clique sur un sous-dossier pour voir les fiches qu’il contient.');
+
         if (!subs.length) {
-          explorerGrid.innerHTML = `<div class="res-item"><span class="res-item-meta">Aucun sous-dossier créé dans ${currentJspFolder} pour le moment.</span></div>`;
+          explorerRows.innerHTML = `<div class="row-meta-cell" style="padding: 1rem 0.5rem;">Aucun sous-dossier dans ${currentJsp}.</div>`;
           return;
         }
 
         subs.forEach((s) => {
-          const countInSub = allRessources.filter(
-            (r) => (r.jspLevel || 'JSP1') === currentJspFolder && (r.subfolder || 'Général') === s.name
-          ).length;
+          const countFiches = getFichesInSub(currentJsp, s.name).length;
+          const row = document.createElement('div');
+          row.className = 'explorer-row';
 
-          const tile = document.createElement('div');
-          tile.className = 'folder-tile';
-          tile.addEventListener('dblclick', () => enterSubFolder(s.name));
+          row.innerHTML = `
+            <div class="row-name-cell"><span class="mini-folder-ico"></span><span>${s.name}</span></div>
+            <div class="row-meta-cell row-col-hide">Sous-dossier</div>
+            <div class="row-meta-cell row-col-hide">${countFiches} fiche(s)</div>
+            <div class="row-actions-cell"></div>
+          `;
 
-          const top = document.createElement('div');
-          top.className = 'folder-tile-top';
-          top.innerHTML = `<span class="folder-tab-icon">Sous-dossier</span><span class="res-item-meta">Double-clic</span>`;
-
-          const title = document.createElement('div');
-          title.className = 'folder-tile-title';
-          title.textContent = s.name;
-
-          const sub = document.createElement('div');
-          sub.className = 'folder-tile-sub';
-          sub.textContent = `${countInSub} fiche(s) • Par ${s.author || 'Équipe'}`;
-
-          const actions = document.createElement('div');
-          actions.className = 'folder-tile-actions';
-
+          const actions = row.querySelector('.row-actions-cell');
           const openBtn = document.createElement('button');
           openBtn.type = 'button';
           openBtn.className = 'btn btn-secondary btn-small';
           openBtn.textContent = 'Ouvrir';
-          openBtn.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            enterSubFolder(s.name);
+          openBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openSubFolder(s.name);
           });
           actions.appendChild(openBtn);
 
-          const canDelSub = Boolean(currentUser && (isSystemAdmin || (canManageFoldersAndRes && s.authorUid === currentUser.uid)));
+          const canDelSub = Boolean(currentUser && (isSystemAdmin || (canManage && s.authorUid === currentUser.uid)));
           if (canDelSub) {
             const delBtn = document.createElement('button');
             delBtn.type = 'button';
             delBtn.className = 'btn btn-secondary btn-small';
             delBtn.textContent = 'Suppr.';
-            delBtn.addEventListener('click', async (ev) => {
-              ev.stopPropagation();
+            delBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
               await deleteDoc(doc(db, 'ressources_dossiers', s.id));
               showAlert('Sous-dossier supprimé.', true);
             });
             actions.appendChild(delBtn);
           }
 
-          tile.append(top, title, sub, actions);
-          explorerGrid.appendChild(tile);
+          row.addEventListener('click', () => {
+            explorerRows.querySelectorAll('.explorer-row').forEach((r) => r.classList.remove('selected'));
+            row.classList.add('selected');
+            setInspector(s.name, `Sous-dossier de ${currentJsp} • ${countFiches} fiche(s).`);
+          });
+          row.addEventListener('dblclick', () => openSubFolder(s.name));
+
+          explorerRows.appendChild(row);
         });
         return;
       }
 
-      explorerGrid.innerHTML = `<div class="res-item"><span class="res-item-meta">Tu es dans <strong>${currentJspFolder} / ${currentSubFolder}</strong>. Utilise le bouton Retour ou la barre du haut pour remonter.</span></div>`;
+      // Niveau 2 : Dans un sous-dossier -> affiche les fiches du sous-dossier
+      const fiches = getFichesInSub(currentJsp, currentSub);
+      statusLeft.textContent = `${fiches.length} fiche(s) dans ${currentJsp} / ${currentSub}`;
+      setInspector(currentSub, `Sous-dossier de ${currentJsp}. Double-clique sur une fiche pour lire son contenu et ses photos.`);
+
+      if (!fiches.length) {
+        explorerRows.innerHTML = `<div class="row-meta-cell" style="padding: 1rem 0.5rem;">Aucune fiche dans ${currentJsp} / ${currentSub}.</div>`;
+      } else {
+        fiches.forEach((f) => {
+          const nbPhotos = getPhotosOfFiche(f).length;
+          const row = document.createElement('div');
+          row.className = `explorer-row ${openedFicheId === f.id ? 'selected' : ''}`;
+
+          row.innerHTML = `
+            <div class="row-name-cell"><span>📄 ${f.title || 'Fiche'}</span></div>
+            <div class="row-meta-cell row-col-hide">Fiche</div>
+            <div class="row-meta-cell row-col-hide">${nbPhotos} photo(s) • ${f.author || 'JSP'}</div>
+            <div class="row-actions-cell"></div>
+          `;
+
+          const openBtn = document.createElement('button');
+          openBtn.type = 'button';
+          openBtn.className = 'btn btn-secondary btn-small';
+          openBtn.textContent = 'Lire';
+          openBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openedFicheId = f.id;
+            renderExplorer();
+          });
+          row.querySelector('.row-actions-cell').appendChild(openBtn);
+
+          row.addEventListener('click', () => {
+            explorerRows.querySelectorAll('.explorer-row').forEach((r) => r.classList.remove('selected'));
+            row.classList.add('selected');
+            setInspector(f.title || 'Fiche', `Par ${f.author || 'Équipe JSP'} • ${nbPhotos} photo(s).`);
+          });
+          row.addEventListener('dblclick', () => {
+            openedFicheId = f.id;
+            renderExplorer();
+          });
+
+          explorerRows.appendChild(row);
+        });
+      }
+
+      renderOpenedFiche();
     }
 
     createSubForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!currentUser || !canManageFoldersAndRes || !currentJspFolder) {
-        showAlert('Entre dans un dossier JSP et vérifie que tu as les droits.');
+      if (!currentUser || !canManage || !currentJsp) {
+        showAlert('Ouvre un dossier JSP pour créer un sous-dossier.');
         return;
       }
       const name = newSubNameInput.value.trim();
@@ -933,16 +1217,16 @@
       try {
         await addDoc(collection(db, 'ressources_dossiers'), {
           name,
-          jspLevel: currentJspFolder,
+          jspLevel: currentJsp,
           author: currentPseudo,
           authorUid: currentUser.uid,
           createdAt: serverTimestamp()
         });
         newSubNameInput.value = '';
-        populateSubfolderSelect(currentJspFolder, name);
-        showAlert(`Sous-dossier « ${name} » créé dans ${currentJspFolder}.`, true);
+        populateSubfolderSelect(currentJsp, name);
+        showAlert(`Sous-dossier « ${name} » créé dans ${currentJsp}.`, true);
       } catch (err) {
-        showAlert('Erreur création sous-dossier : ' + (err.code || err.message));
+        showAlert('Erreur : ' + (err.code || err.message));
       } finally {
         createSubBtn.disabled = false;
       }
@@ -977,97 +1261,84 @@
       });
     }
 
-    function renderPhotosPreview() {
+    function renderThumbs() {
       photosCountBadge.textContent = `${selectedPhotos.length} / ${MAX_PHOTOS} photo(s)`;
       btnClearPhotos.style.display = selectedPhotos.length ? 'inline-flex' : 'none';
-      photosPreviewArea.innerHTML = '';
+      thumbsPreviewArea.innerHTML = '';
 
-      if (!selectedPhotos.length) {
-        photosPreviewArea.innerHTML = '<div class="upload-empty">Aucune photo sélectionnée.<br>Ajoute jusqu\'à 6 photos pour illustrer ta fiche.</div>';
-        return;
-      }
+      if (!selectedPhotos.length) return;
 
       const grid = document.createElement('div');
-      grid.className = 'upload-thumbs';
+      grid.className = 'thumbs-grid';
 
       selectedPhotos.forEach((src, idx) => {
-        const item = document.createElement('div');
-        item.className = 'upload-thumb-item';
+        const card = document.createElement('div');
+        card.className = 'thumb-card';
 
         const img = document.createElement('img');
         img.src = src;
         img.alt = `Photo ${idx + 1}`;
 
-        const remBtn = document.createElement('button');
-        remBtn.type = 'button';
-        remBtn.className = 'upload-thumb-remove';
-        remBtn.title = 'Retirer cette photo';
-        remBtn.textContent = '×';
-        remBtn.addEventListener('click', () => {
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'thumb-del';
+        del.textContent = '×';
+        del.addEventListener('click', () => {
           selectedPhotos.splice(idx, 1);
-          renderPhotosPreview();
+          renderThumbs();
         });
 
-        item.append(img, remBtn);
-        grid.appendChild(item);
+        card.append(img, del);
+        grid.appendChild(card);
       });
 
-      photosPreviewArea.appendChild(grid);
+      thumbsPreviewArea.appendChild(grid);
     }
 
-    async function handleFilesSelection(fileList) {
+    async function addFiles(fileList) {
       const files = Array.from(fileList || []);
       if (!files.length) return;
-
-      const availableSlots = MAX_PHOTOS - selectedPhotos.length;
-      if (availableSlots <= 0) {
+      const slots = MAX_PHOTOS - selectedPhotos.length;
+      if (slots <= 0) {
         showAlert(`Maximum ${MAX_PHOTOS} photos par fiche.`);
         return;
       }
-
-      const toProcess = files.slice(0, availableSlots);
-      for (const f of toProcess) {
+      for (const f of files.slice(0, slots)) {
         try {
-          const dataUrl = await compressPhotoFile(f);
-          selectedPhotos.push(dataUrl);
-        } catch (_) {
-          showAlert('Une photo n\'a pas pu être chargée.');
-        }
+          selectedPhotos.push(await compressPhotoFile(f));
+        } catch (_) {}
       }
-      renderPhotosPreview();
+      renderThumbs();
     }
 
     btnPickMulti.addEventListener('click', () => {
       inputPhotosMulti.value = '';
       inputPhotosMulti.click();
     });
-
     btnPickCamera.addEventListener('click', () => {
       inputPhotoCamera.value = '';
       inputPhotoCamera.click();
     });
-
     btnClearPhotos.addEventListener('click', () => {
       selectedPhotos = [];
-      renderPhotosPreview();
+      renderThumbs();
     });
-
-    inputPhotosMulti.addEventListener('change', () => handleFilesSelection(inputPhotosMulti.files));
-    inputPhotoCamera.addEventListener('change', () => handleFilesSelection(inputPhotoCamera.files));
+    inputPhotosMulti.addEventListener('change', () => addFiles(inputPhotosMulti.files));
+    inputPhotoCamera.addEventListener('change', () => addFiles(inputPhotoCamera.files));
 
     function resetEditor() {
-      const targetLvl = currentJspFolder || 'JSP1';
+      const lvl = currentJsp || 'JSP1';
       resForm.reset();
-      resJspLevelSelect.value = targetLvl;
-      populateSubfolderSelect(targetLvl, currentSubFolder || 'Général');
+      resJspLevelSelect.value = lvl;
+      populateSubfolderSelect(lvl, currentSub || 'Général');
       selectedPhotos = [];
-      renderPhotosPreview();
+      renderThumbs();
     }
     resClearBtn.addEventListener('click', resetEditor);
 
     resForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!currentUser || !canManageFoldersAndRes) {
+      if (!currentUser || !canManage) {
         showAlert('Seuls les Rédacteur Fiches & Cours JSP, admin et superadmin peuvent publier.');
         return;
       }
@@ -1076,7 +1347,7 @@
       const title = resTitleInput.value.trim();
       const content = resTextInput.value.trim();
       if (!title || !content) {
-        showAlert('Remplis au moins le titre et le texte.');
+        showAlert('Remplis le titre et le texte.');
         return;
       }
 
@@ -1094,147 +1365,40 @@
           authorUid: currentUser.uid,
           createdAt: serverTimestamp()
         });
-        currentJspFolder = jspLevel;
-        currentSubFolder = subfolder === 'Général' ? null : subfolder;
+        currentJsp = jspLevel;
+        currentSub = subfolder;
         resetEditor();
         renderExplorer();
-        renderRessourcesList();
         showAlert(`Fiche publiée dans ${jspLevel} / ${subfolder}.`, true);
       } catch (err) {
-        showAlert('Erreur de publication : ' + (err.code || err.message));
+        showAlert('Erreur : ' + (err.code || err.message));
       } finally {
         resSubmitBtn.disabled = false;
-        resSubmitBtn.textContent = 'Publier la ressource';
+        resSubmitBtn.textContent = 'Publier la fiche';
       }
     });
-
-    function getResourcePhotos(r) {
-      if (Array.isArray(r.images) && r.images.length) return r.images;
-      if (r.scannedImageUrl) return [r.scannedImageUrl];
-      return [];
-    }
-
-    function renderRessourcesList() {
-      let filtered = allRessources;
-      if (currentJspFolder && currentSubFolder) {
-        filtered = allRessources.filter(
-          (r) => (r.jspLevel || 'JSP1') === currentJspFolder && (r.subfolder || 'Général') === currentSubFolder
-        );
-        resListTitle.textContent = `Fiches dans ${currentJspFolder} / ${currentSubFolder}`;
-        resListSub.textContent = 'Contenu du sous-dossier sélectionné.';
-      } else if (currentJspFolder) {
-        filtered = allRessources.filter((r) => (r.jspLevel || 'JSP1') === currentJspFolder);
-        resListTitle.textContent = `Toutes les fiches de ${currentJspFolder}`;
-        resListSub.textContent = 'Double-clique sur un sous-dossier ci-dessus pour filtrer ou ouvre une fiche.';
-      } else {
-        resListTitle.textContent = 'Dernières fiches (tous dossiers JSP)';
-        resListSub.textContent = 'Double-clique sur JSP1, JSP2, JSP3 ou JSP4 pour explorer ses sous-dossiers.';
-      }
-
-      resListEl.innerHTML = '';
-      if (!filtered.length) {
-        resListEl.innerHTML = '<div class="res-item"><span class="res-item-meta">Aucune fiche dans cet emplacement pour le moment.</span></div>';
-        return;
-      }
-
-      filtered.forEach((r) => {
-        const card = document.createElement('article');
-        card.className = 'res-item';
-
-        const top = document.createElement('div');
-        top.className = 'res-item-top';
-
-        const left = document.createElement('div');
-        const badge = document.createElement('span');
-        badge.className = 'badge';
-        badge.textContent = `${r.jspLevel || 'JSP1'} • ${r.subfolder || 'Général'}`;
-
-        const h3 = document.createElement('h3');
-        h3.className = 'res-item-title';
-        h3.textContent = r.title || 'Fiche JSP';
-
-        const meta = document.createElement('div');
-        meta.className = 'res-item-meta';
-        meta.textContent = `Par ${r.author || 'Équipe JSP'}`;
-
-        left.append(badge, h3, meta);
-        top.appendChild(left);
-
-        const canDelete = Boolean(currentUser && (isSystemAdmin || r.authorUid === currentUser.uid));
-        if (canDelete) {
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.className = 'btn btn-secondary btn-small';
-          delBtn.textContent = 'Suppr.';
-          delBtn.addEventListener('click', async () => {
-            await deleteDoc(doc(db, 'ressources', r.id));
-            showAlert('Fiche supprimée.', true);
-          });
-          top.appendChild(delBtn);
-        }
-
-        card.appendChild(top);
-
-        const txt = document.createElement('p');
-        txt.className = 'res-item-text';
-        txt.textContent = r.content || '';
-        card.appendChild(txt);
-
-        const photos = getResourcePhotos(r);
-        if (photos.length) {
-          const grid = document.createElement('div');
-          grid.className = `res-photos-grid ${photos.length === 1 ? 'single' : ''}`;
-
-          photos.forEach((src, idx) => {
-            const box = document.createElement('div');
-            box.className = 'res-photo-box';
-
-            const img = document.createElement('img');
-            img.src = src;
-            img.alt = `${r.title || 'Photo'} ${idx + 1}`;
-
-            box.appendChild(img);
-            box.addEventListener('click', () => {
-              modalTitle.textContent = `${r.title || 'Photo'} (${idx + 1}/${photos.length}) • ${r.jspLevel || 'JSP1'} / ${r.subfolder || 'Général'}`;
-              modalImg.src = src;
-              modalEl.classList.add('open');
-            });
-            grid.appendChild(box);
-          });
-
-          card.appendChild(grid);
-        }
-
-        resListEl.appendChild(card);
-      });
-    }
 
     onSnapshot(collection(db, 'ressources_dossiers'), (snap) => {
       const list = [];
       snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
       allSubfolders = list;
-      populateSubfolderSelect(resJspLevelSelect.value || currentJspFolder || 'JSP1', resSubfolderSelect.value);
+      populateSubfolderSelect(resJspLevelSelect.value || currentJsp || 'JSP1', resSubfolderSelect.value);
       renderExplorer();
-    }, () => {
-      renderExplorer();
-    });
+    }, () => renderExplorer());
 
     onSnapshot(query(collection(db, 'ressources'), orderBy('createdAt', 'desc')), (snap) => {
       const list = [];
       snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
       allRessources = list;
       renderExplorer();
-      renderRessourcesList();
-    }, () => {
-      renderRessourcesList();
-    });
+    }, () => renderExplorer());
 
     onAuthStateChanged(auth, (user) => {
       if (authSub) { authSub(); authSub = null; }
       currentUser = user || null;
-      canManageFoldersAndRes = false;
+      canManage = false;
       isSystemAdmin = false;
-      editorCard.style.display = 'none';
+      staffPanel.style.display = 'none';
       createSubForm.style.display = 'none';
       permBadge.textContent = 'Lecture seule';
 
@@ -1245,7 +1409,6 @@
         drawerMailLink.style.display = 'none';
         drawerAuthBtn.style.display = 'inline-flex';
         renderExplorer();
-        renderRessourcesList();
         return;
       }
 
@@ -1264,15 +1427,16 @@
         const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
         isSystemAdmin = isAdmin;
         const staffRoles = Array.isArray(d.staffRoles) ? d.staffRoles : [];
-        const hasRedacRole = staffRoles.some((r) => {
+        const hasRedac = staffRoles.some((r) => {
           const s = String(r || '').toLowerCase();
           return s.includes('rédacteur fiches') || s.includes('redacteur fiches');
         });
 
-        canManageFoldersAndRes = isAdmin || hasRedacRole;
-        editorCard.style.display = canManageFoldersAndRes ? 'flex' : 'none';
-        permBadge.textContent = canManageFoldersAndRes
-          ? (isAdmin ? `Publication & dossiers (${rawRole})` : 'Rédacteur Fiches & Cours JSP')
+        canManage = isAdmin || hasRedac;
+        staffPanel.style.display = canManage ? 'flex' : 'none';
+        createSubForm.style.display = (canManage && currentJsp && !currentSub) ? 'flex' : 'none';
+        permBadge.textContent = canManage
+          ? (isAdmin ? `${rawRole}` : 'Rédacteur Fiches & Cours JSP')
           : 'Lecture seule';
 
         const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
@@ -1287,7 +1451,6 @@
         drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
         drawerMailLink.style.display = isAdmin ? 'block' : 'none';
         renderExplorer();
-        renderRessourcesList();
       });
     });
 
@@ -1297,9 +1460,8 @@
     });
 
     populateSubfolderSelect('JSP1');
-    renderPhotosPreview();
+    renderThumbs();
     renderExplorer();
-    renderRessourcesList();
   </script>
 </body>
 </html>

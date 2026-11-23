@@ -659,8 +659,8 @@
 
           <div class="multi-upload-box">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-              <strong style="font-size: 0.88rem;">Photos (multi-ajout)</strong>
-              <span class="badge" id="photos-count-badge">0 / 6 photo(s)</span>
+              <strong style="font-size: 0.88rem;">Photos (illimitées via Cloudinary)</strong>
+              <span class="badge" id="photos-count-badge">0 photo(s)</span>
             </div>
 
             <div style="display: flex; gap: 0.55rem; flex-wrap: wrap;">
@@ -731,8 +731,8 @@
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const ROOT_FOLDERS = ['JSP1', 'JSP2', 'JSP3', 'JSP4'];
-    const MAX_PHOTOS = 6;
-    const MAX_DOC_BYTES = 900000; // marge sous la limite 1 Mo de Firestore
+    const CLOUDINARY_CLOUD_NAME = 'lmavrite';
+    const CLOUDINARY_UPLOAD_PRESET = 'vos_jsp_unsigned';
 
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
@@ -785,7 +785,8 @@
     let currentPseudo = 'Membre';
     let canManage = false;
     let isSystemAdmin = false;
-    let selectedPhotos = [];
+    // Chaque item : { previewUrl: string, existingUrl?: string, blob?: Blob }
+    let photoItems = [];
     let editingFicheId = null;
 
     let currentJsp = null;
@@ -908,7 +909,10 @@
       populateSubfolderSelect(lvl, sub);
       resTitleInput.value = fiche.title || '';
       resTextInput.value = fiche.content || '';
-      selectedPhotos = [...getPhotosOfFiche(fiche)];
+      photoItems = getPhotosOfFiche(fiche).map((url) => ({
+        previewUrl: url,
+        existingUrl: url
+      }));
       renderThumbs();
       editorHeading.textContent = `Modifier la fiche : ${fiche.title || 'Sans titre'}`;
       resSubmitBtn.textContent = 'Enregistrer les modifications';
@@ -1262,7 +1266,7 @@
       populateSubfolderSelect(resJspLevelSelect.value);
     });
 
-    function compressPhotoFile(file, maxW = 820, quality = 0.68) {
+    function compressToBlob(file, maxW = 1400, quality = 0.82) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = reject;
@@ -1278,7 +1282,10 @@
             canvas.height = h;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', quality));
+            canvas.toBlob((blob) => {
+              if (!blob) return reject(new Error('Blob compression failed'));
+              resolve({ blob, previewUrl: URL.createObjectURL(blob) });
+            }, 'image/jpeg', quality);
           };
           img.src = reader.result;
         };
@@ -1287,21 +1294,21 @@
     }
 
     function renderThumbs() {
-      photosCountBadge.textContent = `${selectedPhotos.length} / ${MAX_PHOTOS} photo(s)`;
-      btnClearPhotos.style.display = selectedPhotos.length ? 'inline-flex' : 'none';
+      photosCountBadge.textContent = `${photoItems.length} photo(s)`;
+      btnClearPhotos.style.display = photoItems.length ? 'inline-flex' : 'none';
       thumbsPreviewArea.innerHTML = '';
 
-      if (!selectedPhotos.length) return;
+      if (!photoItems.length) return;
 
       const grid = document.createElement('div');
       grid.className = 'thumbs-grid';
 
-      selectedPhotos.forEach((src, idx) => {
+      photoItems.forEach((item, idx) => {
         const card = document.createElement('div');
         card.className = 'thumb-card';
 
         const img = document.createElement('img');
-        img.src = src;
+        img.src = item.previewUrl;
         img.alt = `Photo ${idx + 1}`;
 
         const del = document.createElement('button');
@@ -1309,7 +1316,10 @@
         del.className = 'thumb-del';
         del.textContent = '×';
         del.addEventListener('click', () => {
-          selectedPhotos.splice(idx, 1);
+          if (item.blob && item.previewUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(item.previewUrl);
+          }
+          photoItems.splice(idx, 1);
           renderThumbs();
         });
 
@@ -1323,37 +1333,21 @@
     async function addFiles(fileList) {
       const files = Array.from(fileList || []);
       if (!files.length) return;
-      const slots = MAX_PHOTOS - selectedPhotos.length;
-      if (slots <= 0) {
-        showAlert(`Maximum ${MAX_PHOTOS} photos par fiche.`);
-        return;
-      }
-
-      const toAdd = files.slice(0, slots);
-      const totalFuture = selectedPhotos.length + toAdd.length;
-      const maxW = totalFuture >= 4 ? 720 : 860;
-      const quality = totalFuture >= 4 ? 0.62 : 0.7;
 
       const results = await Promise.all(
-        toAdd.map((f) => compressPhotoFile(f, maxW, quality).catch(() => null))
+        files.map((f) => compressToBlob(f).catch(() => null))
       );
 
-      let addedCount = 0;
-      results.forEach((dataUrl) => {
-        if (dataUrl) {
-          selectedPhotos.push(dataUrl);
-          addedCount++;
+      results.forEach((res) => {
+        if (res) {
+          photoItems.push({
+            previewUrl: res.previewUrl,
+            blob: res.blob
+          });
         }
       });
 
-      if (addedCount < toAdd.length) {
-        showAlert('Certaines images n’ont pas pu être chargées.');
-      }
       renderThumbs();
-    }
-
-    function estimatePayloadBytes(obj) {
-      return new Blob([JSON.stringify(obj)]).size;
     }
 
     btnPickMulti.addEventListener('click', () => {
@@ -1365,7 +1359,12 @@
       inputPhotoCamera.click();
     });
     btnClearPhotos.addEventListener('click', () => {
-      selectedPhotos = [];
+      photoItems.forEach((item) => {
+        if (item.blob && item.previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
+      });
+      photoItems = [];
       renderThumbs();
     });
     inputPhotosMulti.addEventListener('change', () => addFiles(inputPhotosMulti.files));
@@ -1379,10 +1378,53 @@
       resForm.reset();
       resJspLevelSelect.value = lvl;
       populateSubfolderSelect(lvl, currentSub || 'Général');
-      selectedPhotos = [];
+      photoItems.forEach((item) => {
+        if (item.blob && item.previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
+      });
+      photoItems = [];
       renderThumbs();
     }
     resClearBtn.addEventListener('click', resetEditor);
+
+    async function uploadSingleToCloudinary(blob, folderPath) {
+      const formData = new FormData();
+      formData.append('file', blob, `jsp_${Date.now()}.jpg`);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', folderPath);
+
+      const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await resp.json();
+      if (!resp.ok || !data.secure_url) {
+        throw new Error((data && data.error && data.error.message) || 'Échec upload Cloudinary');
+      }
+      return data.secure_url;
+    }
+
+    async function uploadAllPhotosToCloudinary(jspLevel, subfolder) {
+      const finalUrls = [];
+      const cleanSub = String(subfolder || 'Général').replace(/[\\/#?%]+/g, '_');
+      const folderPath = `vos_jsp/ressources/${jspLevel}/${cleanSub}`;
+
+      for (let i = 0; i < photoItems.length; i++) {
+        const item = photoItems[i];
+        if (item.existingUrl) {
+          finalUrls.push(item.existingUrl);
+        } else if (item.blob) {
+          resSubmitBtn.textContent = `Envoi photo ${i + 1} / ${photoItems.length}...`;
+          const url = await uploadSingleToCloudinary(item.blob, folderPath);
+          finalUrls.push(url);
+        }
+      }
+
+      return finalUrls;
+    }
 
     resForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1399,31 +1441,28 @@
         return;
       }
 
-      const payload = {
-        jspLevel,
-        subfolder,
-        title,
-        content,
-        images: selectedPhotos,
-        scannedImageUrl: selectedPhotos[0] || ''
-      };
-
-      if (estimatePayloadBytes(payload) > MAX_DOC_BYTES) {
-        showAlert('Les photos cumulées dépassent la taille max autorisée par la base. Retire 1 ou 2 photos.');
-        return;
-      }
-
       resSubmitBtn.disabled = true;
       resSubmitBtn.textContent = editingFicheId ? 'Enregistrement...' : 'Publication...';
 
       try {
+        const uploadedUrls = await uploadAllPhotosToCloudinary(jspLevel, subfolder);
+
+        const payload = {
+          jspLevel,
+          subfolder,
+          title,
+          content,
+          images: uploadedUrls,
+          scannedImageUrl: uploadedUrls[0] || ''
+        };
+
         if (editingFicheId) {
           await updateDoc(doc(db, 'ressources', editingFicheId), {
             ...payload,
             updatedAt: serverTimestamp()
           });
           openedFicheId = editingFicheId;
-          showAlert(`Fiche « ${title} » modifiée.`, true);
+          showAlert(`Fiche « ${title} » modifiée (${uploadedUrls.length} photo(s)).`, true);
         } else {
           const createdRef = await addDoc(collection(db, 'ressources'), {
             ...payload,
@@ -1432,7 +1471,7 @@
             createdAt: serverTimestamp()
           });
           openedFicheId = createdRef.id;
-          showAlert(`Fiche publiée dans ${jspLevel} / ${subfolder}.`, true);
+          showAlert(`Fiche publiée dans ${jspLevel} / ${subfolder} (${uploadedUrls.length} photo(s)).`, true);
         }
 
         currentJsp = jspLevel;

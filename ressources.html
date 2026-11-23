@@ -681,6 +681,50 @@
           </div>
         </form>
       </section>
+
+      <!-- PUB & FORMULAIRE RECRUTEMENT RÉDACTEUR FICHES & COURS JSP -->
+      <section class="staff-panel" id="redac-recruit-panel">
+        <div>
+          <span class="badge">Recrutement Équipe</span>
+          <h2 style="margin: 0.45rem 0 0.25rem;">Devenir Rédacteur Fiches &amp; Cours JSP</h2>
+          <p class="row-meta-cell" style="margin: 0; font-size: 0.88rem; line-height: 1.5;">
+            Tu veux aider à enrichir le Nuage avec des fiches et des cours ? On recrute si tu es <strong>entre JSP1 et JSP2</strong>, et on cherche aussi <strong>une personne entre JSP3 et JSP4</strong> !
+          </p>
+        </div>
+
+        <div id="redac-recruit-alert" class="alert" style="display: none;"></div>
+
+        <form id="redac-recruit-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
+          <div class="editor-two-cols">
+            <div class="form-group">
+              <label for="rec-name">Prénom / Pseudo</label>
+              <input type="text" id="rec-name" required placeholder="Ton prénom ou pseudo">
+            </div>
+
+            <div class="form-group">
+              <label for="rec-level">Ton niveau JSP</label>
+              <select id="rec-level" required>
+                <option value="JSP1–JSP2">Entre JSP1 et JSP2</option>
+                <option value="JSP3–JSP4">Entre JSP3 et JSP4</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="rec-contact">Contact (Discord, e-mail ou téléphone)</label>
+            <input type="text" id="rec-contact" required placeholder="Ex. : pseudo_discord ou adresse@mail.fr">
+          </div>
+
+          <div class="form-group">
+            <label for="rec-motivation">Pourquoi tu veux rejoindre l'équipe &amp; quels modules t'intéressent ?</label>
+            <textarea id="rec-motivation" rows="3" required placeholder="Dis-nous ce que tu aimerais rédiger ou partager..."></textarea>
+          </div>
+
+          <div>
+            <button type="submit" class="btn btn-small" id="rec-submit">Envoyer ma candidature</button>
+          </div>
+        </form>
+      </section>
     </div>
   </main>
 
@@ -775,6 +819,14 @@
     const photosCountBadge = document.getElementById('photos-count-badge');
     const thumbsPreviewArea = document.getElementById('thumbs-preview-area');
 
+    const recruitAlert = document.getElementById('redac-recruit-alert');
+    const recruitForm = document.getElementById('redac-recruit-form');
+    const recNameInput = document.getElementById('rec-name');
+    const recLevelSelect = document.getElementById('rec-level');
+    const recContactInput = document.getElementById('rec-contact');
+    const recMotivationInput = document.getElementById('rec-motivation');
+    const recSubmitBtn = document.getElementById('rec-submit');
+
     const modalEl = document.getElementById('res-modal');
     const modalTitle = document.getElementById('res-modal-title');
     const modalImg = document.getElementById('res-modal-img');
@@ -785,7 +837,6 @@
     let currentPseudo = 'Membre';
     let canManage = false;
     let isSystemAdmin = false;
-    // Chaque item : { previewUrl: string, existingUrl?: string, blob?: Blob }
     let photoItems = [];
     let editingFicheId = null;
 
@@ -801,6 +852,12 @@
       alertEl.style.display = 'block';
       alertEl.className = ok ? 'alert success' : 'alert';
       alertEl.textContent = msg;
+    }
+
+    function showRecruitAlert(msg, ok = false) {
+      recruitAlert.style.display = 'block';
+      recruitAlert.className = ok ? 'alert success' : 'alert';
+      recruitAlert.textContent = msg;
     }
 
     function getInitials(label) {
@@ -1486,6 +1543,46 @@
       }
     });
 
+    recruitForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const applicantName = recNameInput.value.trim();
+      const jspBracket = recLevelSelect.value;
+      const contact = recContactInput.value.trim();
+      const motivation = recMotivationInput.value.trim();
+
+      if (!applicantName || !contact || !motivation) {
+        showRecruitAlert('Remplis tous les champs de candidature.');
+        return;
+      }
+
+      recSubmitBtn.disabled = true;
+      recSubmitBtn.textContent = 'Envoi...';
+
+      try {
+        await addDoc(collection(db, 'candidatures'), {
+          applicantName,
+          contact,
+          roleTitle: 'Rédacteur Fiches & Cours JSP',
+          role: 'Rédacteur Fiches & Cours JSP',
+          jspLevel: jspBracket,
+          availability: `Niveau ${jspBracket}`,
+          motivation: `[Niveau ${jspBracket}] ${motivation}`,
+          status: 'en_attente',
+          applicantUid: currentUser ? currentUser.uid : null,
+          source: 'ressources.html',
+          createdAt: serverTimestamp()
+        });
+
+        recruitForm.reset();
+        showRecruitAlert('Candidature envoyée ! Elle apparaît maintenant dans le Panel Admin.', true);
+      } catch (err) {
+        showRecruitAlert('Erreur : ' + (err.code || err.message));
+      } finally {
+        recSubmitBtn.disabled = false;
+        recSubmitBtn.textContent = 'Envoyer ma candidature';
+      }
+    });
+
     onSnapshot(collection(db, 'ressources_dossiers'), (snap) => {
       const list = [];
       snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
@@ -1550,6 +1647,10 @@
         const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
         const pseudo = isAdmin ? formatAdminPseudo(d, fallback) : (d.pseudo || fallback);
         currentPseudo = pseudo;
+
+        if (!recNameInput.value.trim()) {
+          recNameInput.value = d.pseudo || fallback;
+        }
 
         profileBox.style.display = 'flex';
         paintAvatar(profileAvatar, d.photoDataUrl || '', pseudo);

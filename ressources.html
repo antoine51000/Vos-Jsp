@@ -12,14 +12,115 @@
       --fire-soft: rgba(225, 29, 42, 0.12);
       --fire-border: rgba(225, 29, 42, 0.34);
       --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.14);
     }
 
     .cloud-page {
       max-width: 1220px;
-      margin: 1.75rem auto 4rem;
+      margin: 1.5rem auto 4rem;
       display: flex;
       flex-direction: column;
       gap: 1.35rem;
+    }
+
+    /* BANNIÈRE RECRUTEMENT EN HAUT */
+    .recruit-hero {
+      position: relative;
+      background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.22), transparent 46%),
+        linear-gradient(125deg, rgba(225, 29, 42, 0.18) 0%, rgba(159, 18, 28, 0.08) 52%, var(--surface) 100%);
+      border: 1px solid var(--fire-border);
+      border-radius: 24px;
+      padding: 1.35rem 1.5rem;
+      box-shadow: 0 16px 36px rgba(225, 29, 42, 0.09);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .recruit-hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .recruit-hero-title {
+      margin: 0.4rem 0 0.25rem;
+      font-size: 1.28rem;
+      letter-spacing: -0.02em;
+    }
+
+    .recruit-hero-sub {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 740px;
+    }
+
+    .recruit-slots {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 640px) {
+      .recruit-slots {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .recruit-slot-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--fire);
+      border-radius: 16px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .recruit-slot-card.amber-accent {
+      border-left-color: var(--amber);
+    }
+
+    .recruit-slot-tag {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--fire);
+    }
+
+    .recruit-slot-card.amber-accent .recruit-slot-tag {
+      color: #b45309;
+    }
+
+    .recruit-slot-main {
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .recruit-slot-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .recruit-drawer-form {
+      background: var(--surface);
+      border: 1px solid var(--fire-border);
+      border-radius: 18px;
+      padding: 1.15rem 1.25rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .recruit-drawer-form.open {
+      display: flex;
     }
 
     .cloud-shell {
@@ -570,6 +671,68 @@
     <div class="cloud-page">
       <div id="res-alert" class="alert"></div>
 
+      <!-- BANNIÈRE RECRUTEMENT STYLÉE EN HAUT -->
+      <section class="recruit-hero" id="redac-recruit-panel">
+        <div class="recruit-hero-top">
+          <div>
+            <span class="badge">🔥 Recrutement Équipe — Rédacteur Fiches &amp; Cours JSP</span>
+            <h2 class="recruit-hero-title">Rejoins l'équipe de rédaction des fiches JSP</h2>
+            <p class="recruit-hero-sub">
+              Aide à alimenter le Nuage avec des fiches claires et des photos de cours. Les candidatures remontent directement dans le <strong>Panel Admin</strong>.
+            </p>
+          </div>
+          <button type="button" class="btn btn-small" id="btn-toggle-recruit">Postuler maintenant</button>
+        </div>
+
+        <div class="recruit-slots">
+          <div class="recruit-slot-card">
+            <span class="recruit-slot-tag">Créneau ouvert</span>
+            <div class="recruit-slot-main">Si tu es entre JSP1 et JSP2</div>
+            <div class="recruit-slot-note">Idéal pour partager tes premiers cours, modules et fiches illustrées.</div>
+          </div>
+
+          <div class="recruit-slot-card amber-accent">
+            <span class="recruit-slot-tag">Poste recherché</span>
+            <div class="recruit-slot-main">On cherche une personne entre JSP3 et JSP4</div>
+            <div class="recruit-slot-note">Parfait pour structurer les fiches avancées et accompagner les plus jeunes.</div>
+          </div>
+        </div>
+
+        <div id="redac-recruit-alert" class="alert" style="display: none;"></div>
+
+        <form id="redac-recruit-form" class="recruit-drawer-form">
+          <div class="editor-two-cols">
+            <div class="form-group">
+              <label for="rec-name">Prénom / Pseudo</label>
+              <input type="text" id="rec-name" required placeholder="Ton prénom ou pseudo">
+            </div>
+
+            <div class="form-group">
+              <label for="rec-level">Ton niveau JSP</label>
+              <select id="rec-level" required>
+                <option value="JSP1–JSP2">Entre JSP1 et JSP2</option>
+                <option value="JSP3–JSP4">Entre JSP3 et JSP4</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="rec-contact">Contact (Discord, e-mail ou téléphone)</label>
+            <input type="text" id="rec-contact" required placeholder="Ex. : pseudo_discord ou adresse@mail.fr">
+          </div>
+
+          <div class="form-group">
+            <label for="rec-motivation">Pourquoi tu veux rejoindre l'équipe &amp; quels modules t'intéressent ?</label>
+            <textarea id="rec-motivation" rows="3" required placeholder="Dis-nous ce que tu aimerais rédiger ou partager..."></textarea>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-small" id="rec-submit">Envoyer ma candidature</button>
+            <button type="button" class="btn btn-secondary btn-small" id="btn-cancel-recruit">Fermer</button>
+          </div>
+        </form>
+      </section>
+
       <!-- EXPLORATEUR NUAGE VERSION POMPIER -->
       <section class="cloud-shell">
         <div class="cloud-topbar-bar">
@@ -681,50 +844,6 @@
           </div>
         </form>
       </section>
-
-      <!-- PUB & FORMULAIRE RECRUTEMENT RÉDACTEUR FICHES & COURS JSP -->
-      <section class="staff-panel" id="redac-recruit-panel">
-        <div>
-          <span class="badge">Recrutement Équipe</span>
-          <h2 style="margin: 0.45rem 0 0.25rem;">Devenir Rédacteur Fiches &amp; Cours JSP</h2>
-          <p class="row-meta-cell" style="margin: 0; font-size: 0.88rem; line-height: 1.5;">
-            Tu veux aider à enrichir le Nuage avec des fiches et des cours ? On recrute si tu es <strong>entre JSP1 et JSP2</strong>, et on cherche aussi <strong>une personne entre JSP3 et JSP4</strong> !
-          </p>
-        </div>
-
-        <div id="redac-recruit-alert" class="alert" style="display: none;"></div>
-
-        <form id="redac-recruit-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
-          <div class="editor-two-cols">
-            <div class="form-group">
-              <label for="rec-name">Prénom / Pseudo</label>
-              <input type="text" id="rec-name" required placeholder="Ton prénom ou pseudo">
-            </div>
-
-            <div class="form-group">
-              <label for="rec-level">Ton niveau JSP</label>
-              <select id="rec-level" required>
-                <option value="JSP1–JSP2">Entre JSP1 et JSP2</option>
-                <option value="JSP3–JSP4">Entre JSP3 et JSP4</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="rec-contact">Contact (Discord, e-mail ou téléphone)</label>
-            <input type="text" id="rec-contact" required placeholder="Ex. : pseudo_discord ou adresse@mail.fr">
-          </div>
-
-          <div class="form-group">
-            <label for="rec-motivation">Pourquoi tu veux rejoindre l'équipe &amp; quels modules t'intéressent ?</label>
-            <textarea id="rec-motivation" rows="3" required placeholder="Dis-nous ce que tu aimerais rédiger ou partager..."></textarea>
-          </div>
-
-          <div>
-            <button type="submit" class="btn btn-small" id="rec-submit">Envoyer ma candidature</button>
-          </div>
-        </form>
-      </section>
     </div>
   </main>
 
@@ -819,6 +938,8 @@
     const photosCountBadge = document.getElementById('photos-count-badge');
     const thumbsPreviewArea = document.getElementById('thumbs-preview-area');
 
+    const btnToggleRecruit = document.getElementById('btn-toggle-recruit');
+    const btnCancelRecruit = document.getElementById('btn-cancel-recruit');
     const recruitAlert = document.getElementById('redac-recruit-alert');
     const recruitForm = document.getElementById('redac-recruit-form');
     const recNameInput = document.getElementById('rec-name');
@@ -859,6 +980,17 @@
       recruitAlert.className = ok ? 'alert success' : 'alert';
       recruitAlert.textContent = msg;
     }
+
+    btnToggleRecruit.addEventListener('click', () => {
+      recruitForm.classList.toggle('open');
+      if (recruitForm.classList.contains('open')) {
+        recNameInput.focus();
+      }
+    });
+
+    btnCancelRecruit.addEventListener('click', () => {
+      recruitForm.classList.remove('open');
+    });
 
     function getInitials(label) {
       const clean = String(label || 'JS')
@@ -1574,6 +1706,7 @@
         });
 
         recruitForm.reset();
+        recruitForm.classList.remove('open');
         showRecruitAlert('Candidature envoyée ! Elle apparaît maintenant dans le Panel Admin.', true);
       } catch (err) {
         showRecruitAlert('Erreur : ' + (err.code || err.message));

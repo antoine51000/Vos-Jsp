@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — &amp; Ressources</title>
+  <title>Vos JSP — Nuage &amp; Ressources</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     :root {
@@ -732,6 +732,7 @@
 
     const ROOT_FOLDERS = ['JSP1', 'JSP2', 'JSP3', 'JSP4'];
     const MAX_PHOTOS = 6;
+    const MAX_DOC_BYTES = 900000; // marge sous la limite 1 Mo de Firestore
 
     const profileBox = document.getElementById('drawer-profile-box');
     const profileAvatar = document.getElementById('drawer-profile-avatar');
@@ -1261,7 +1262,7 @@
       populateSubfolderSelect(resJspLevelSelect.value);
     });
 
-    function compressPhotoFile(file) {
+    function compressPhotoFile(file, maxW = 820, quality = 0.68) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = reject;
@@ -1269,16 +1270,15 @@
           const img = new Image();
           img.onerror = reject;
           img.onload = () => {
-            const maxW = 1100;
             const scale = img.width > maxW ? maxW / img.width : 1;
-            const w = Math.round(img.width * scale);
-            const h = Math.round(img.height * scale);
+            const w = Math.max(1, Math.round(img.width * scale));
+            const h = Math.max(1, Math.round(img.height * scale));
             const canvas = document.createElement('canvas');
             canvas.width = w;
             canvas.height = h;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', 0.78));
+            resolve(canvas.toDataURL('image/jpeg', quality));
           };
           img.src = reader.result;
         };
@@ -1328,12 +1328,32 @@
         showAlert(`Maximum ${MAX_PHOTOS} photos par fiche.`);
         return;
       }
-      for (const f of files.slice(0, slots)) {
-        try {
-          selectedPhotos.push(await compressPhotoFile(f));
-        } catch (_) {}
+
+      const toAdd = files.slice(0, slots);
+      const totalFuture = selectedPhotos.length + toAdd.length;
+      const maxW = totalFuture >= 4 ? 720 : 860;
+      const quality = totalFuture >= 4 ? 0.62 : 0.7;
+
+      const results = await Promise.all(
+        toAdd.map((f) => compressPhotoFile(f, maxW, quality).catch(() => null))
+      );
+
+      let addedCount = 0;
+      results.forEach((dataUrl) => {
+        if (dataUrl) {
+          selectedPhotos.push(dataUrl);
+          addedCount++;
+        }
+      });
+
+      if (addedCount < toAdd.length) {
+        showAlert('Certaines images n’ont pas pu être chargées.');
       }
       renderThumbs();
+    }
+
+    function estimatePayloadBytes(obj) {
+      return new Blob([JSON.stringify(obj)]).size;
     }
 
     btnPickMulti.addEventListener('click', () => {
@@ -1379,19 +1399,24 @@
         return;
       }
 
+      const payload = {
+        jspLevel,
+        subfolder,
+        title,
+        content,
+        images: selectedPhotos,
+        scannedImageUrl: selectedPhotos[0] || ''
+      };
+
+      if (estimatePayloadBytes(payload) > MAX_DOC_BYTES) {
+        showAlert('Les photos cumulées dépassent la taille max autorisée par la base. Retire 1 ou 2 photos.');
+        return;
+      }
+
       resSubmitBtn.disabled = true;
       resSubmitBtn.textContent = editingFicheId ? 'Enregistrement...' : 'Publication...';
 
       try {
-        const payload = {
-          jspLevel,
-          subfolder,
-          title,
-          content,
-          images: selectedPhotos,
-          scannedImageUrl: selectedPhotos[0] || ''
-        };
-
         if (editingFicheId) {
           await updateDoc(doc(db, 'ressources', editingFicheId), {
             ...payload,

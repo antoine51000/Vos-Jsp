@@ -106,6 +106,152 @@
       align-items: center;
     }
 
+    /* COMPTE À REBOURS OUVERTURE */
+    .idx-countdown-card {
+      background:
+        radial-gradient(circle at 90% 15%, rgba(245, 158, 11, 0.2), transparent 45%),
+        radial-gradient(circle at 10% 85%, rgba(225, 29, 42, 0.14), transparent 50%),
+        var(--surface);
+      border: 1px solid var(--fire-border);
+      border-radius: 26px;
+      padding: 1.55rem 1.75rem;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .idx-cd-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .idx-cd-top h2 {
+      margin: 0.45rem 0 0.25rem;
+      font-size: 1.42rem;
+      letter-spacing: -0.02em;
+    }
+
+    .idx-cd-top p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 640px;
+      line-height: 1.5;
+    }
+
+    .cd-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.34rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--fire-border);
+      background: var(--fire-soft);
+      color: var(--fire);
+    }
+
+    .cd-status-pill.delayed {
+      background: var(--amber-soft);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #b45309;
+    }
+
+    .cd-status-pill.stopped {
+      background: rgba(100, 116, 139, 0.14);
+      border-color: rgba(100, 116, 139, 0.35);
+      color: var(--text);
+    }
+
+    .cd-timer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(72px, 1fr));
+      gap: 0.75rem;
+      max-width: 560px;
+    }
+
+    @media (max-width: 520px) {
+      .cd-timer-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .cd-unit {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.75rem 0.6rem;
+      text-align: center;
+    }
+
+    .cd-unit strong {
+      display: block;
+      font-size: 1.65rem;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--fire);
+    }
+
+    .cd-unit span {
+      display: block;
+      margin-top: 0.2rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .cd-announcement-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--fire);
+      border-radius: 16px;
+      padding: 0.95rem 1.15rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .cd-announcement-box.visible {
+      display: flex;
+    }
+
+    .cd-announcement-box.delayed {
+      border-left-color: var(--amber);
+      background: rgba(245, 158, 11, 0.07);
+    }
+
+    .cd-announcement-box.stopped {
+      border-left-color: #64748b;
+    }
+
+    .cd-announcement-title {
+      font-size: 0.88rem;
+      font-weight: 900;
+    }
+
+    .cd-announcement-text {
+      margin: 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    .cd-actions-bar {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
     /* PANEL MISES À JOUR LIVE */
     .idx-updates-panel {
       background: var(--surface);
@@ -544,6 +690,35 @@
         </aside>
       </section>
 
+      <!-- COMPTE À REBOURS OUVERTURE + NOTIFS + MESSAGE D'ANNONCE -->
+      <section class="idx-countdown-card" id="opening-countdown-section">
+        <div class="idx-cd-top">
+          <div>
+            <span class="idx-pill">⏱️ Compte à rebours • Ouverture du serveur</span>
+            <h2 id="cd-heading">Compte à rebours en attente de lancement</h2>
+            <p id="cd-subtext">Active les notifications pour être alerté dès l'ouverture ou en cas de changement d'horaire.</p>
+          </div>
+          <span class="cd-status-pill stopped" id="cd-status-badge">Compte à rebours stoppé</span>
+        </div>
+
+        <div class="cd-timer-grid" id="cd-timer-grid">
+          <div class="cd-unit"><strong id="cd-days">00</strong><span>Jours</span></div>
+          <div class="cd-unit"><strong id="cd-hours">00</strong><span>Heures</span></div>
+          <div class="cd-unit"><strong id="cd-minutes">00</strong><span>Minutes</span></div>
+          <div class="cd-unit"><strong id="cd-seconds">00</strong><span>Secondes</span></div>
+        </div>
+
+        <div class="cd-announcement-box" id="cd-announcement-box">
+          <div class="cd-announcement-title" id="cd-announcement-title">Annonce officielle</div>
+          <p class="cd-announcement-text" id="cd-announcement-text"></p>
+        </div>
+
+        <div class="cd-actions-bar">
+          <button type="button" class="btn btn-small" id="btn-enable-notifs">🔔 Activer les notifs d'ouverture</button>
+          <span class="row-meta-cell" id="cd-notif-status">Notifs non activées</span>
+        </div>
+      </section>
+
       <!-- BANNIÈRE NUAGE RESSOURCES -->
       <section class="idx-ressources-banner">
         <div>
@@ -680,7 +855,9 @@
     import {
       doc,
       getDoc,
-      onSnapshot
+      setDoc,
+      onSnapshot,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const topAuthBtn = document.getElementById('top-auth-btn');
@@ -693,6 +870,19 @@
     const drawerAdminLink = document.getElementById('drawer-admin-link');
     const drawerMailLink = document.getElementById('drawer-mail-link');
     const siteUpdatesList = document.getElementById('site-updates-list');
+
+    const cdHeading = document.getElementById('cd-heading');
+    const cdSubtext = document.getElementById('cd-subtext');
+    const cdStatusBadge = document.getElementById('cd-status-badge');
+    const cdDays = document.getElementById('cd-days');
+    const cdHours = document.getElementById('cd-hours');
+    const cdMinutes = document.getElementById('cd-minutes');
+    const cdSeconds = document.getElementById('cd-seconds');
+    const cdAnnouncementBox = document.getElementById('cd-announcement-box');
+    const cdAnnouncementTitle = document.getElementById('cd-announcement-title');
+    const cdAnnouncementText = document.getElementById('cd-announcement-text');
+    const btnEnableNotifs = document.getElementById('btn-enable-notifs');
+    const cdNotifStatus = document.getElementById('cd-notif-status');
 
     const GITHUB_OWNER = 'antoine51000';
     const GITHUB_REPO = 'vos-jsp';
@@ -709,6 +899,211 @@
       { title: 'Mise en ligne de la galerie photo communautaire', date: '21 nov. 2026 • 19:10', code: 'v1.3' },
       { title: 'Ouverture du forum d’entraide des membres', date: '21 nov. 2026 • 17:45', code: 'v1.2' }
     ];
+
+    let countdownState = {
+      status: 'stopped',
+      targetAtMs: null,
+      message: '',
+      updatedAtMs: 0
+    };
+    let lastNotifiedKey = '';
+
+    function pad2(n) {
+      return String(Math.max(0, Math.floor(n))).padStart(2, '0');
+    }
+
+    function formatFrDate(ms) {
+      if (!ms) return '';
+      return new Date(ms).toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function maybeTriggerBrowserNotification(title, body, key) {
+      if (localStorage.getItem('vos_jsp_open_notifs') !== '1') return;
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      if (!key || lastNotifiedKey === key) return;
+      lastNotifiedKey = key;
+      try {
+        new Notification(title, { body });
+      } catch (_) {}
+    }
+
+    function renderCountdown() {
+      const now = Date.now();
+      const status = countdownState.status || 'stopped';
+      const target = Number(countdownState.targetAtMs) || 0;
+
+      cdStatusBadge.classList.remove('delayed', 'stopped');
+      cdAnnouncementBox.classList.remove('delayed', 'stopped', 'visible');
+
+      if (status === 'stopped') {
+        cdStatusBadge.textContent = 'Compte à rebours stoppé';
+        cdStatusBadge.classList.add('stopped');
+        cdHeading.textContent = 'Ouverture momentanément stoppée';
+        cdSubtext.textContent = "Le compte à rebours est arrêté pour le moment.";
+        cdDays.textContent = '00';
+        cdHours.textContent = '00';
+        cdMinutes.textContent = '00';
+        cdSeconds.textContent = '00';
+
+        cdAnnouncementBox.classList.add('stopped', 'visible');
+        cdAnnouncementTitle.textContent = '🛑 Information officielle — Compte à rebours stoppé';
+        cdAnnouncementText.textContent =
+          countdownState.message ||
+          "Le compte à rebours d'ouverture a été mis en pause par l'équipe. Reste attentif aux prochaines annonces sur le site.";
+
+        maybeTriggerBrowserNotification(
+          'Vos JSP — Compte à rebours stoppé',
+          cdAnnouncementText.textContent,
+          `stopped_${countdownState.updatedAtMs || 'init'}`
+        );
+        return;
+      }
+
+      if (status === 'delayed') {
+        cdStatusBadge.textContent = 'Ouverture retardée';
+        cdStatusBadge.classList.add('delayed');
+        cdHeading.textContent = target > now
+          ? `Nouvelle échéance : ${formatFrDate(target)}`
+          : 'Ouverture reportée';
+        cdSubtext.textContent = "L'horaire d'ouverture a été ajusté par l'administration.";
+
+        cdAnnouncementBox.classList.add('delayed', 'visible');
+        cdAnnouncementTitle.textContent = '⏳ Information officielle — Ouverture retardée';
+        cdAnnouncementText.textContent =
+          countdownState.message ||
+          (target > now
+            ? `L'ouverture est retardée et reprogrammée au ${formatFrDate(target)}. Merci pour votre patience !`
+            : "L'ouverture a été retardée. Une nouvelle date sera confirmée très prochainement.");
+
+        maybeTriggerBrowserNotification(
+          'Vos JSP — Ouverture retardée',
+          cdAnnouncementText.textContent,
+          `delayed_${target}_${countdownState.updatedAtMs || ''}`
+        );
+
+        if (target <= now) {
+          cdDays.textContent = '00';
+          cdHours.textContent = '00';
+          cdMinutes.textContent = '00';
+          cdSeconds.textContent = '00';
+          return;
+        }
+      } else {
+        const diff = target - now;
+        if (!target || diff <= 0) {
+          cdStatusBadge.textContent = 'C’est l’heure !';
+          cdHeading.textContent = 'L’ouverture est lancée !';
+          cdSubtext.textContent = 'Le compte à rebours est arrivé à terme.';
+          cdDays.textContent = '00';
+          cdHours.textContent = '00';
+          cdMinutes.textContent = '00';
+          cdSeconds.textContent = '00';
+
+          if (countdownState.message) {
+            cdAnnouncementBox.classList.add('visible');
+            cdAnnouncementTitle.textContent = '🔥 Annonce d’ouverture';
+            cdAnnouncementText.textContent = countdownState.message;
+          }
+
+          if (target) {
+            maybeTriggerBrowserNotification(
+              'Vos JSP — C’est ouvert !',
+              countdownState.message || "Le compte à rebours d'ouverture est terminé !",
+              `live_${target}`
+            );
+          }
+          return;
+        }
+
+        cdStatusBadge.textContent = 'En cours';
+        cdHeading.textContent = `Ouverture prévue le ${formatFrDate(target)}`;
+        cdSubtext.textContent = 'Le compte à rebours tourne en direct.';
+
+        if (countdownState.message) {
+          cdAnnouncementBox.classList.add('visible');
+          cdAnnouncementTitle.textContent = '📢 Message de l’équipe';
+          cdAnnouncementText.textContent = countdownState.message;
+        }
+      }
+
+      const totalSec = Math.max(0, Math.floor((target - now) / 1000));
+      const days = Math.floor(totalSec / 86400);
+      const hours = Math.floor((totalSec % 86400) / 3600);
+      const mins = Math.floor((totalSec % 3600) / 60);
+      const secs = totalSec % 60;
+
+      cdDays.textContent = pad2(days);
+      cdHours.textContent = pad2(hours);
+      cdMinutes.textContent = pad2(mins);
+      cdSeconds.textContent = pad2(secs);
+    }
+
+    function refreshNotifButtonLabel() {
+      const enabled = localStorage.getItem('vos_jsp_open_notifs') === '1';
+      if (enabled && 'Notification' in window && Notification.permission === 'granted') {
+        btnEnableNotifs.textContent = '🔔 Notifs activées';
+        cdNotifStatus.textContent = 'Tu recevras une alerte si le compte à rebours change ou se termine.';
+      } else {
+        btnEnableNotifs.textContent = "🔔 Activer les notifs d'ouverture";
+        cdNotifStatus.textContent = 'Notifs non activées sur cet appareil.';
+      }
+    }
+
+    btnEnableNotifs.addEventListener('click', async () => {
+      if (!('Notification' in window)) {
+        cdNotifStatus.textContent = 'Les notifications navigateur ne sont pas supportées ici.';
+        return;
+      }
+      const perm = await Notification.requestPermission();
+      if (perm === 'granted') {
+        localStorage.setItem('vos_jsp_open_notifs', '1');
+        refreshNotifButtonLabel();
+        if (auth.currentUser) {
+          try {
+            await setDoc(doc(db, 'opening_alerts', auth.currentUser.uid), {
+              uid: auth.currentUser.uid,
+              enabled: true,
+              updatedAt: serverTimestamp()
+            }, { merge: true });
+          } catch (_) {}
+        }
+        try {
+          new Notification('Vos JSP', {
+            body: "Notifications d'ouverture activées ! Tu seras prévenu en cas de retard, d'arrêt ou d'ouverture."
+          });
+        } catch (_) {}
+      } else {
+        cdNotifStatus.textContent = 'Permission refusée dans ton navigateur.';
+      }
+    });
+
+    onSnapshot(doc(db, 'site_config', 'countdown'), (snap) => {
+      if (!snap.exists()) {
+        renderCountdown();
+        return;
+      }
+      const d = snap.data() || {};
+      const updatedMs = d.updatedAt && typeof d.updatedAt.toMillis === 'function'
+        ? d.updatedAt.toMillis()
+        : (Number(d.updatedAtMs) || Date.now());
+      countdownState = {
+        status: d.status || 'stopped',
+        targetAtMs: Number(d.targetAtMs) || null,
+        message: d.message || '',
+        updatedAtMs: updatedMs
+      };
+      renderCountdown();
+    });
+
+    refreshNotifButtonLabel();
+    renderCountdown();
+    setInterval(renderCountdown, 1000);
 
     function formatCommitDate(isoDate) {
       const d = new Date(isoDate);

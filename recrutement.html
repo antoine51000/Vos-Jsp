@@ -9,7 +9,7 @@
   <style>
     .rec-wrap {
       max-width: 1120px;
-      margin: 1.8rem auto 3.8rem;
+      margin: 1.8rem auto 4rem;
       display: flex;
       flex-direction: column;
       gap: 1.35rem;
@@ -29,22 +29,21 @@
     }
 
     .rec-hero h1 {
-      margin: 0.45rem 0 0.3rem;
-      font-size: 1.8rem;
+      margin: 0.4rem 0 0.25rem;
+      font-size: 1.75rem;
       letter-spacing: -0.02em;
     }
 
     .rec-hero p {
       margin: 0;
       color: var(--muted);
-      font-size: 0.92rem;
-      max-width: 580px;
+      font-size: 0.9rem;
+      max-width: 560px;
     }
 
     .rec-stats {
       display: flex;
       gap: 0.7rem;
-      flex-wrap: wrap;
     }
 
     .rec-stat {
@@ -52,7 +51,7 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 0.7rem 1rem;
-      min-width: 112px;
+      min-width: 110px;
     }
 
     .rec-stat small {
@@ -70,7 +69,7 @@
 
     .rec-grid {
       display: grid;
-      grid-template-columns: 1.15fr 0.95fr;
+      grid-template-columns: 1.15fr 0.9fr;
       gap: 1.25rem;
       align-items: start;
     }
@@ -94,122 +93,124 @@
 
     .rec-card h2 {
       margin: 0;
-      font-size: 1.22rem;
+      font-size: 1.2rem;
     }
 
     .rec-sub {
       margin: 0.2rem 0 0;
       color: var(--muted);
-      font-size: 0.86rem;
+      font-size: 0.85rem;
     }
 
-    .rec-filters {
-      display: flex;
-      flex-direction: column;
+    .filter-bar {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
       gap: 0.65rem;
     }
 
-    .pole-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
+    @media (max-width: 600px) {
+      .filter-bar {
+        grid-template-columns: 1fr;
+      }
     }
 
-    .pole-pill {
-      appearance: none;
+    .pole-section {
+      border: 1px solid var(--border);
+      border-radius: 18px;
       background: var(--bg);
-      border: 1.5px solid var(--border);
-      color: var(--text);
-      font-weight: 700;
-      font-size: 0.78rem;
-      padding: 0.42rem 0.78rem;
-      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .pole-toggle {
+      width: 100%;
+      appearance: none;
+      background: transparent;
+      border: none;
+      padding: 0.85rem 1.05rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
       cursor: pointer;
-      transition: all 0.15s ease;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.92rem;
+      text-align: left;
     }
 
-    .pole-pill:hover {
-      border-color: var(--primary);
+    .pole-toggle:hover {
+      background: rgba(0, 0, 0, 0.02);
     }
 
-    .pole-pill.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff;
+    .pole-count {
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 0.22rem 0.6rem;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
     }
 
-    .poles-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1.1rem;
-    }
-
-    .pole-group {
-      display: flex;
+    .pole-body {
+      display: none;
       flex-direction: column;
       gap: 0.6rem;
+      padding: 0 0.85rem 0.85rem;
     }
 
-    .pole-header {
+    .pole-section.open .pole-body {
+      display: flex;
+    }
+
+    .role-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 15px;
+      padding: 0.85rem 1rem;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding-bottom: 0.35rem;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.84rem;
-      font-weight: 800;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      align-items: flex-start;
+      gap: 0.85rem;
     }
 
-    .role-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-
-    .role-item {
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 18px;
-      padding: 0.95rem 1.1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-      transition: border-color 0.15s ease;
-    }
-
-    .role-item.selected {
+    .role-card.selected {
       border-color: var(--primary);
     }
 
-    .role-item-top {
+    .role-info {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
     }
 
-    .role-item-title {
+    .role-title {
       font-weight: 800;
-      font-size: 0.96rem;
+      font-size: 0.94rem;
     }
 
-    .role-item-desc {
+    .role-desc {
       margin: 0;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       color: var(--muted);
-      line-height: 1.45;
+      line-height: 1.4;
     }
 
-    .selected-pill {
+    .role-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.45rem;
+      flex-shrink: 0;
+    }
+
+    .selected-banner {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 0.65rem 0.85rem;
-      font-size: 0.86rem;
+      font-size: 0.85rem;
       font-weight: 700;
     }
 
@@ -248,7 +249,7 @@
 
     .my-app-title {
       font-weight: 800;
-      font-size: 0.98rem;
+      font-size: 0.96rem;
     }
 
     .my-app-meta {
@@ -415,7 +416,7 @@
         <div>
           <span class="badge">Équipe &amp; bénévolat • Vos JSP</span>
           <h1>Rejoins l'équipe Vos JSP</h1>
-          <p>Cherche un poste par mot-clé ou par pôle, sélectionne-le et envoie ta candidature en un clin d'œil.</p>
+          <p>Recherche un poste, filtre par pôle et envoie ta candidature directement.</p>
         </div>
         <div class="rec-stats">
           <div class="rec-stat">
@@ -432,31 +433,31 @@
       <div id="rec-alert" class="alert"></div>
 
       <div class="rec-grid">
-        <!-- COLONNE GAUCHE : RECHERCHE + PÔLES + POSTES -->
         <section class="rec-card">
           <div>
-            <h2>Postes par pôle</h2>
-            <p class="rec-sub">Filtre par pôle ou tape un mot-clé pour trouver le bon poste.</p>
+            <h2>Postes disponibles</h2>
+            <p class="rec-sub">Clique sur un pôle pour dérouler les postes.</p>
           </div>
 
-          <div class="rec-filters">
-            <input type="search" id="role-search" placeholder="Rechercher un poste (ex. : modérateur, actus, discord, fiches)...">
-            <div class="pole-pills" id="pole-filters"></div>
+          <div class="filter-bar">
+            <input type="search" id="role-search" placeholder="Rechercher un poste...">
+            <select id="pole-select" aria-label="Filtrer par pôle">
+              <option value="Tous">Tous les pôles</option>
+            </select>
           </div>
 
-          <div class="poles-container" id="poles-container"></div>
+          <div style="display: flex; flex-direction: column; gap: 0.7rem;" id="poles-container"></div>
         </section>
 
-        <!-- COLONNE DROITE : FORMULAIRE DIRECT -->
         <section class="rec-card">
           <div>
-            <h2>Postuler simplement</h2>
-            <p class="rec-sub">Remplis les champs ci-dessous et valide.</p>
+            <h2>Candidature</h2>
+            <p class="rec-sub">Complète le formulaire pour postuler.</p>
           </div>
 
-          <div class="selected-pill" id="selected-role-label">Poste choisi : aucun</div>
+          <div class="selected-banner" id="selected-role-label">Poste choisi : aucun</div>
 
-          <form id="candidature-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
+          <form id="candidature-form" style="display: flex; flex-direction: column; gap: 0.8rem;">
             <div class="form-group" style="margin: 0;">
               <label for="app-name">Pseudo / Nom affiché</label>
               <input type="text" id="app-name" required placeholder="Ton pseudo">
@@ -479,7 +480,7 @@
 
             <div class="form-group" style="margin: 0;">
               <label for="app-motivation">Motivation</label>
-              <textarea id="app-motivation" rows="4" required placeholder="En quelques lignes, pourquoi tu veux rejoindre l'équipe ?"></textarea>
+              <textarea id="app-motivation" rows="4" required placeholder="Pourquoi veux-tu rejoindre l'équipe ?"></textarea>
             </div>
 
             <label class="adm-check">
@@ -492,11 +493,10 @@
         </section>
       </div>
 
-      <!-- MES CANDIDATURES + CHAT -->
       <section class="rec-card" id="mes-candidatures">
         <div>
           <h2>Mes candidatures &amp; discussions</h2>
-          <p class="rec-sub">Suis tes candidatures et échange directement avec l'équipe.</p>
+          <p class="rec-sub">Suis tes candidatures et échange avec l'équipe.</p>
         </div>
         <div class="my-apps-list" id="my-apps-list"></div>
       </section>
@@ -550,7 +550,7 @@
 
     const alertEl = document.getElementById('rec-alert');
     const searchInput = document.getElementById('role-search');
-    const poleFiltersEl = document.getElementById('pole-filters');
+    const poleSelect = document.getElementById('pole-select');
     const polesContainer = document.getElementById('poles-container');
     const selectedRoleLabel = document.getElementById('selected-role-label');
     const statOpenRoles = document.getElementById('stat-open-roles');
@@ -579,28 +579,28 @@
         id: 'def-modo',
         title: 'Modérateur / Modératrice',
         pole: 'Modération & Sécurité',
-        description: 'Veiller au respect des règles sur le forum, la galerie et les échanges de la communauté.',
+        description: 'Veiller au respect des règles sur le forum, la galerie et les échanges.',
         open: true
       },
       {
         id: 'def-redac',
         title: 'Rédacteur / Rédactrice Actus',
         pole: 'Éditorial & Actus',
-        description: 'Rédiger, corriger et publier des articles sur la vie JSP, le secourisme et la sécurité civile.',
+        description: 'Rédiger et publier des actualités sur la vie JSP et la sécurité civile.',
         open: true
       },
       {
         id: 'def-fiches',
         title: 'Rédacteur Fiches & Cours JSP',
         pole: 'Pédagogie & Ressources',
-        description: 'Partager et organiser des fiches de révision, cours et supports utiles pour les cycles JSP.',
+        description: 'Partager des fiches, cours et supports utiles pour les cycles JSP.',
         open: true
       },
       {
         id: 'def-anim',
         title: 'Animateur / Staff Discord',
         pole: 'Communauté & Discord',
-        description: 'Animer la communauté, accueillir les membres et relayer les annonces importantes.',
+        description: 'Animer la communauté, aider les membres et relayer les infos.',
         open: true
       }
     ];
@@ -616,6 +616,7 @@
     let selectedRole = DEFAULT_POSTES[0].title;
     let selectedPoleFilter = 'Tous';
     let searchQuery = '';
+    let expandedPoles = new Set(['Modération & Sécurité']);
     let firestoreRoles = [];
     let myApps = [];
 
@@ -673,24 +674,17 @@
       return merged;
     }
 
-    function renderPoleFilters(allRoles) {
-      const activePoles = new Set(['Tous']);
-      POLES_ORDER.forEach((p) => {
-        if (allRoles.some((r) => r.pole === p)) activePoles.add(p);
-      });
-      if (!activePoles.has(selectedPoleFilter)) selectedPoleFilter = 'Tous';
+    function syncPoleSelect(allRoles) {
+      const activePoles = POLES_ORDER.filter((p) => allRoles.some((r) => r.pole === p));
+      if (!activePoles.includes(selectedPoleFilter)) selectedPoleFilter = 'Tous';
 
-      poleFiltersEl.innerHTML = '';
+      poleSelect.innerHTML = '<option value="Tous">Tous les pôles</option>';
       activePoles.forEach((pole) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `pole-pill ${selectedPoleFilter === pole ? 'active' : ''}`;
-        btn.textContent = pole;
-        btn.addEventListener('click', () => {
-          selectedPoleFilter = pole;
-          renderRoles();
-        });
-        poleFiltersEl.appendChild(btn);
+        const opt = document.createElement('option');
+        opt.value = pole;
+        opt.textContent = pole;
+        if (pole === selectedPoleFilter) opt.selected = true;
+        poleSelect.appendChild(opt);
       });
     }
 
@@ -699,7 +693,7 @@
       const openCount = allRoles.filter((r) => r.open !== false).length;
       statOpenRoles.textContent = String(openCount);
 
-      renderPoleFilters(allRoles);
+      syncPoleSelect(allRoles);
 
       if (!allRoles.some((r) => r.title === selectedRole && r.open !== false)) {
         const firstOpen = allRoles.find((r) => r.open !== false);
@@ -708,6 +702,8 @@
       selectedRoleLabel.textContent = selectedRole ? `Poste choisi : ${selectedRole}` : 'Poste choisi : aucun';
 
       const q = searchQuery.trim().toLowerCase();
+      const hasActiveFilter = Boolean(q) || selectedPoleFilter !== 'Tous';
+
       const filtered = allRoles.filter((r) => {
         const matchesPole = selectedPoleFilter === 'Tous' || r.pole === selectedPoleFilter;
         const matchesSearch = !q || `${r.title || ''} ${r.description || ''} ${r.pole || ''}`.toLowerCase().includes(q);
@@ -716,7 +712,7 @@
 
       polesContainer.innerHTML = '';
       if (!filtered.length) {
-        polesContainer.innerHTML = '<div class="rec-empty">Aucun poste ne correspond à ta recherche ou à ce pôle.</div>';
+        polesContainer.innerHTML = '<div class="rec-empty">Aucun poste trouvé.</div>';
         return;
       }
 
@@ -726,62 +722,72 @@
         const items = filtered.filter((r) => r.pole === pole);
         if (!items.length) return;
 
-        const group = document.createElement('div');
-        group.className = 'pole-group';
+        const isOpen = hasActiveFilter || expandedPoles.has(pole);
 
-        const header = document.createElement('div');
-        header.className = 'pole-header';
-        header.innerHTML = `<span>${pole}</span><span>${items.length}</span>`;
-        group.appendChild(header);
+        const section = document.createElement('div');
+        section.className = `pole-section ${isOpen ? 'open' : ''}`;
 
-        const listEl = document.createElement('div');
-        listEl.className = 'role-list';
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'pole-toggle';
+        toggle.innerHTML = `<span>${pole}</span><span class="pole-count">${items.length} poste${items.length > 1 ? 's' : ''}</span>`;
+        toggle.addEventListener('click', () => {
+          if (expandedPoles.has(pole)) expandedPoles.delete(pole);
+          else expandedPoles.add(pole);
+          renderRoles();
+        });
+
+        const body = document.createElement('div');
+        body.className = 'pole-body';
 
         items.forEach((r) => {
-          const isOpen = r.open !== false;
+          const roleOpen = r.open !== false;
           const isSel = r.title === selectedRole;
 
           const card = document.createElement('div');
-          card.className = `role-item ${isSel ? 'selected' : ''}`;
+          card.className = `role-card ${isSel ? 'selected' : ''}`;
 
-          const top = document.createElement('div');
-          top.className = 'role-item-top';
+          const info = document.createElement('div');
+          info.className = 'role-info';
+          info.innerHTML = `
+            <span class="role-title">${r.title}</span>
+            <p class="role-desc">${r.description || ''}</p>
+          `;
 
-          const titleEl = document.createElement('span');
-          titleEl.className = 'role-item-title';
-          titleEl.textContent = r.title;
+          const side = document.createElement('div');
+          side.className = 'role-side';
 
           const badge = document.createElement('span');
           badge.className = 'badge';
-          badge.textContent = isOpen ? 'Ouvert' : 'Clôturé';
-
-          top.append(titleEl, badge);
-
-          const descEl = document.createElement('p');
-          descEl.className = 'role-item-desc';
-          descEl.textContent = r.description || '';
+          badge.textContent = roleOpen ? 'Ouvert' : 'Fermé';
 
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = isSel ? 'btn btn-small' : 'btn btn-secondary btn-small';
-          btn.disabled = !isOpen;
-          btn.textContent = isSel ? 'Sélectionné' : (isOpen ? 'Choisir ce poste' : 'Fermé');
+          btn.disabled = !roleOpen;
+          btn.textContent = isSel ? 'Choisis' : (roleOpen ? 'Choisir' : 'Fermé');
           btn.addEventListener('click', () => {
             selectedRole = r.title;
             renderRoles();
           });
 
-          card.append(top, descEl, btn);
-          listEl.appendChild(card);
+          side.append(badge, btn);
+          card.append(info, side);
+          body.appendChild(card);
         });
 
-        group.appendChild(listEl);
-        polesContainer.appendChild(group);
+        section.append(toggle, body);
+        polesContainer.appendChild(section);
       });
     }
 
     searchInput.addEventListener('input', () => {
       searchQuery = searchInput.value;
+      renderRoles();
+    });
+
+    poleSelect.addEventListener('change', () => {
+      selectedPoleFilter = poleSelect.value;
       renderRoles();
     });
 
@@ -830,12 +836,12 @@
       myAppsList.innerHTML = '';
 
       if (!currentUser) {
-        myAppsList.innerHTML = '<div class="my-app-card"><span class="my-app-meta">Connecte-toi pour suivre tes candidatures et discuter avec l\'équipe.</span></div>';
+        myAppsList.innerHTML = '<div class="my-app-card"><span class="my-app-meta">Connecte-toi pour voir tes candidatures et discuter avec l\'équipe.</span></div>';
         return;
       }
 
       if (!myApps.length) {
-        myAppsList.innerHTML = '<div class="my-app-card"><span class="my-app-meta">Tu n\'as pas encore envoyé de candidature.</span></div>';
+        myAppsList.innerHTML = '<div class="my-app-card"><span class="my-app-meta">Aucune candidature envoyée pour le moment.</span></div>';
         return;
       }
 
@@ -879,7 +885,7 @@
         msgsEl.className = 'app-chat-msgs';
         const msgs = messagesByApp[a.id] || [];
         if (!msgs.length) {
-          msgsEl.innerHTML = '<span class="my-app-meta">Aucun message pour l\'instant. Pose ta question à l\'équipe ici.</span>';
+          msgsEl.innerHTML = '<span class="my-app-meta">Aucun message pour l\'instant.</span>';
         } else {
           msgs.forEach((m) => {
             const b = document.createElement('div');

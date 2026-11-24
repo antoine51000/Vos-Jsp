@@ -102,16 +102,33 @@
       font-size: 0.85rem;
     }
 
-    .filter-bar {
-      display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 0.65rem;
+    .pole-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
     }
 
-    @media (max-width: 600px) {
-      .filter-bar {
-        grid-template-columns: 1fr;
-      }
+    .pole-tab {
+      appearance: none;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 0.38rem 0.72rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.14s ease;
+    }
+
+    .pole-tab:hover {
+      border-color: var(--primary);
+    }
+
+    .pole-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
     }
 
     .pole-section {
@@ -169,40 +186,40 @@
       border-radius: 15px;
       padding: 0.85rem 1rem;
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.85rem;
+      flex-direction: column;
+      gap: 0.65rem;
     }
 
     .role-card.selected {
       border-color: var(--primary);
     }
 
-    .role-info {
+    .role-top {
       display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      min-width: 0;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.65rem;
     }
 
     .role-title {
       font-weight: 800;
-      font-size: 0.94rem;
+      font-size: 0.95rem;
     }
 
     .role-desc {
-      margin: 0;
+      margin: 0.2rem 0 0;
       font-size: 0.82rem;
       color: var(--muted);
       line-height: 1.4;
     }
 
-    .role-side {
+    .role-footer {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.45rem;
-      flex-shrink: 0;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.5rem;
+      padding-top: 0.35rem;
+      border-top: 1px solid var(--border);
     }
 
     .selected-banner {
@@ -439,12 +456,8 @@
             <p class="rec-sub">Clique sur un pôle pour dérouler les postes.</p>
           </div>
 
-          <div class="filter-bar">
-            <input type="search" id="role-search" placeholder="Rechercher un poste...">
-            <select id="pole-select" aria-label="Filtrer par pôle">
-              <option value="Tous">Tous les pôles</option>
-            </select>
-          </div>
+          <input type="search" id="role-search" placeholder="Rechercher un poste...">
+          <div class="pole-tabs" id="pole-tabs"></div>
 
           <div style="display: flex; flex-direction: column; gap: 0.7rem;" id="poles-container"></div>
         </section>
@@ -550,7 +563,7 @@
 
     const alertEl = document.getElementById('rec-alert');
     const searchInput = document.getElementById('role-search');
-    const poleSelect = document.getElementById('pole-select');
+    const poleTabsEl = document.getElementById('pole-tabs');
     const polesContainer = document.getElementById('poles-container');
     const selectedRoleLabel = document.getElementById('selected-role-label');
     const statOpenRoles = document.getElementById('stat-open-roles');
@@ -674,17 +687,21 @@
       return merged;
     }
 
-    function syncPoleSelect(allRoles) {
-      const activePoles = POLES_ORDER.filter((p) => allRoles.some((r) => r.pole === p));
+    function renderPoleTabs(allRoles) {
+      const activePoles = ['Tous', ...POLES_ORDER.filter((p) => allRoles.some((r) => r.pole === p))];
       if (!activePoles.includes(selectedPoleFilter)) selectedPoleFilter = 'Tous';
 
-      poleSelect.innerHTML = '<option value="Tous">Tous les pôles</option>';
+      poleTabsEl.innerHTML = '';
       activePoles.forEach((pole) => {
-        const opt = document.createElement('option');
-        opt.value = pole;
-        opt.textContent = pole;
-        if (pole === selectedPoleFilter) opt.selected = true;
-        poleSelect.appendChild(opt);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `pole-tab ${selectedPoleFilter === pole ? 'active' : ''}`;
+        btn.textContent = pole;
+        btn.addEventListener('click', () => {
+          selectedPoleFilter = pole;
+          renderRoles();
+        });
+        poleTabsEl.appendChild(btn);
       });
     }
 
@@ -693,7 +710,7 @@
       const openCount = allRoles.filter((r) => r.open !== false).length;
       statOpenRoles.textContent = String(openCount);
 
-      syncPoleSelect(allRoles);
+      renderPoleTabs(allRoles);
 
       if (!allRoles.some((r) => r.title === selectedRole && r.open !== false)) {
         const firstOpen = allRoles.find((r) => r.open !== false);
@@ -747,32 +764,36 @@
           const card = document.createElement('div');
           card.className = `role-card ${isSel ? 'selected' : ''}`;
 
+          const top = document.createElement('div');
+          top.className = 'role-top';
+
           const info = document.createElement('div');
-          info.className = 'role-info';
           info.innerHTML = `
             <span class="role-title">${r.title}</span>
             <p class="role-desc">${r.description || ''}</p>
           `;
 
-          const side = document.createElement('div');
-          side.className = 'role-side';
-
           const badge = document.createElement('span');
           badge.className = 'badge';
           badge.textContent = roleOpen ? 'Ouvert' : 'Fermé';
+
+          top.append(info, badge);
+
+          const footer = document.createElement('div');
+          footer.className = 'role-footer';
 
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = isSel ? 'btn btn-small' : 'btn btn-secondary btn-small';
           btn.disabled = !roleOpen;
-          btn.textContent = isSel ? 'Choisis' : (roleOpen ? 'Choisir' : 'Fermé');
+          btn.textContent = isSel ? 'Choisi' : (roleOpen ? 'Choisir' : 'Fermé');
           btn.addEventListener('click', () => {
             selectedRole = r.title;
             renderRoles();
           });
 
-          side.append(badge, btn);
-          card.append(info, side);
+          footer.appendChild(btn);
+          card.append(top, footer);
           body.appendChild(card);
         });
 
@@ -783,11 +804,6 @@
 
     searchInput.addEventListener('input', () => {
       searchQuery = searchInput.value;
-      renderRoles();
-    });
-
-    poleSelect.addEventListener('change', () => {
-      selectedPoleFilter = poleSelect.value;
       renderRoles();
     });
 

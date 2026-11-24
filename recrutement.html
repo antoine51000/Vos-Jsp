@@ -115,7 +115,7 @@
       }
     }
 
-    /* SÉLECTEUR DE PÔLE STYLÉ */
+    /* SÉLECTEUR DE PÔLE SOBRE & PROPRE */
     .custom-select {
       position: relative;
       user-select: none;
@@ -124,73 +124,52 @@
     .custom-select-btn {
       width: 100%;
       appearance: none;
-      background: var(--surface);
+      background: var(--bg);
       border: 1.5px solid var(--border);
       border-radius: 14px;
       padding: 0.66rem 0.9rem;
       color: var(--text);
-      font-weight: 800;
+      font-weight: 700;
       font-size: 0.84rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 0.5rem;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-      transition: all 0.15s ease;
+      transition: border-color 0.15s ease;
     }
 
     .custom-select-btn:hover,
     .custom-select.open .custom-select-btn {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(225, 29, 42, 0.1);
-    }
-
-    .custom-select-btn-left {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .pole-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      flex-shrink: 0;
-      background: var(--primary);
     }
 
     .custom-select-arrow {
       font-size: 0.72rem;
       color: var(--muted);
       flex-shrink: 0;
-      transition: transform 0.16s ease, color 0.16s ease;
+      transition: transform 0.16s ease;
     }
 
     .custom-select.open .custom-select-arrow {
       transform: rotate(180deg);
-      color: var(--primary);
     }
 
     .custom-select-menu {
       display: none;
       position: absolute;
-      top: calc(100% + 0.45rem);
+      top: calc(100% + 0.4rem);
       left: 0;
       right: 0;
-      min-width: 245px;
+      min-width: 240px;
       z-index: 35;
       background: var(--surface);
       border: 1.5px solid var(--border);
-      border-radius: 18px;
-      padding: 0.4rem;
-      box-shadow: 0 20px 42px rgba(15, 23, 42, 0.16);
+      border-radius: 16px;
+      padding: 0.35rem;
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.2rem;
     }
 
     .custom-select.open .custom-select-menu {
@@ -200,10 +179,10 @@
     .custom-select-option {
       width: 100%;
       appearance: none;
-      background: transparent;
+      background: var(--surface);
       border: 1px solid transparent;
-      border-radius: 12px;
-      padding: 0.58rem 0.72rem;
+      border-radius: 11px;
+      padding: 0.55rem 0.72rem;
       text-align: left;
       font-weight: 700;
       font-size: 0.82rem;
@@ -213,47 +192,29 @@
       justify-content: space-between;
       align-items: center;
       gap: 0.6rem;
-      transition: all 0.12s ease;
-    }
-
-    .custom-select-option-left {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      min-width: 0;
+      transition: background 0.12s ease, border-color 0.12s ease;
     }
 
     .custom-select-option:hover {
       background: var(--bg);
       border-color: var(--border);
-      transform: translateX(2px);
     }
 
-    .custom-select-option.active {
-      background: linear-gradient(135deg, var(--primary), #be123c);
-      color: #fff;
-      box-shadow: 0 6px 16px rgba(225, 29, 42, 0.24);
-    }
-
-    .custom-select-option.active .pole-dot {
-      background: #fff !important;
+    .custom-select-option.is-selected {
+      background: var(--bg);
+      border-color: var(--primary);
+      color: var(--primary);
     }
 
     .pole-badge-num {
       font-size: 0.72rem;
       font-weight: 800;
-      padding: 0.14rem 0.5rem;
+      padding: 0.14rem 0.48rem;
       border-radius: 999px;
       background: var(--bg);
       color: var(--muted);
       border: 1px solid var(--border);
       flex-shrink: 0;
-    }
-
-    .custom-select-option.active .pole-badge-num {
-      background: rgba(255, 255, 255, 0.22);
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.35);
     }
 
     .pole-section {
@@ -586,10 +547,7 @@
 
             <div class="custom-select" id="pole-select-wrap">
               <button type="button" class="custom-select-btn" id="pole-select-btn" aria-expanded="false">
-                <span class="custom-select-btn-left">
-                  <span class="pole-dot" id="pole-select-dot"></span>
-                  <span id="pole-select-label">Tous les pôles</span>
-                </span>
+                <span id="pole-select-label">Tous les pôles</span>
                 <span class="custom-select-arrow">&#9662;</span>
               </button>
               <div class="custom-select-menu" id="pole-select-menu" role="listbox"></div>
@@ -702,7 +660,6 @@
     const searchInput = document.getElementById('role-search');
     const poleSelectWrap = document.getElementById('pole-select-wrap');
     const poleSelectBtn = document.getElementById('pole-select-btn');
-    const poleSelectDot = document.getElementById('pole-select-dot');
     const poleSelectLabel = document.getElementById('pole-select-label');
     const poleSelectMenu = document.getElementById('pole-select-menu');
     const polesContainer = document.getElementById('poles-container');
@@ -727,15 +684,6 @@
       'Pédagogie & Ressources',
       'Autres postes'
     ];
-
-    const POLE_COLORS = {
-      'Tous': '#e11d2a',
-      'Modération & Sécurité': '#ef4444',
-      'Éditorial & Actus': '#f59e0b',
-      'Communauté & Discord': '#3b82f6',
-      'Pédagogie & Ressources': '#10b981',
-      'Autres postes': '#8b5cf6'
-    };
 
     const DEFAULT_POSTES = [
       {
@@ -858,7 +806,6 @@
       if (!activePoles.includes(selectedPoleFilter)) selectedPoleFilter = 'Tous';
 
       poleSelectLabel.textContent = selectedPoleFilter === 'Tous' ? 'Tous les pôles' : selectedPoleFilter;
-      poleSelectDot.style.background = POLE_COLORS[selectedPoleFilter] || '#e11d2a';
       poleSelectMenu.innerHTML = '';
 
       const options = [
@@ -871,19 +818,11 @@
       ];
 
       options.forEach((opt) => {
-        const isAct = selectedPoleFilter === opt.value;
-        const dotColor = POLE_COLORS[opt.value] || '#e11d2a';
-
+        const isSel = selectedPoleFilter === opt.value;
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = `custom-select-option ${isAct ? 'active' : ''}`;
-        btn.innerHTML = `
-          <span class="custom-select-option-left">
-            <span class="pole-dot" style="background:${dotColor};"></span>
-            <span>${opt.label}</span>
-          </span>
-          <span class="pole-badge-num">${opt.count}</span>
-        `;
+        btn.className = `custom-select-option ${isSel ? 'is-selected' : ''}`;
+        btn.innerHTML = `<span>${opt.label}</span><span class="pole-badge-num">${opt.count}</span>`;
         btn.addEventListener('click', () => {
           selectedPoleFilter = opt.value;
           setPoleSelectOpen(false);
@@ -928,7 +867,6 @@
         if (!items.length) return;
 
         const isOpen = hasActiveFilter || expandedPoles.has(pole);
-        const dotColor = POLE_COLORS[pole] || '#e11d2a';
 
         const section = document.createElement('div');
         section.className = `pole-section ${isOpen ? 'open' : ''}`;
@@ -936,13 +874,7 @@
         const toggle = document.createElement('button');
         toggle.type = 'button';
         toggle.className = 'pole-toggle';
-        toggle.innerHTML = `
-          <span style="display:inline-flex;align-items:center;gap:0.55rem;">
-            <span class="pole-dot" style="background:${dotColor};"></span>
-            <span>${pole}</span>
-          </span>
-          <span class="pole-count">${items.length} poste${items.length > 1 ? 's' : ''}</span>
-        `;
+        toggle.innerHTML = `<span>${pole}</span><span class="pole-count">${items.length} poste${items.length > 1 ? 's' : ''}</span>`;
         toggle.addEventListener('click', () => {
           if (expandedPoles.has(pole)) expandedPoles.delete(pole);
           else expandedPoles.add(pole);

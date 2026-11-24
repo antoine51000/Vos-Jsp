@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos JSP — Maintenance en cours</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    @keyframes pulseBeacon {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(225, 29, 42, 0.34), 0 24px 52px -18px rgba(11, 17, 32, 0.2);
+      }
+      50% {
+        box-shadow: 0 0 36px 4px rgba(245, 158, 11, 0.26), 0 24px 52px -18px rgba(225, 29, 42, 0.24);
+      }
+    }
+
+    .mnt-wrap {
+      max-width: 720px;
+      margin: 2.5rem auto 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.35rem;
+    }
+
+    .mnt-card {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 88% 16%, rgba(245, 158, 11, 0.2), transparent 44%),
+        radial-gradient(circle at 14% 86%, rgba(225, 29, 42, 0.16), transparent 48%),
+        var(--surface);
+      border: 1.5px solid rgba(225, 29, 42, 0.28);
+      border-radius: 28px;
+      padding: 2.4rem 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+      animation: pulseBeacon 3.8s infinite ease-in-out;
+    }
+
+    .mnt-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--red), #f59e0b, var(--cyber));
+    }
+
+    .mnt-icon {
+      width: 66px;
+      height: 66px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      background: var(--red-soft);
+      border: 1px solid rgba(225, 29, 42, 0.26);
+    }
+
+    .mnt-card h1 {
+      margin: 0.15rem 0 0;
+      font-size: clamp(1.6rem, 4vw, 2.25rem);
+      letter-spacing: -0.03em;
+    }
+
+    .mnt-card p {
+      margin: 0;
+      max-width: 530px;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.58;
+    }
+
+    .mnt-msg-box {
+      width: 100%;
+      max-width: 540px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid #f59e0b;
+      border-radius: 16px;
+      padding: 0.95rem 1.1rem;
+      text-align: left;
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .mnt-discrete-footer {
+      text-align: center;
+      margin-top: 0.6rem;
+    }
+
+    .mnt-discrete-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      opacity: 0.55;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.35rem 0.65rem;
+      border-radius: 8px;
+      transition: opacity 0.18s ease, color 0.18s ease;
+    }
+
+    .mnt-discrete-btn:hover {
+      opacity: 1;
+      color: var(--red);
+    }
+
+    .mnt-secret-panel {
+      display: none;
+      flex-direction: column;
+      gap: 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--red);
+      border-radius: 26px;
+      padding: 1.65rem 1.75rem;
+      box-shadow: var(--shadow-hover);
+    }
+
+    .mnt-secret-panel.open {
+      display: flex;
+    }
+
+    .mnt-auth-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.15rem;
+    }
+
+    @media (max-width: 720px) {
+      .mnt-auth-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mnt-card {
+        padding: 1.9rem 1.3rem;
+      }
+    }
+
+    .mnt-auth-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .mnt-auth-box h2 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .mnt-auth-box p {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <div>VOS <span>JSP</span></div>
+      </div>
+    </div>
+    <span class="badge" style="margin:0;">Maintenance</span>
+  </div>
+
+  <main>
+    <div class="mnt-wrap">
+      <section class="mnt-card">
+        <div class="mnt-icon">🛠️</div>
+        <span class="badge">Intervention technique en cours</span>
+        <h1>Le site est momentanément en maintenance</h1>
+        <p>Nous effectuons actuellement des améliorations et vérifications sur <strong>Vos JSP</strong>. Le site reviendra en ligne très rapidement.</p>
+        <div class="mnt-msg-box" id="mnt-live-message">
+          Maintenance programmée par l'administration. Merci de patienter quelques instants !
+        </div>
+      </section>
+
+      <div class="mnt-discrete-footer">
+        <button type="button" class="mnt-discrete-btn" id="toggle-secret-login">Vous êtes superadmin ?</button>
+      </div>
+
+      <section class="mnt-secret-panel" id="mnt-secret-panel">
+        <div id="mnt-alert" class="alert"></div>
+
+        <!-- 1. CONNEXION SPÉCIALE SUPERADMIN -->
+        <div class="mnt-auth-box">
+          <span class="card-meta">Accès SuperAdmin uniquement</span>
+          <h2>Connexion Spéciale Maintenance</h2>
+          <p>Réservé exclusivement au compte <strong>SuperAdmin</strong>. Les comptes admins classiques sont bloqués ici et doivent utiliser un code OTP ci-dessous.</p>
+          <form id="superadmin-mnt-form">
+            <div class="form-group">
+              <label for="sa-email">Adresse e-mail SuperAdmin</label>
+              <input type="email" id="sa-email" required placeholder="superadmin@vos-jsp.com">
+            </div>
+            <div class="form-group">
+              <label for="sa-pass">Mot de passe</label>
+              <input type="password" id="sa-pass" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-small">Connexion SuperAdmin</button>
+          </form>
+        </div>
+
+        <!-- 2. EN DESSOUS : SE CONNECTER VIA OTP -->
+        <div class="mnt-auth-box">
+          <span class="badge" style="margin:0; width:fit-content;">Usage unique</span>
+          <h2>Se connecter via OTP</h2>
+          <p>Saisis l'identifiant temporaire (ex. <code>prenom.nom</code>) et le code OTP à usage unique généré par le SuperAdmin.</p>
+          <form id="otp-mnt-form">
+            <div class="form-group">
+              <label for="otp-login">Identifiant temporaire (prenom.nom)</label>
+              <input type="text" id="otp-login" required placeholder="Ex. : leo.pujolas" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="otp-code">Mot de passe OTP à usage unique</label>
+              <input type="text" id="otp-code" required placeholder="Ex. : JSP-8492-X9" autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-secondary btn-small">Se connecter via OTP</button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div><strong>Vos JSP</strong> — Maintenance système sécurisée.</div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import {
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      collection,
+      doc,
+      getDoc,
+      getDocs,
+      updateDoc,
+      query,
+      where,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const mntLiveMsg = document.getElementById('mnt-live-message');
+    const toggleBtn = document.getElementById('toggle-secret-login');
+    const secretPanel = document.getElementById('mnt-secret-panel');
+    const alertEl = document.getElementById('mnt-alert');
+
+    function showAlert(msg, ok = false) {
+      alertEl.style.display = 'block';
+      alertEl.className = ok ? 'alert success' : 'alert';
+      alertEl.textContent = msg;
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      secretPanel.classList.toggle('open');
+    });
+
+    // Suivi en direct de l'état maintenance : si désactivé, renvoie vers index.html
+    onSnapshot(doc(db, 'site_config', 'maintenance'), (snap) => {
+      if (!snap.exists()) return;
+      const d = snap.data() || {};
+      if (d.message) mntLiveMsg.textContent = d.message;
+      if (d.enabled === false) {
+        window.location.replace('index.html');
+      }
+    });
+
+    // 1. Connexion Spéciale SuperAdmin uniquement
+    document.getElementById('superadmin-mnt-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('sa-email').value.trim();
+      const pass = document.getElementById('sa-pass').value;
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, pass);
+        const uSnap = await getDoc(doc(db, 'users', cred.user.uid));
+        const uData = uSnap.exists() ? (uSnap.data() || {}) : {};
+        const role = String(uData.role || uData.grade || '').toLowerCase();
+
+        if (uData.banned === true || role !== 'superadmin') {
+          await signOut(auth);
+          showAlert("Accès refusé : ce formulaire est strictement réservé au SuperAdmin. Utilise la connexion OTP.");
+          return;
+        }
+
+        sessionStorage.setItem('vos_jsp_mnt_bypass', JSON.stringify({
+          type: 'superadmin',
+          uid: cred.user.uid,
+          at: Date.now()
+        }));
+        showAlert('Accès SuperAdmin validé ! Redirection...', true);
+        setTimeout(() => window.location.replace('admin.html'), 600);
+      } catch (err) {
+        showAlert('Identifiants SuperAdmin invalides.');
+      }
+    });
+
+    // 2. Connexion via OTP à usage unique
+    document.getElementById('otp-mnt-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const loginId = document.getElementById('otp-login').value.trim().toLowerCase();
+      const code = document.getElementById('otp-code').value.trim();
+
+      if (!loginId || !code) {
+        showAlert('Renseigne ton identifiant temporaire et le code OTP.');
+        return;
+      }
+
+      try {
+        const qOtp = query(
+          collection(db, 'maintenance_otps'),
+          where('loginId', '==', loginId),
+          where('used', '==', false)
+        );
+        const snap = await getDocs(qOtp);
+        const matchDoc = snap.docs.find((d) => String((d.data() || {}).otpCode || '').trim() === code);
+
+        if (!matchDoc) {
+          showAlert('Code OTP invalide, expiré ou déjà utilisé.');
+          return;
+        }
+
+        const otpData = matchDoc.data() || {};
+        if (otpData.expiresAtMs && Date.now() > Number(otpData.expiresAtMs)) {
+          showAlert('Ce code OTP est expiré.');
+          return;
+        }
+
+        // Consomme immédiatement le code (usage unique strict)
+        await updateDoc(doc(db, 'maintenance_otps', matchDoc.id), {
+          used: true,
+          usedAt: serverTimestamp()
+        });
+
+        sessionStorage.setItem('vos_jsp_mnt_bypass', JSON.stringify({
+          type: 'otp',
+          loginId,
+          targetUid: otpData.targetUid || '',
+          at: Date.now()
+        }));
+
+        showAlert(`Code OTP validé pour ${loginId} ! Accès autorisé...`, true);
+        setTimeout(() => window.location.replace('index.html'), 650);
+      } catch (err) {
+        showAlert('Erreur lors de la vérification OTP : ' + (err.code || err.message));
+      }
+    });
+  </script>
+</body>
+</html>

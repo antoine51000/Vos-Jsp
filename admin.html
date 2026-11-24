@@ -61,20 +61,8 @@
 
     .adm-menu {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
       gap: 0.65rem;
-    }
-
-    @media (max-width: 960px) {
-      .adm-menu {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 500px) {
-      .adm-menu {
-        grid-template-columns: 1fr;
-      }
     }
 
     .adm-nav-btn {
@@ -473,6 +461,7 @@
           <button type="button" class="adm-nav-btn" data-sec="mod">3. Forum &amp; Galerie</button>
           <button type="button" class="adm-nav-btn" data-sec="recrut">4. Recrutement</button>
           <button type="button" class="adm-nav-btn" data-sec="compte">5. Compte à rebours</button>
+          <button type="button" class="adm-nav-btn" data-sec="maint" id="nav-btn-maint" style="display: none;">6. Maintenance &amp; OTP</button>
         </nav>
 
         <!-- 1. MEMBRES & MAILS -->
@@ -652,6 +641,47 @@
             </div>
           </div>
         </section>
+
+        <!-- 6. MAINTENANCE & OTP (SUPERADMIN UNIQUEMENT) -->
+        <section class="adm-card" id="sec-maint" style="display: none;">
+          <div>
+            <span class="badge">SuperAdmin uniquement</span>
+            <h2>Maintenance &amp; Accès OTP à usage unique</h2>
+            <p class="adm-sub">Active ou coupe la maintenance du site et génère un identifiant <code>prenom.nom</code> + code OTP à usage unique.</p>
+          </div>
+
+          <div class="adm-two">
+            <div class="adm-box">
+              <h3>État de la maintenance</h3>
+              <div class="form-group">
+                <label for="mnt-admin-msg">Message affiché sur maintenance.html</label>
+                <textarea id="mnt-admin-msg" rows="3" placeholder="Ex. : Maintenance en cours sur Vos JSP. Retour prévu ce soir !"></textarea>
+              </div>
+              <div class="adm-actions">
+                <button type="button" class="btn btn-small" id="btn-mnt-on">🔒 Activer la maintenance</button>
+                <button type="button" class="btn btn-secondary btn-small" id="btn-mnt-off">✅ Désactiver la maintenance</button>
+              </div>
+              <div class="cd-preview-box" id="mnt-admin-status" style="margin-top: 0.9rem;">Chargement...</div>
+            </div>
+
+            <div class="adm-box">
+              <h3>Créer un code OTP à usage unique</h3>
+              <form id="otp-create-form">
+                <div class="form-group">
+                  <label for="otp-target-login">Identifiant temporaire (prenom.nom)</label>
+                  <input type="text" id="otp-target-login" required placeholder="Ex. : leo.pujolas">
+                </div>
+                <div class="form-group">
+                  <label for="otp-target-uid">UID concerné (optionnel)</label>
+                  <input type="text" id="otp-target-uid" placeholder="UID Firebase">
+                </div>
+                <button type="submit" class="btn btn-small">Générer un OTP unique</button>
+              </form>
+              <div class="cd-preview-box" id="otp-generated-box" style="display: none; margin-top: 0.85rem;"></div>
+              <div class="adm-rows" id="otp-list" style="margin-top: 0.9rem;"></div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   </main>
@@ -707,12 +737,14 @@
     const roleBadge = document.getElementById('adm-role-badge');
 
     const navBtns = Array.from(document.querySelectorAll('.adm-nav-btn'));
+    const navBtnMaint = document.getElementById('nav-btn-maint');
     const secs = {
       membres: document.getElementById('sec-membres'),
       actus: document.getElementById('sec-actus'),
       mod: document.getElementById('sec-mod'),
       recrut: document.getElementById('sec-recrut'),
-      compte: document.getElementById('sec-compte')
+      compte: document.getElementById('sec-compte'),
+      maint: document.getElementById('sec-maint')
     };
 
     const rolesSimpleBox = document.getElementById('roles-simple-box');
@@ -720,6 +752,15 @@
     const rolePeopleBox = document.getElementById('role-people-box');
     const rolePeopleTitle = document.getElementById('role-people-title');
     const rolePeopleList = document.getElementById('role-people-list');
+
+    const cdDatetimeInput = document.getElementById('cd-admin-datetime');
+    const cdMessageInput = document.getElementById('cd-admin-message');
+    const cdCurrentBox = document.getElementById('cd-admin-current');
+
+    const mntAdminMsg = document.getElementById('mnt-admin-msg');
+    const mntAdminStatus = document.getElementById('mnt-admin-status');
+    const otpGeneratedBox = document.getElementById('otp-generated-box');
+    const otpListEl = document.getElementById('otp-list');
 
     const DEFAULT_ROLES = [
       'Modérateur / Modératrice',
@@ -738,7 +779,7 @@
     let appMessagesMap = {};
     let activeRole = null;
 
-    let users = [], mails = [], props = [], actus = [], forum = [], galerie = [], roles = [], apps = [];
+    let users = [], mails = [], props = [], actus = [], forum = [], galerie = [], roles = [], apps = [], otps = [];
 
     function notify(msg, ok = false) {
       alertEl.style.display = 'block';
@@ -776,6 +817,7 @@
     navBtns.forEach((b) => {
       b.addEventListener('click', () => {
         const key = b.dataset.sec;
+        if (key === 'maint' && !isSuperAdmin) return;
         navBtns.forEach((x) => x.classList.toggle('active', x === b));
         Object.entries(secs).forEach(([k, el]) => {
           el.style.display = k === key ? 'flex' : 'none';
@@ -953,6 +995,7 @@
           delBtn.className = 'btn btn-secondary btn-small';
           delBtn.textContent = 'Suppr.';
           delBtn.addEventListener('click', async () => {
+            if (!confirm(`Supprimer le profil Firestore de ${u.pseudo || u.email} ?`)) return;
             await deleteDoc(doc(db, 'users', u.id));
             notify('Profil supprimé.', true);
           });
@@ -971,7 +1014,7 @@
       const box = document.getElementById('mails-list');
       box.innerHTML = '';
       if (!mails.length) {
-        box.innerHTML = '<div class="adm-empty">Aucune adresse mail.</div>';
+        box.innerHTML = '<div class="adm-empty">Aucune adresse mail admin.</div>';
         return;
       }
       mails.forEach((m) => {
@@ -980,13 +1023,13 @@
         const top = document.createElement('div');
         top.className = 'adm-row-top';
         const info = document.createElement('div');
-        info.innerHTML = `<span class="adm-title">${m.address || m.id}</span><span class="adm-meta">${m.holder || 'Admin'}</span>`;
+        info.innerHTML = `<span class="adm-title">${m.address || m.id} — ${m.holderName || ''}</span><span class="adm-meta">${m.uid ? `UID : ${m.uid}` : 'Non lié'}</span>`;
         const del = document.createElement('button');
         del.type = 'button';
         del.className = 'btn btn-secondary btn-small';
-        del.textContent = 'Supprimer';
+        del.textContent = 'Suppr.';
         del.addEventListener('click', async () => {
-          await deleteDoc(doc(db, 'admin_mails', m.id));
+          await deleteDoc(doc(db, 'admin_mailboxes', m.id));
           notify('Adresse supprimée.', true);
         });
         top.append(info, del);
@@ -998,96 +1041,92 @@
     document.getElementById('mail-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       let addr = document.getElementById('mail-addr').value.trim().toLowerCase();
-      if (!addr.includes('@')) addr = `${addr}@vos-jsp.com`;
-      const holder = document.getElementById('mail-holder').value.trim() || '[ ADMIN ] Admin';
+      const holderName = document.getElementById('mail-holder').value.trim();
       const uid = document.getElementById('mail-uid').value.trim();
-      await setDoc(doc(db, 'admin_mails', sanitizeIp(addr)), {
-        address: addr, holder, uid, createdAt: serverTimestamp()
-      }, { merge: true });
-      if (uid) await setDoc(doc(db, 'users', uid), { adminMail: addr }, { merge: true });
+      if (!addr.includes('@')) addr = `${addr.replace(/[^a-z0-9._-]/g, '')}@vos-jsp.com`;
+      await addDoc(collection(db, 'admin_mailboxes'), {
+        address: addr, holderName, uid, createdAt: serverTimestamp()
+      });
       e.target.reset();
-      notify(`Adresse ${addr} créée.`, true);
+      notify('Adresse mail admin ajoutée.', true);
     });
 
-    function renderActusAndProps() {
-      const pBox = document.getElementById('props-list');
-      const aBox = document.getElementById('actus-list');
-      const pending = props.filter((p) => (p.status || 'en_attente') === 'en_attente');
-
-      pBox.innerHTML = '';
-      if (!pending.length) {
-        pBox.innerHTML = '<div class="adm-empty">Aucune proposition en attente.</div>';
-      } else {
-        pending.forEach((p) => {
-          const row = document.createElement('div');
-          row.className = 'adm-row';
-          const top = document.createElement('div');
-          top.className = 'adm-row-top';
-          const info = document.createElement('div');
-          info.innerHTML = `<span class="adm-title">${p.title || 'Proposition'}</span><span class="adm-meta">Par ${p.author || 'Membre'} • ${p.category || 'Actu'}</span>`;
-          const acts = document.createElement('div');
-          acts.className = 'adm-actions';
-
-          const okBtn = document.createElement('button');
-          okBtn.type = 'button';
-          okBtn.className = 'btn btn-small';
-          okBtn.textContent = 'Publier';
-          okBtn.addEventListener('click', async () => {
-            await addDoc(collection(db, 'actus'), {
-              title: p.title || 'Actualité',
-              category: p.category || 'Cursus JSP',
-              summary: p.summary || '',
-              body: p.body || p.summary || '',
-              author: p.author || 'Communauté',
-              createdAt: serverTimestamp()
-            });
-            await updateDoc(doc(db, 'propositions', p.id), { status: 'approuvee' });
-            notify('Proposition publiée.', true);
-          });
-
-          const noBtn = document.createElement('button');
-          noBtn.type = 'button';
-          noBtn.className = 'btn btn-secondary btn-small';
-          noBtn.textContent = 'Refuser';
-          noBtn.addEventListener('click', async () => {
-            await updateDoc(doc(db, 'propositions', p.id), { status: 'refusee' });
-            notify('Proposition refusée.', true);
-          });
-
-          acts.append(okBtn, noBtn);
-          top.append(info, acts);
-          const desc = document.createElement('div');
-          desc.className = 'adm-meta';
-          desc.textContent = p.summary || p.body || '';
-          row.append(top, desc);
-          pBox.appendChild(row);
-        });
+    function renderProps() {
+      const box = document.getElementById('props-list');
+      box.innerHTML = '';
+      if (!props.length) {
+        box.innerHTML = '<div class="adm-empty">Aucune proposition en attente.</div>';
+        return;
       }
+      props.forEach((p) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+        const info = document.createElement('div');
+        info.innerHTML = `<span class="adm-title">${p.title || 'Sans titre'}</span><span class="adm-meta">${p.category || 'Actu'} • Par ${p.authorName || 'Membre'}</span>`;
+        const acts = document.createElement('div');
+        acts.className = 'adm-actions';
 
-      aBox.innerHTML = '';
+        const okBtn = document.createElement('button');
+        okBtn.type = 'button';
+        okBtn.className = 'btn btn-small';
+        okBtn.textContent = 'Publier';
+        okBtn.addEventListener('click', async () => {
+          await addDoc(collection(db, 'actus'), {
+            title: p.title || 'Actualité',
+            category: p.category || 'Cursus JSP',
+            summary: p.summary || (p.body || '').slice(0, 140),
+            body: p.body || p.summary || '',
+            authorUid: currentUser.uid,
+            createdAt: serverTimestamp()
+          });
+          await deleteDoc(doc(db, 'propositions', p.id));
+          notify('Proposition publiée.', true);
+        });
+
+        const noBtn = document.createElement('button');
+        noBtn.type = 'button';
+        noBtn.className = 'btn btn-secondary btn-small';
+        noBtn.textContent = 'Refuser';
+        noBtn.addEventListener('click', async () => {
+          await deleteDoc(doc(db, 'propositions', p.id));
+          notify('Proposition refusée.', true);
+        });
+
+        acts.append(okBtn, noBtn);
+        top.append(info, acts);
+        row.appendChild(top);
+        box.appendChild(row);
+      });
+    }
+
+    function renderActus() {
+      const box = document.getElementById('actus-list');
+      box.innerHTML = '';
       if (!actus.length) {
-        aBox.innerHTML = '<div class="adm-empty">Aucune actu en ligne.</div>';
-      } else {
-        actus.forEach((a) => {
-          const row = document.createElement('div');
-          row.className = 'adm-row';
-          const top = document.createElement('div');
-          top.className = 'adm-row-top';
-          const info = document.createElement('div');
-          info.innerHTML = `<span class="adm-title">${a.title || 'Actu'}</span><span class="adm-meta">${a.category || 'Actu'}</span>`;
-          const del = document.createElement('button');
-          del.type = 'button';
-          del.className = 'btn btn-secondary btn-small';
-          del.textContent = 'Supprimer';
-          del.addEventListener('click', async () => {
-            await deleteDoc(doc(db, 'actus', a.id));
-            notify('Actu supprimée.', true);
-          });
-          top.append(info, del);
-          row.appendChild(top);
-          aBox.appendChild(row);
-        });
+        box.innerHTML = '<div class="adm-empty">Aucune actu.</div>';
+        return;
       }
+      actus.forEach((a) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+        const info = document.createElement('div');
+        info.innerHTML = `<span class="adm-title">${a.title || 'Sans titre'}</span><span class="adm-meta">${a.category || ''}</span>`;
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'btn btn-secondary btn-small';
+        del.textContent = 'Suppr.';
+        del.addEventListener('click', async () => {
+          await deleteDoc(doc(db, 'actus', a.id));
+          notify('Actu supprimée.', true);
+        });
+        top.append(info, del);
+        row.appendChild(top);
+        box.appendChild(row);
+      });
     }
 
     document.getElementById('actu-form').addEventListener('submit', async (e) => {
@@ -1097,7 +1136,7 @@
         category: document.getElementById('actu-cat').value,
         summary: document.getElementById('actu-summary').value.trim(),
         body: document.getElementById('actu-body').value.trim(),
-        author: adminLabel,
+        authorUid: currentUser.uid,
         createdAt: serverTimestamp()
       });
       e.target.reset();
@@ -1106,225 +1145,79 @@
 
     function renderMod() {
       const fBox = document.getElementById('forum-list');
-      const gBox = document.getElementById('gallery-list');
-
       fBox.innerHTML = '';
-      if (!forum.length) {
-        fBox.innerHTML = '<div class="adm-empty">Aucun sujet.</div>';
-      } else {
-        forum.forEach((f) => {
-          const row = document.createElement('div');
-          row.className = 'adm-row';
-          const top = document.createElement('div');
-          top.className = 'adm-row-top';
-          const info = document.createElement('div');
-          info.innerHTML = `<span class="adm-title">${f.title || f.message || 'Sujet'}</span><span class="adm-meta">Par ${f.author || 'Membre'}</span>`;
-          const del = document.createElement('button');
-          del.type = 'button';
-          del.className = 'btn btn-secondary btn-small';
-          del.textContent = 'Supprimer';
-          del.addEventListener('click', async () => {
-            await deleteDoc(doc(db, 'forum', f.id));
-            notify('Sujet supprimé.', true);
-          });
-          top.append(info, del);
-          row.appendChild(top);
-          fBox.appendChild(row);
+      if (!forum.length) fBox.innerHTML = '<div class="adm-empty">Aucun sujet.</div>';
+      forum.forEach((f) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+        const info = document.createElement('div');
+        info.innerHTML = `<span class="adm-title">${f.title || f.subject || 'Sujet'}</span><span class="adm-meta">Par ${f.authorPseudo || f.authorName || 'Membre'}</span>`;
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'btn btn-secondary btn-small';
+        del.textContent = 'Suppr.';
+        del.addEventListener('click', async () => {
+          await deleteDoc(doc(db, 'forum', f.id));
+          notify('Sujet supprimé.', true);
         });
-      }
+        top.append(info, del);
+        row.appendChild(top);
+        fBox.appendChild(row);
+      });
 
+      const gBox = document.getElementById('gallery-list');
       gBox.innerHTML = '';
-      if (!galerie.length) {
-        gBox.innerHTML = '<div class="adm-empty">Aucune photo.</div>';
-      } else {
-        galerie.forEach((g) => {
-          const row = document.createElement('div');
-          row.className = 'adm-row';
-          const top = document.createElement('div');
-          top.className = 'adm-row-top';
-          const info = document.createElement('div');
-          info.innerHTML = `<span class="adm-title">${g.title || 'Photo'}</span><span class="adm-meta">Par ${g.author || 'Membre'}</span>`;
-          const del = document.createElement('button');
-          del.type = 'button';
-          del.className = 'btn btn-secondary btn-small';
-          del.textContent = 'Supprimer';
-          del.addEventListener('click', async () => {
-            await deleteDoc(doc(db, 'galerie', g.id));
-            notify('Photo supprimée.', true);
-          });
-          top.append(info, del);
-          row.appendChild(top);
-          gBox.appendChild(row);
+      if (!galerie.length) gBox.innerHTML = '<div class="adm-empty">Aucune photo.</div>';
+      galerie.forEach((g) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+        const info = document.createElement('div');
+        info.innerHTML = `<span class="adm-title">${g.title || 'Photo'}</span><span class="adm-meta">Par ${g.authorPseudo || g.authorName || 'Membre'}</span>`;
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'btn btn-secondary btn-small';
+        del.textContent = 'Suppr.';
+        del.addEventListener('click', async () => {
+          await deleteDoc(doc(db, 'galerie', g.id));
+          notify('Photo supprimée.', true);
         });
-      }
-    }
-
-    function ensureAppChatListener(appId) {
-      if (chatSubs[appId]) return;
-      const qChat = query(collection(db, 'candidatures', appId, 'messages'), orderBy('createdAt', 'asc'));
-      chatSubs[appId] = onSnapshot(qChat, (snap) => {
-        appMessagesMap[appId] = snap.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
-        renderRecrut();
+        top.append(info, del);
+        row.appendChild(top);
+        gBox.appendChild(row);
       });
     }
 
-    function renderRecrut() {
-      const rBox = document.getElementById('roles-list');
-      const aBox = document.getElementById('apps-list');
-
-      rBox.innerHTML = '';
+    function renderRoles() {
+      const box = document.getElementById('roles-list');
+      box.innerHTML = '';
       if (!roles.length) {
-        rBox.innerHTML = '<div class="adm-empty">Aucun poste ajouté.</div>';
-      } else {
-        roles.forEach((r) => {
-          const row = document.createElement('div');
-          row.className = 'adm-row';
-          const top = document.createElement('div');
-          top.className = 'adm-row-top';
-          const info = document.createElement('div');
-          info.innerHTML = `<span class="adm-title">${r.title || 'Poste'}</span><span class="adm-meta">${r.description || ''}</span>`;
-          const del = document.createElement('button');
-          del.type = 'button';
-          del.className = 'btn btn-secondary btn-small';
-          del.textContent = 'Supprimer';
-          del.addEventListener('click', async () => {
-            await deleteDoc(doc(db, 'recrutement_postes', r.id));
-            notify('Poste supprimé.', true);
-          });
-          top.append(info, del);
-          row.appendChild(top);
-          rBox.appendChild(row);
-        });
+        box.innerHTML = '<div class="adm-empty">Aucun poste.</div>';
+        return;
       }
-
-      aBox.innerHTML = '';
-      if (!apps.length) {
-        aBox.innerHTML = '<div class="adm-empty">Aucune candidature.</div>';
-      } else {
-        apps.forEach((a) => {
-          ensureAppChatListener(a.id);
-          const msgs = appMessagesMap[a.id] || [];
-          const st = a.status || 'en_attente';
-          const roleLabel = a.roleTitle || a.role || 'Poste';
-
-          const row = document.createElement('div');
-          row.className = 'adm-row';
-
-          const top = document.createElement('div');
-          top.className = 'adm-row-top';
-
-          const info = document.createElement('div');
-          info.innerHTML = `<span class="adm-title">${a.applicantName || 'Candidat'} — ${roleLabel}</span><span class="adm-meta">Statut : ${st} • Contact : ${a.contact || '—'}</span>`;
-
-          const acts = document.createElement('div');
-          acts.className = 'adm-actions';
-
-          const ok = document.createElement('button');
-          ok.type = 'button';
-          ok.className = 'btn btn-small';
-          ok.textContent = 'Accepter';
-          ok.addEventListener('click', async () => {
-            await updateDoc(doc(db, 'candidatures', a.id), { status: 'acceptee' });
-            notify('Candidature acceptée.', true);
-          });
-
-          const no = document.createElement('button');
-          no.type = 'button';
-          no.className = 'btn btn-secondary btn-small';
-          no.textContent = 'Refuser';
-          no.addEventListener('click', async () => {
-            await updateDoc(doc(db, 'candidatures', a.id), { status: 'refusee' });
-            notify('Candidature refusée.', true);
-          });
-
-          const chatBtn = document.createElement('button');
-          chatBtn.type = 'button';
-          chatBtn.className = 'btn btn-secondary btn-small';
-          chatBtn.innerHTML = `Messages <span class="msg-count-badge">${msgs.length}</span>`;
-          chatBtn.addEventListener('click', () => {
-            if (openAppChats.has(a.id)) openAppChats.delete(a.id);
-            else openAppChats.add(a.id);
-            renderRecrut();
-          });
-
-          const delApp = document.createElement('button');
-          delApp.type = 'button';
-          delApp.className = 'btn btn-secondary btn-small';
-          delApp.textContent = 'Suppr.';
-          delApp.addEventListener('click', async () => {
-            await deleteDoc(doc(db, 'candidatures', a.id));
-            notify('Candidature supprimée.', true);
-          });
-
-          acts.append(ok, no, chatBtn, delApp);
-          top.append(info, acts);
-
-          const details = document.createElement('div');
-          details.className = 'app-details-box';
-          details.innerHTML = `
-            <p><strong>Candidat :</strong> ${a.applicantName || 'Non précisé'}</p>
-            <p><strong>Contact :</strong> ${a.contact || 'Non précisé'}</p>
-            <p><strong>Poste :</strong> ${roleLabel}</p>
-            <p><strong>Disponibilités :</strong> ${a.availability || 'Non précisé'}</p>
-            <p><strong>Motivation :</strong> ${a.motivation || 'Non précisé'}</p>
-          `;
-
-          const chatPanel = document.createElement('div');
-          chatPanel.className = `app-chat-panel ${openAppChats.has(a.id) ? 'open' : ''}`;
-
-          const chatList = document.createElement('div');
-          chatList.className = 'app-chat-messages';
-          if (!msgs.length) {
-            chatList.innerHTML = '<div class="adm-empty">Aucun message dans cette candidature.</div>';
-          } else {
-            msgs.forEach((m) => {
-              const b = document.createElement('div');
-              b.className = `app-chat-bubble ${m.senderUid === (currentUser && currentUser.uid) ? 'mine' : ''}`;
-              const snd = document.createElement('span');
-              snd.className = 'app-chat-sender';
-              snd.textContent = m.senderName || 'Membre';
-              const txt = document.createElement('div');
-              txt.textContent = m.text || '';
-              b.append(snd, txt);
-              chatList.appendChild(b);
-            });
-          }
-
-          const chatForm = document.createElement('form');
-          chatForm.className = 'app-chat-form';
-          const chatInput = document.createElement('input');
-          chatInput.type = 'text';
-          chatInput.placeholder = 'Écrire un message au candidat...';
-          chatInput.required = true;
-          const chatSend = document.createElement('button');
-          chatSend.type = 'submit';
-          chatSend.className = 'btn btn-small';
-          chatSend.textContent = 'Envoyer';
-
-          chatForm.addEventListener('submit', async (ev) => {
-            ev.preventDefault();
-            const text = chatInput.value.trim();
-            if (!text || !currentUser) return;
-            await addDoc(collection(db, 'candidatures', a.id, 'messages'), {
-              senderUid: currentUser.uid,
-              senderName: adminLabel,
-              text,
-              createdAt: serverTimestamp()
-            });
-            await updateDoc(doc(db, 'candidatures', a.id), {
-              unreadForApplicant: true,
-              lastMessageAt: serverTimestamp(),
-              lastMessagePreview: text
-            });
-            chatInput.value = '';
-          });
-
-          chatForm.append(chatInput, chatSend);
-          chatPanel.append(chatList, chatForm);
-          row.append(top, details, chatPanel);
-          aBox.appendChild(row);
+      roles.forEach((r) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+        const info = document.createElement('div');
+        info.innerHTML = `<span class="adm-title">${r.title || 'Poste'}</span><span class="adm-meta">${r.description || ''}</span>`;
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'btn btn-secondary btn-small';
+        del.textContent = 'Suppr.';
+        del.addEventListener('click', async () => {
+          await deleteDoc(doc(db, 'recrutement_postes', r.id));
+          notify('Poste supprimé.', true);
         });
-      }
+        top.append(info, del);
+        row.appendChild(top);
+        box.appendChild(row);
+      });
+      if (rolesSimpleBox.classList.contains('open')) renderRolesSimple();
     }
 
     document.getElementById('role-form').addEventListener('submit', async (e) => {
@@ -1338,134 +1231,393 @@
       notify('Poste ajouté.', true);
     });
 
-    /* COMPTE À REBOURS OUVERTURE */
-    const cdAdminDatetime = document.getElementById('cd-admin-datetime');
-    const cdAdminMessage = document.getElementById('cd-admin-message');
-    const cdAdminCurrent = document.getElementById('cd-admin-current');
-
-    function buildCleanAnnouncement(action, targetMs, customMsg) {
-      const trimmed = String(customMsg || '').trim();
-      if (trimmed) return trimmed;
-      const formattedDate = targetMs
-        ? new Date(targetMs).toLocaleString('fr-FR', {
-            day: '2-digit',
-            month: 'long',
-            hour: '2-digit',
-            minute: '2-digit'
-          })
-        : '';
-      if (action === 'delayed') {
-        return formattedDate
-          ? `L'ouverture est retardée et reprogrammée au ${formattedDate}. Merci pour votre compréhension !`
-          : "L'ouverture a été retardée. Un nouvel horaire sera annoncé très vite.";
-      }
-      if (action === 'stopped') {
-        return "Le compte à rebours a été stoppé par l'équipe. L'ouverture est suspendue jusqu'à nouvel ordre.";
-      }
-      return formattedDate
-        ? `Le compte à rebours est lancé ! Rendez-vous le ${formattedDate}.`
-        : "Le compte à rebours est lancé !";
+    function ensureAppChatListener(appId) {
+      if (chatSubs[appId]) return;
+      const qChat = query(collection(db, 'candidatures', appId, 'messages'), orderBy('createdAt', 'asc'));
+      chatSubs[appId] = onSnapshot(qChat, (snap) => {
+        appMessagesMap[appId] = snap.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+        renderApps();
+      });
     }
 
-    async function saveCountdown(action) {
-      if (!currentUser) return;
-      const rawDate = cdAdminDatetime.value ? new Date(cdAdminDatetime.value).getTime() : null;
-      if (action === 'running' && (!rawDate || Number.isNaN(rawDate))) {
-        notify('Choisis une date et une heure valide pour lancer le compte à rebours.');
+    function renderApps() {
+      const box = document.getElementById('apps-list');
+      box.innerHTML = '';
+      if (!apps.length) {
+        box.innerHTML = '<div class="adm-empty">Aucune candidature.</div>';
         return;
       }
-      if (action === 'delayed' && rawDate && Number.isNaN(rawDate)) {
-        notify('La date choisie est invalide.');
+      apps.forEach((a) => {
+        ensureAppChatListener(a.id);
+        const msgs = appMessagesMap[a.id] || [];
+        const unread = Number(a.unreadForAdmin) || 0;
+        const isChatOpen = openAppChats.has(a.id);
+        const candidateName = a.applicantName || a.name || a.pseudo || 'Candidat';
+        const roleLabel = a.roleTitle || a.role || 'Poste non précisé';
+        const jspLabel = a.jspLevel || 'Non précisé';
+
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+
+        const info = document.createElement('div');
+        info.innerHTML = `
+          <span class="adm-title">${candidateName} — ${roleLabel}</span>
+          <span class="adm-meta">Contact : ${a.contact || '—'} • Statut : ${a.status || 'en_attente'}</span>
+        `;
+
+        const acts = document.createElement('div');
+        acts.className = 'adm-actions';
+
+        const accBtn = document.createElement('button');
+        accBtn.type = 'button';
+        accBtn.className = 'btn btn-small';
+        accBtn.textContent = 'Accepter';
+        accBtn.addEventListener('click', async () => {
+          await updateDoc(doc(db, 'candidatures', a.id), { status: 'acceptee' });
+          notify('Candidature acceptée.', true);
+        });
+
+        const refBtn = document.createElement('button');
+        refBtn.type = 'button';
+        refBtn.className = 'btn btn-secondary btn-small';
+        refBtn.textContent = 'Refuser';
+        refBtn.addEventListener('click', async () => {
+          await updateDoc(doc(db, 'candidatures', a.id), { status: 'refusee' });
+          notify('Candidature refusée.', true);
+        });
+
+        const msgBtn = document.createElement('button');
+        msgBtn.type = 'button';
+        msgBtn.className = 'btn btn-secondary btn-small';
+        msgBtn.innerHTML = `Message${unread > 0 ? `<span class="msg-count-badge">${unread}</span>` : ''}`;
+        msgBtn.addEventListener('click', async () => {
+          if (openAppChats.has(a.id)) {
+            openAppChats.delete(a.id);
+          } else {
+            openAppChats.add(a.id);
+            if (unread > 0) {
+              await updateDoc(doc(db, 'candidatures', a.id), { unreadForAdmin: 0 });
+            }
+          }
+          renderApps();
+        });
+
+        const delAppBtn = document.createElement('button');
+        delAppBtn.type = 'button';
+        delAppBtn.className = 'btn btn-secondary btn-small';
+        delAppBtn.textContent = 'Suppr.';
+        delAppBtn.addEventListener('click', async () => {
+          if (!confirm(`Supprimer définitivement la candidature de ${candidateName} ?`)) return;
+          if (chatSubs[a.id]) {
+            chatSubs[a.id]();
+            delete chatSubs[a.id];
+          }
+          openAppChats.delete(a.id);
+          await deleteDoc(doc(db, 'candidatures', a.id));
+          notify('Candidature supprimée.', true);
+        });
+
+        acts.append(accBtn, refBtn, msgBtn, delAppBtn);
+        top.append(info, acts);
+
+        const details = document.createElement('div');
+        details.className = 'app-details-box';
+        details.innerHTML = `
+          <p><strong>Poste :</strong> ${roleLabel}</p>
+          <p><strong>Niveau JSP :</strong> ${jspLabel}</p>
+          <p><strong>Disponibilités :</strong> ${a.availability || 'Non précisé'}</p>
+          <p><strong>Motivation :</strong> ${a.motivation || 'Non précisé'}</p>
+        `;
+
+        row.append(top, details);
+
+        const chatPanel = document.createElement('div');
+        chatPanel.className = `app-chat-panel ${isChatOpen ? 'open' : ''}`;
+
+        const chatList = document.createElement('div');
+        chatList.className = 'app-chat-messages';
+        if (!msgs.length) {
+          chatList.innerHTML = '<div class="adm-empty">Aucun message dans cette discussion.</div>';
+        } else {
+          msgs.forEach((m) => {
+            const bubble = document.createElement('div');
+            bubble.className = `app-chat-bubble ${m.senderRole === 'admin' ? 'mine' : ''}`;
+            const sender = document.createElement('span');
+            sender.className = 'app-chat-sender';
+            sender.textContent = m.senderName || (m.senderRole === 'admin' ? adminLabel : candidateName);
+            const txt = document.createElement('div');
+            txt.textContent = m.text || '';
+            bubble.append(sender, txt);
+            chatList.appendChild(bubble);
+          });
+        }
+
+        const chatForm = document.createElement('form');
+        chatForm.className = 'app-chat-form';
+        const chatInput = document.createElement('input');
+        chatInput.type = 'text';
+        chatInput.required = true;
+        chatInput.placeholder = `Répondre à ${candidateName}...`;
+        const sendBtn = document.createElement('button');
+        sendBtn.type = 'submit';
+        sendBtn.className = 'btn btn-small';
+        sendBtn.textContent = 'Envoyer';
+
+        chatForm.addEventListener('submit', async (ev) => {
+          ev.preventDefault();
+          const text = chatInput.value.trim();
+          if (!text) return;
+          await addDoc(collection(db, 'candidatures', a.id, 'messages'), {
+            text,
+            senderUid: currentUser.uid,
+            senderName: adminLabel,
+            senderRole: 'admin',
+            createdAt: serverTimestamp()
+          });
+          await updateDoc(doc(db, 'candidatures', a.id), {
+            unreadForApplicant: (Number(a.unreadForApplicant) || 0) + 1,
+            unreadForAdmin: 0,
+            lastMessageAt: serverTimestamp(),
+            lastMessagePreview: text.slice(0, 120)
+          });
+          chatInput.value = '';
+        });
+
+        chatForm.append(chatInput, sendBtn);
+        chatPanel.append(chatList, chatForm);
+        row.appendChild(chatPanel);
+        box.appendChild(row);
+      });
+    }
+
+    function toDatetimeLocalValue(ms) {
+      if (!ms) return '';
+      const d = new Date(Number(ms));
+      if (Number.isNaN(d.getTime())) return '';
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function renderCountdownAdmin(data) {
+      const d = data || {};
+      const status = d.status || 'stopped';
+      const targetMs = Number(d.targetAtMs) || 0;
+      const msg = d.message || '';
+      const statusLabel = status === 'running' ? '▶ En cours' : (status === 'delayed' ? '⏳ Retardé' : '🛑 Stoppé');
+      const dateStr = targetMs
+        ? new Date(targetMs).toLocaleString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : 'Aucune date définie';
+
+      cdCurrentBox.innerHTML = `
+        <strong>Statut :</strong> ${statusLabel}<br>
+        <strong>Échéance cible :</strong> ${dateStr}<br>
+        <strong>Message actif :</strong> ${msg ? msg : '<em>Message par défaut selon le statut</em>'}
+      `;
+    }
+
+    async function saveCountdownState(nextStatus) {
+      const rawDt = cdDatetimeInput.value;
+      const parsedMs = rawDt ? new Date(rawDt).getTime() : 0;
+      const customMsg = cdMessageInput.value.trim();
+
+      if ((nextStatus === 'running' || nextStatus === 'delayed') && (!parsedMs || Number.isNaN(parsedMs))) {
+        notify('Choisis une date et heure valide pour lancer ou retarder le compte à rebours.');
         return;
       }
-      const cleanMessage = buildCleanAnnouncement(action, rawDate, cdAdminMessage.value);
-      await setDoc(doc(db, 'site_config', 'countdown'), {
-        status: action,
-        targetAtMs: action === 'stopped' ? null : rawDate,
-        message: cleanMessage,
+
+      const payload = {
+        status: nextStatus,
+        targetAtMs: parsedMs || null,
+        message: customMsg,
+        updatedBy: currentUser.uid,
+        updatedAtMs: Date.now(),
+        updatedAt: serverTimestamp()
+      };
+
+      await setDoc(doc(db, 'site_config', 'countdown'), payload, { merge: true });
+      const labelMap = {
+        running: 'Compte à rebours lancé / mis à jour.',
+        delayed: 'Compte à rebours marqué comme retardé.',
+        stopped: 'Compte à rebours stoppé.'
+      };
+      notify(labelMap[nextStatus] || 'Compte à rebours mis à jour.', true);
+    }
+
+    document.getElementById('cd-btn-start').addEventListener('click', () => saveCountdownState('running'));
+    document.getElementById('cd-btn-delay').addEventListener('click', () => saveCountdownState('delayed'));
+    document.getElementById('cd-btn-stop').addEventListener('click', () => saveCountdownState('stopped'));
+
+    function generateOneTimeOtpCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let a = '';
+      let b = '';
+      for (let i = 0; i < 4; i++) a += chars[Math.floor(Math.random() * chars.length)];
+      for (let i = 0; i < 4; i++) b += chars[Math.floor(Math.random() * chars.length)];
+      return `JSP-${a}-${b}`;
+    }
+
+    function renderMaintenanceAdmin(data) {
+      const d = data || {};
+      const enabled = d.enabled === true;
+      mntAdminStatus.innerHTML = `
+        <strong>État actuel :</strong> ${enabled ? '🔒 MAINTENANCE ACTIVÉE (site bloqué)' : '✅ SITE EN LIGNE (maintenance désactivée)'}<br>
+        <strong>Message :</strong> ${d.message || '<em>Message par défaut</em>'}
+      `;
+    }
+
+    function renderOtpsList() {
+      otpListEl.innerHTML = '';
+      if (!otps.length) {
+        otpListEl.innerHTML = '<div class="adm-empty">Aucun code OTP généré.</div>';
+        return;
+      }
+      otps.forEach((o) => {
+        const row = document.createElement('div');
+        row.className = 'adm-row';
+        const top = document.createElement('div');
+        top.className = 'adm-row-top';
+        const info = document.createElement('div');
+        info.innerHTML = `
+          <span class="adm-title">${o.loginId || '—'} • <code>${o.otpCode || '—'}</code></span>
+          <span class="adm-meta">${o.used ? '❌ Déjà utilisé' : '✅ Valide (1 usage)'}</span>
+        `;
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'btn btn-secondary btn-small';
+        del.textContent = 'Suppr.';
+        del.addEventListener('click', async () => {
+          await deleteDoc(doc(db, 'maintenance_otps', o.id));
+          notify('Code OTP supprimé.', true);
+        });
+        top.append(info, del);
+        row.appendChild(top);
+        otpListEl.appendChild(row);
+      });
+    }
+
+    document.getElementById('btn-mnt-on').addEventListener('click', async () => {
+      if (!isSuperAdmin) return;
+      const msg = mntAdminMsg.value.trim() || "Maintenance en cours sur Vos JSP. Merci de patienter quelques instants.";
+      await setDoc(doc(db, 'site_config', 'maintenance'), {
+        enabled: true,
+        message: msg,
         updatedBy: currentUser.uid,
         updatedAt: serverTimestamp()
       }, { merge: true });
+      notify('Mode maintenance ACTIVÉ.', true);
+    });
 
-      notify(
-        action === 'running'
-          ? 'Compte à rebours lancé sur index.html !'
-          : action === 'delayed'
-            ? 'Retard enregistré et message publié sur index.html !'
-            : 'Compte à rebours stoppé et message publié sur index.html !',
-        true
-      );
-    }
+    document.getElementById('btn-mnt-off').addEventListener('click', async () => {
+      if (!isSuperAdmin) return;
+      await setDoc(doc(db, 'site_config', 'maintenance'), {
+        enabled: false,
+        updatedBy: currentUser.uid,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      notify('Mode maintenance DÉSACTIVÉ.', true);
+    });
 
-    document.getElementById('cd-btn-start').addEventListener('click', () => saveCountdown('running'));
-    document.getElementById('cd-btn-delay').addEventListener('click', () => saveCountdown('delayed'));
-    document.getElementById('cd-btn-stop').addEventListener('click', () => saveCountdown('stopped'));
+    document.getElementById('otp-create-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!isSuperAdmin) return;
+      const loginId = document.getElementById('otp-target-login').value.trim().toLowerCase();
+      const targetUid = document.getElementById('otp-target-uid').value.trim();
+      const otpCode = generateOneTimeOtpCode();
 
-    function startDataListeners() {
-      stopDataListeners();
-      dataSubs = [
-        onSnapshot(collection(db, 'users'), (s) => {
-          users = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
-          renderUsers();
-          if (rolesSimpleBox.classList.contains('open')) renderRolesSimple();
-        }),
-        onSnapshot(collection(db, 'admin_mails'), (s) => {
-          mails = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
-          renderMails();
-        }),
-        onSnapshot(collection(db, 'propositions'), (s) => {
-          props = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
-          renderActusAndProps();
-        }),
-        onSnapshot(collection(db, 'actus'), (s) => {
-          actus = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
-          renderActusAndProps();
-        }),
-        onSnapshot(collection(db, 'forum'), (s) => {
-          forum = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
-          renderMod();
-        }),
-        onSnapshot(collection(db, 'galerie'), (s) => {
-          galerie = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
-          renderMod();
-        }),
-        onSnapshot(collection(db, 'recrutement_postes'), (s) => {
-          roles = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
-          renderRecrut();
-          if (rolesSimpleBox.classList.contains('open')) renderRolesSimple();
-        }),
-        onSnapshot(collection(db, 'candidatures'), (s) => {
-          apps = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
-          renderRecrut();
-        }),
-        onSnapshot(doc(db, 'site_config', 'countdown'), (snap) => {
-          if (!snap.exists()) {
-            cdAdminCurrent.innerHTML = '<strong>Statut :</strong> Non configuré<br><strong>Message :</strong> Aucun';
-            return;
-          }
-          const d = snap.data() || {};
-          const dateStr = d.targetAtMs
-            ? new Date(Number(d.targetAtMs)).toLocaleString('fr-FR')
-            : 'Aucune';
-          cdAdminCurrent.innerHTML = `
-            <strong>Statut :</strong> ${d.status || 'stopped'}<br>
-            <strong>Échéance :</strong> ${dateStr}<br>
-            <strong>Message affiché :</strong> ${d.message || 'Aucun'}
-          `;
-        })
-      ];
-    }
+      await addDoc(collection(db, 'maintenance_otps'), {
+        loginId,
+        otpCode,
+        targetUid,
+        used: false,
+        createdBy: currentUser.uid,
+        createdAt: serverTimestamp()
+      });
 
-    function stopDataListeners() {
-      dataSubs.forEach((u) => u());
+      otpGeneratedBox.style.display = 'block';
+      otpGeneratedBox.innerHTML = `
+        <strong>Code OTP à usage unique créé :</strong><br>
+        Identifiant : <code>${loginId}</code><br>
+        Mot de passe OTP : <code>${otpCode}</code><br>
+        <small>Usage unique : inutilisable dès la première connexion.</small>
+      `;
+      e.target.reset();
+      notify(`OTP généré pour ${loginId}.`, true);
+    });
+
+    function clearListeners() {
+      dataSubs.forEach((fn) => { try { fn(); } catch (_) {} });
       dataSubs = [];
-      Object.values(chatSubs).forEach((u) => u());
+      Object.values(chatSubs).forEach((fn) => { try { fn(); } catch (_) {} });
       chatSubs = {};
+      appMessagesMap = {};
+    }
+
+    function startListeners() {
+      clearListeners();
+      dataSubs.push(onSnapshot(collection(db, 'users'), (s) => {
+        users = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+        renderUsers();
+        if (rolesSimpleBox.classList.contains('open')) renderRolesSimple();
+      }));
+      dataSubs.push(onSnapshot(collection(db, 'admin_mailboxes'), (s) => {
+        mails = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+        renderMails();
+      }));
+      dataSubs.push(onSnapshot(collection(db, 'propositions'), (s) => {
+        props = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+        renderProps();
+      }));
+      dataSubs.push(onSnapshot(collection(db, 'actus'), (s) => {
+        actus = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+        renderActus();
+      }));
+      dataSubs.push(onSnapshot(collection(db, 'forum'), (s) => {
+        forum = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+        renderMod();
+      }));
+      dataSubs.push(onSnapshot(collection(db, 'galerie'), (s) => {
+        galerie = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+        renderMod();
+      }));
+      dataSubs.push(onSnapshot(collection(db, 'recrutement_postes'), (s) => {
+        roles = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+        renderRoles();
+      }));
+      dataSubs.push(onSnapshot(collection(db, 'candidatures'), (s) => {
+        apps = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+        renderApps();
+      }));
+      dataSubs.push(onSnapshot(doc(db, 'site_config', 'countdown'), (snap) => {
+        const d = snap.exists() ? (snap.data() || {}) : {};
+        if (d.targetAtMs && !cdDatetimeInput.value) {
+          cdDatetimeInput.value = toDatetimeLocalValue(d.targetAtMs);
+        }
+        if (typeof d.message === 'string' && !cdMessageInput.value && d.message) {
+          cdMessageInput.value = d.message;
+        }
+        renderCountdownAdmin(d);
+      }));
+
+      if (isSuperAdmin) {
+        dataSubs.push(onSnapshot(doc(db, 'site_config', 'maintenance'), (snap) => {
+          const d = snap.exists() ? (snap.data() || {}) : {};
+          if (typeof d.message === 'string' && !mntAdminMsg.value && d.message) {
+            mntAdminMsg.value = d.message;
+          }
+          renderMaintenanceAdmin(d);
+        }));
+        dataSubs.push(onSnapshot(collection(db, 'maintenance_otps'), (s) => {
+          otps = s.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
+          renderOtpsList();
+        }));
+      }
     }
 
     async function doLogout() {
-      stopDataListeners();
-      if (authSub) { authSub(); authSub = null; }
+      clearListeners();
       await signOut(auth);
       window.location.replace('login.html');
     }
@@ -1474,12 +1626,13 @@
     drawerLogoutBtn.addEventListener('click', doLogout);
 
     onAuthStateChanged(auth, (user) => {
-      stopDataListeners();
       if (authSub) { authSub(); authSub = null; }
-      currentUser = user;
-      isSuperAdmin = false;
+      clearListeners();
 
       if (!user) {
+        currentUser = null;
+        isSuperAdmin = false;
+        navBtnMaint.style.display = 'none';
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
         drawerAdminLink.style.display = 'none';
@@ -1490,6 +1643,7 @@
         return;
       }
 
+      currentUser = user;
       drawerAuthBtn.style.display = 'none';
       drawerLogoutBtn.style.display = 'inline-flex';
       const fallback = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
@@ -1501,21 +1655,25 @@
           return;
         }
         const r = String(d.role || d.grade || 'membre').toLowerCase();
-        const okAdmin = r === 'admin' || r === 'superadmin';
+        const isAdmin = r === 'admin' || r === 'superadmin';
         isSuperAdmin = r === 'superadmin';
-        const pseudo = okAdmin ? formatAdminPseudo(d, fallback) : (d.pseudo || fallback);
+        const pseudo = isAdmin ? formatAdminPseudo(d, fallback) : (d.pseudo || fallback);
         adminLabel = pseudo;
 
         profileBox.style.display = 'flex';
         paintAvatar(profileAvatar, d.photoDataUrl || '', pseudo);
         profileName.textContent = pseudo;
-        profileRole.textContent = isSuperAdmin ? 'superadmin' : (okAdmin ? 'admin' : 'membre');
-        profileRole.className = okAdmin ? 'profile-tag admin' : 'profile-tag';
-        drawerAdminLink.style.display = okAdmin ? 'block' : 'none';
-        drawerMailLink.style.display = okAdmin ? 'block' : 'none';
+        profileRole.textContent = isSuperAdmin ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
+        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
+        drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
+        drawerMailLink.style.display = isAdmin ? 'block' : 'none';
+        navBtnMaint.style.display = isSuperAdmin ? 'block' : 'none';
 
-        if (!okAdmin) {
-          stopDataListeners();
+        if (!isSuperAdmin && secs.maint.style.display !== 'none') {
+          navBtns[0].click();
+        }
+
+        if (!isAdmin) {
           deniedEl.style.display = 'flex';
           contentEl.style.display = 'none';
           return;
@@ -1524,7 +1682,7 @@
         roleBadge.textContent = isSuperAdmin ? 'superadmin' : 'admin';
         deniedEl.style.display = 'none';
         contentEl.style.display = 'flex';
-        startDataListeners();
+        startListeners();
       });
     });
   </script>

@@ -8,197 +8,161 @@
   <script type="module" src="js/maintenance-guard.js"></script>
   <style>
     .gal-page {
-      max-width: 1120px;
-      margin: 2rem auto 3.5rem;
+      max-width: 1140px;
+      margin: 1.8rem auto 4rem;
       display: flex;
       flex-direction: column;
-      gap: 1.4rem;
+      gap: 1.35rem;
     }
 
     .gal-hero {
-      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 24px;
-      padding: 1.75rem 1.9rem;
+      padding: 1.65rem 1.85rem;
       box-shadow: var(--shadow);
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
-      gap: 1.25rem;
+      align-items: center;
+      gap: 1.2rem;
       flex-wrap: wrap;
     }
 
     .gal-hero h1 {
-      margin: 0.55rem 0 0.3rem;
-      font-size: 1.9rem;
+      margin: 0.45rem 0 0.25rem;
+      font-size: 1.8rem;
       letter-spacing: -0.02em;
-      line-height: 1.12;
     }
 
     .gal-hero p {
       margin: 0;
       color: var(--muted);
-      font-size: 0.94rem;
-      max-width: 590px;
-      line-height: 1.5;
+      font-size: 0.9rem;
+      max-width: 560px;
     }
 
-    .gal-stats {
+    .gal-hero-right {
       display: flex;
+      align-items: center;
       gap: 0.65rem;
       flex-wrap: wrap;
-      align-items: center;
     }
 
-    .gal-stat-box {
-      background: var(--surface);
+    .gal-stat {
+      background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 0.65rem 0.95rem;
-      min-width: 108px;
+      min-width: 102px;
     }
 
-    .gal-stat-box small {
+    .gal-stat small {
       display: block;
       font-size: 0.72rem;
       color: var(--muted);
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    .gal-stat-box strong {
+    .gal-stat strong {
       display: block;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       margin-top: 0.1rem;
     }
 
-    .gal-purge-btn {
-      appearance: none;
-      border: 1px solid rgba(225, 29, 42, 0.35);
-      background: rgba(225, 29, 42, 0.08);
-      color: var(--primary);
-      font-weight: 700;
-      font-size: 0.82rem;
-      padding: 0.62rem 0.95rem;
-      border-radius: 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.42rem;
-      transition: all 0.16s ease;
-    }
-
-    .gal-purge-btn:hover:not(:disabled) {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
-
-    .gal-purge-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .gal-controls-bar {
+    .gal-toolbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 0.8rem 1rem;
+      box-shadow: var(--shadow);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 0.75rem 1rem;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
     }
 
-    .gal-filters {
+    .gal-pills {
       display: flex;
       gap: 0.4rem;
       flex-wrap: wrap;
+      align-items: center;
     }
 
-    .gal-filter-btn {
+    .gal-pill {
       appearance: none;
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       background: var(--bg);
       color: var(--muted);
       font-weight: 700;
-      font-size: 0.82rem;
-      padding: 0.45rem 0.82rem;
+      font-size: 0.8rem;
+      padding: 0.42rem 0.78rem;
       border-radius: 999px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.14s ease;
     }
 
-    .gal-filter-btn:hover {
+    .gal-pill:hover {
       border-color: var(--primary);
       color: var(--text);
     }
 
-    .gal-filter-btn.active {
+    .gal-pill.active {
       background: var(--primary);
       border-color: var(--primary);
       color: #fff;
     }
 
-    .gal-search-input {
-      min-width: 220px;
-      border-radius: 999px;
-      padding: 0.46rem 0.9rem;
-      font-size: 0.84rem;
+    .gal-toolbar-right {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
-    .gal-wizard-wrap {
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
+    .gal-search {
+      min-width: 210px;
+      border-radius: 14px !important;
+      padding: 0.56rem 0.85rem !important;
+      font-size: 0.84rem !important;
     }
 
-    .gal-wizard-card {
+    /* COMPOSER PLIANT */
+    .gal-upload-panel {
+      display: none;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 24px;
-      padding: 1.65rem 1.6rem;
+      padding: 1.5rem 1.65rem;
       box-shadow: var(--shadow);
-      overflow: hidden;
     }
 
-    .gal-step-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.9rem;
+    .gal-upload-panel.open {
+      display: block;
     }
 
-    .gal-step-dots {
-      display: flex;
-      gap: 0.4rem;
-      align-items: center;
+    .gal-upload-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 1.25rem;
+      align-items: start;
     }
 
-    .gal-dot {
-      width: 24px;
-      height: 5px;
-      border-radius: 999px;
-      background: var(--border);
-      transition: width 0.25s ease, background 0.25s ease;
-    }
-
-    .gal-dot.active {
-      width: 36px;
-      background: var(--primary);
+    @media (max-width: 820px) {
+      .gal-upload-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .gal-source-switch {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.35rem;
+      gap: 0.3rem;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 0.28rem;
-      margin-bottom: 1.1rem;
+      border-radius: 13px;
+      padding: 0.25rem;
+      margin-bottom: 0.8rem;
     }
 
     .gal-source-btn {
@@ -207,29 +171,26 @@
       background: transparent;
       color: var(--muted);
       font-weight: 700;
-      font-size: 0.84rem;
-      padding: 0.52rem 0.7rem;
+      font-size: 0.82rem;
+      padding: 0.48rem 0.65rem;
       border-radius: 10px;
       cursor: pointer;
-      transition: background 0.18s ease, color 0.18s ease;
     }
 
     .gal-source-btn.active {
       background: var(--surface);
       color: var(--text);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
 
     .gal-dropzone {
-      position: relative;
       border: 1.5px dashed var(--border);
       background: var(--bg);
-      border-radius: 18px;
-      padding: 1.4rem 1rem;
+      border-radius: 16px;
+      padding: 1.25rem 1rem;
       text-align: center;
       cursor: pointer;
-      transition: border-color 0.18s ease, background 0.18s ease;
-      margin-bottom: 0.85rem;
+      transition: border-color 0.15s ease, background 0.15s ease;
     }
 
     .gal-dropzone:hover,
@@ -238,28 +199,14 @@
       background: rgba(225, 29, 42, 0.04);
     }
 
-    .gal-dropzone-title {
-      display: block;
-      font-weight: 800;
-      font-size: 0.92rem;
-      margin-top: 0.45rem;
-    }
-
-    .gal-dropzone-sub {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 0.2rem;
-    }
-
     .gal-file-pill {
       display: none;
-      margin-top: 0.65rem;
-      font-size: 0.78rem;
+      margin-top: 0.55rem;
+      font-size: 0.76rem;
       font-weight: 700;
       color: var(--primary);
-      background: rgba(225, 29, 42, 0.08);
-      padding: 0.25rem 0.65rem;
+      background: rgba(225, 29, 42, 0.09);
+      padding: 0.22rem 0.65rem;
       border-radius: 999px;
       max-width: 100%;
       overflow: hidden;
@@ -271,97 +218,106 @@
       display: inline-block;
     }
 
-    @keyframes galSlideForward {
-      0% { opacity: 0; transform: translateX(24px); }
-      100% { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes galSlideBackward {
-      0% { opacity: 0; transform: translateX(-24px); }
-      100% { opacity: 1; transform: translateX(0); }
-    }
-
-    .gal-stage.anim-forward {
-      animation: galSlideForward 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-
-    .gal-stage.anim-backward {
-      animation: galSlideBackward 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-
-    .gal-live-preview {
+    .gal-preview-box {
       display: none;
-      margin: 0.75rem 0 1rem;
-      border-radius: 16px;
+      margin-top: 0.75rem;
+      border-radius: 15px;
       overflow: hidden;
       border: 1px solid var(--border);
       background: var(--bg);
     }
 
-    .gal-live-preview.active {
+    .gal-preview-box.active {
       display: block;
     }
 
-    .gal-live-preview img {
+    .gal-preview-box img {
       width: 100%;
-      max-height: 210px;
+      max-height: 185px;
       object-fit: cover;
       display: block;
     }
 
-    .gal-picked-pill {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
+    /* SÉLECTEUR CATÉGORIE CUSTOM */
+    .custom-select {
+      position: relative;
+      user-select: none;
+    }
+
+    .custom-select-btn {
+      width: 100%;
+      appearance: none;
       background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      padding: 0.65rem 0.85rem;
-      margin-bottom: 1.05rem;
-    }
-
-    .gal-picked-left {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      min-width: 0;
-    }
-
-    .gal-picked-thumb {
-      width: 48px;
-      height: 36px;
-      border-radius: 9px;
-      object-fit: cover;
-      background: var(--surface);
-      flex-shrink: 0;
-    }
-
-    .gal-step2-grid {
-      display: grid;
-      grid-template-columns: 1fr 190px;
-      gap: 0.8rem;
-    }
-
-    @media (max-width: 560px) {
-      .gal-step2-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .gal-wizard-card textarea {
-      width: 100%;
-      min-height: 76px;
-      resize: vertical;
+      border: 1.5px solid var(--border);
       border-radius: 14px;
-      padding: 0.75rem 0.9rem;
-      font-family: inherit;
+      padding: 0.64rem 0.88rem;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.84rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
     }
 
+    .custom-select-btn:hover,
+    .custom-select.open .custom-select-btn {
+      border-color: var(--primary);
+    }
+
+    .custom-select-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 0.35rem);
+      left: 0;
+      right: 0;
+      z-index: 30;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 15px;
+      padding: 0.32rem;
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.14);
+      flex-direction: column;
+      gap: 0.18rem;
+    }
+
+    .custom-select.open .custom-select-menu {
+      display: flex;
+    }
+
+    .custom-select-option {
+      width: 100%;
+      appearance: none;
+      background: var(--surface);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 0.52rem 0.7rem;
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .custom-select-option:hover {
+      background: var(--bg);
+      border-color: var(--border);
+    }
+
+    .custom-select-option.is-selected {
+      background: var(--bg);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* GRILLE PHOTOS */
     .gal-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.15rem;
+      gap: 1.2rem;
     }
 
     @media (max-width: 960px) {
@@ -381,19 +337,18 @@
       border: 1px solid var(--border);
       border-radius: 22px;
       overflow: hidden;
-      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.04);
+      box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      transition: transform 0.18s ease, border-color 0.18s ease;
     }
 
     .gal-card:hover {
       transform: translateY(-3px);
-      border-color: rgba(225, 29, 42, 0.35);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.07);
+      border-color: var(--primary);
     }
 
-    .gal-thumb-wrap {
+    .gal-thumb {
       position: relative;
       aspect-ratio: 16 / 10;
       background: var(--bg);
@@ -401,7 +356,7 @@
       cursor: pointer;
     }
 
-    .gal-thumb-wrap img {
+    .gal-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -409,56 +364,57 @@
       transition: transform 0.25s ease;
     }
 
-    .gal-card:hover .gal-thumb-wrap img {
+    .gal-card:hover .gal-thumb img {
       transform: scale(1.03);
     }
 
-    .gal-cat-chip {
+    .gal-chip {
       position: absolute;
       top: 0.7rem;
       left: 0.7rem;
-      background: rgba(17, 24, 39, 0.78);
-      color: #fff;
+      background: rgba(15, 23, 42, 0.78);
       backdrop-filter: blur(6px);
+      color: #fff;
       font-size: 0.72rem;
       font-weight: 700;
-      padding: 0.24rem 0.62rem;
+      padding: 0.24rem 0.65rem;
       border-radius: 999px;
     }
 
-    .gal-card-body {
+    .gal-body {
       padding: 1rem 1.15rem;
       display: flex;
       flex-direction: column;
-      gap: 0.45rem;
+      gap: 0.4rem;
       flex: 1;
     }
 
-    .gal-card-title {
+    .gal-title {
       margin: 0;
-      font-size: 1.02rem;
+      font-size: 1rem;
       font-weight: 800;
       line-height: 1.3;
     }
 
-    .gal-card-desc {
+    .gal-desc {
       margin: 0;
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       color: var(--muted);
       line-height: 1.45;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
-    .gal-card-author {
+    .gal-author {
       margin-top: auto;
-      padding-top: 0.55rem;
+      padding-top: 0.5rem;
       font-size: 0.76rem;
       color: var(--muted);
+      font-weight: 600;
     }
 
-    .gal-card-actions {
-      padding: 0.7rem 1.15rem 0.95rem;
+    .gal-foot {
+      padding: 0.72rem 1.15rem 0.9rem;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -468,19 +424,20 @@
 
     .gal-like-btn {
       appearance: none;
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       background: var(--bg);
       color: var(--text);
       font-weight: 700;
       font-size: 0.78rem;
-      padding: 0.36rem 0.72rem;
+      padding: 0.36rem 0.75rem;
       border-radius: 999px;
       cursor: pointer;
+      transition: all 0.14s ease;
     }
 
     .gal-like-btn:hover {
       border-color: var(--primary);
-      background: rgba(225, 29, 42, 0.06);
+      color: var(--primary);
     }
 
     .gal-empty {
@@ -491,17 +448,35 @@
       border: 1px dashed var(--border);
       border-radius: 22px;
       color: var(--muted);
-      font-size: 0.92rem;
+      font-size: 0.9rem;
+    }
+
+    .gal-purge-btn {
+      appearance: none;
+      border: 1px solid rgba(225, 29, 42, 0.35);
+      background: rgba(225, 29, 42, 0.08);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.55rem 0.88rem;
+      border-radius: 13px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .gal-purge-btn:hover:not(:disabled) {
+      background: var(--primary);
+      color: #fff;
     }
 
     .gal-lightbox {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.82);
+      background: rgba(0, 0, 0, 0.84);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 1.25rem;
+      padding: 1.2rem;
       z-index: 2000;
     }
 
@@ -534,17 +509,6 @@
       align-items: center;
       gap: 1rem;
       flex-wrap: wrap;
-    }
-
-    .ico-svg {
-      width: 16px;
-      height: 16px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      flex-shrink: 0;
     }
   </style>
 </head>
@@ -609,115 +573,102 @@
         <div>
           <span class="badge">Album Communautaire • Vos JSP</span>
           <h1>Galerie photos</h1>
-          <p>Partage tes photos de manœuvres, d'engins et de cohésion en 2 étapes simples, puis filtre ou cherche dans l'album.</p>
+          <p>Retrouve les photos de manœuvres, d'engins et de cohésion de la communauté.</p>
         </div>
-        <div class="gal-stats">
-          <div class="gal-stat-box">
-            <small>Photos publiées</small>
+
+        <div class="gal-hero-right">
+          <div class="gal-stat">
+            <small>Photos</small>
             <strong id="gal-total-photos">0</strong>
           </div>
-          <div class="gal-stat-box">
-            <small>Soutiens cumulés</small>
+          <div class="gal-stat">
+            <small>Soutiens</small>
             <strong id="gal-total-likes">0</strong>
           </div>
-          <button type="button" id="gal-purge-all-btn" class="gal-purge-btn" style="display: none;">
-            <svg class="ico-svg" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-            <span>Tout supprimer</span>
-          </button>
+          <button type="button" class="btn btn-small" id="gal-toggle-upload" style="display: none;">+ Publier une photo</button>
+          <button type="button" id="gal-purge-all-btn" class="gal-purge-btn" style="display: none;">Tout supprimer</button>
         </div>
       </header>
 
       <div id="gal-alert" class="alert"></div>
 
-      <div class="gal-wizard-wrap" id="gal-composer-box">
-        <div class="gal-wizard-card">
-          <div class="gal-step-top">
-            <span class="badge">Ajouter une photo</span>
-            <div class="gal-step-dots" aria-hidden="true">
-              <span class="gal-dot active" id="gal-dot-1"></span>
-              <span class="gal-dot" id="gal-dot-2"></span>
-            </div>
+      <!-- FORMULAIRE PLIANT -->
+      <section class="gal-upload-panel" id="gal-upload-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+          <div>
+            <h2 style="margin: 0; font-size: 1.2rem;">Publier une photo</h2>
+            <p style="margin: 0.15rem 0 0; color: var(--muted); font-size: 0.84rem;">Importe un fichier ou colle un lien image, puis renseigne les infos.</p>
           </div>
+          <button type="button" class="btn btn-secondary btn-small" id="gal-close-upload">Fermer</button>
+        </div>
 
-          <div id="gal-title-stage" class="gal-stage">
-            <h2 id="gal-step-heading" style="font-size: 1.35rem; margin: 0 0 0.2rem;">Choisis ton image</h2>
-            <p id="gal-step-sub" style="color: var(--muted); font-size: 0.86rem; margin: 0 0 1rem;">Étape 1/2 — Dépose une photo ou colle un lien image, puis continue.</p>
-          </div>
-
-          <form id="gal-step-1-form" class="gal-stage">
-            <div class="gal-source-switch" role="tablist">
-              <button type="button" class="gal-source-btn active" id="src-file-btn">Importer une image</button>
+        <form id="gal-publish-form" class="gal-upload-grid">
+          <div>
+            <div class="gal-source-switch">
+              <button type="button" class="gal-source-btn active" id="src-file-btn">Fichier image</button>
               <button type="button" class="gal-source-btn" id="src-url-btn">Lien URL</button>
             </div>
 
             <div id="src-file-group">
               <input type="file" id="gal-file" accept="image/*" style="display: none;">
               <div class="gal-dropzone" id="gal-dropzone" role="button" tabindex="0">
-                <svg class="ico-svg" style="width: 24px; height: 24px; margin: 0 auto; color: var(--primary);" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span class="gal-dropzone-title">Clique pour choisir une photo ou glisse-la ici</span>
-                <span class="gal-dropzone-sub">JPG, PNG ou WebP — optimisation automatique</span>
+                <strong style="display: block; font-size: 0.9rem;">Clique pour choisir une photo ou glisse-la ici</strong>
+                <small style="display: block; color: var(--muted); font-size: 0.78rem; margin-top: 0.2rem;">JPG, PNG ou WebP — optimisation auto</small>
                 <span class="gal-file-pill" id="gal-file-pill"></span>
               </div>
             </div>
 
-            <div class="form-group" id="src-url-group" style="display: none; margin-bottom: 0.4rem;">
+            <div class="form-group" id="src-url-group" style="display: none; margin: 0;">
               <label for="gal-url">Lien direct (https://...)</label>
               <input type="url" id="gal-url" placeholder="https://exemple.com/photo.jpg">
             </div>
 
-            <div class="gal-live-preview" id="gal-step1-preview-box">
-              <img id="gal-step1-preview-img" alt="Aperçu">
+            <div class="gal-preview-box" id="gal-preview-box">
+              <img id="gal-preview-img" alt="Aperçu">
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <div class="form-group" style="margin: 0;">
+              <label for="gal-title">Titre</label>
+              <input type="text" id="gal-title" placeholder="Ex. : Manœuvre du samedi" maxlength="110" required>
             </div>
 
-            <button type="submit" id="gal-next-btn" class="btn" style="width: 100%;">Continuer →</button>
-          </form>
-
-          <form id="gal-step-2-form" class="gal-stage" style="display: none;">
-            <div class="gal-picked-pill">
-              <div class="gal-picked-left">
-                <img id="gal-picked-thumb" class="gal-picked-thumb" alt="">
-                <span style="font-size: 0.84rem; font-weight: 700;">Image prête</span>
-              </div>
-              <button type="button" id="gal-back-btn" class="btn btn-secondary btn-small">Modifier</button>
-            </div>
-
-            <div class="gal-step2-grid">
-              <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label for="gal-title">Titre</label>
-                <input type="text" id="gal-title" placeholder="Ex. : Manœuvre du samedi" maxlength="110" required>
-              </div>
-              <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label for="gal-category">Catégorie</label>
-                <select id="gal-category">
-                  <option value="Manœuvres">Manœuvres</option>
-                  <option value="Matériel & Engins">Matériel &amp; Engins</option>
-                  <option value="Cohésion & Cérémonies">Cohésion &amp; Cérémonies</option>
-                  <option value="Autre">Autre</option>
-                </select>
+            <div class="form-group" style="margin: 0;">
+              <label>Catégorie</label>
+              <div class="custom-select" id="gal-cat-select-wrap">
+                <button type="button" class="custom-select-btn" id="gal-cat-select-btn" aria-expanded="false">
+                  <span id="gal-cat-select-label">Manœuvres</span>
+                  <span>&#9662;</span>
+                </button>
+                <div class="custom-select-menu" id="gal-cat-select-menu"></div>
               </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 0.9rem;">
+            <div class="form-group" style="margin: 0;">
               <label for="gal-desc">Légende (optionnel)</label>
-              <textarea id="gal-desc" placeholder="Ajoute un détail sur la photo..." maxlength="500"></textarea>
+              <textarea id="gal-desc" rows="3" placeholder="Un détail sur la photo..." maxlength="500"></textarea>
             </div>
 
-            <button type="submit" id="gal-submit-btn" class="btn" style="width: 100%;">Publier la photo</button>
-          </form>
+            <button type="submit" class="btn" id="gal-submit-btn">Publier dans la galerie</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- FILTRES & RECHERCHE -->
+      <div class="gal-toolbar">
+        <div class="gal-pills" role="group" aria-label="Filtrer par catégorie">
+          <button type="button" class="gal-pill active" data-cat="all">Tout</button>
+          <button type="button" class="gal-pill" data-cat="Manœuvres">Manœuvres</button>
+          <button type="button" class="gal-pill" data-cat="Matériel &amp; Engins">Matériel &amp; Engins</button>
+          <button type="button" class="gal-pill" data-cat="Cohésion &amp; Cérémonies">Cohésion &amp; Cérémonies</button>
+          <button type="button" class="gal-pill" data-cat="Autre">Autre</button>
         </div>
+
+        <input type="search" id="gal-search" class="gal-search" placeholder="Rechercher une photo...">
       </div>
 
-      <div class="gal-controls-bar">
-        <div class="gal-filters" role="group" aria-label="Filtrer la galerie">
-          <button type="button" class="gal-filter-btn active" data-cat="all">Tout</button>
-          <button type="button" class="gal-filter-btn" data-cat="Manœuvres">Manœuvres</button>
-          <button type="button" class="gal-filter-btn" data-cat="Matériel &amp; Engins">Matériel &amp; Engins</button>
-          <button type="button" class="gal-filter-btn" data-cat="Cohésion &amp; Cérémonies">Cohésion &amp; Cérémonies</button>
-          <button type="button" class="gal-filter-btn" data-cat="Autre">Autre</button>
-        </div>
-        <input type="search" id="gal-search" class="gal-search-input" placeholder="Rechercher une photo...">
-      </div>
-
+      <!-- GRILLE -->
       <section class="gal-grid" id="gal-grid">
         <div class="gal-empty">Chargement de la galerie...</div>
       </section>
@@ -739,9 +690,7 @@
 
   <footer>
     <div class="footer-container">
-      <div>
-        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
-      </div>
+      <div><strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.</div>
       <div class="footer-links">
         <a href="mentions-legales.html">Mentions légales</a>
         <a href="confidentialite.html">Confidentialité</a>
@@ -770,23 +719,10 @@
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import {
-      collection,
-      query,
-      orderBy,
-      limit,
-      addDoc,
-      updateDoc,
-      deleteDoc,
-      doc,
-      getDoc,
-      onSnapshot,
-      serverTimestamp,
-      increment
+      collection, query, orderBy, limit, addDoc, updateDoc, deleteDoc,
+      doc, getDoc, onSnapshot, serverTimestamp, increment
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const profileBox = document.getElementById('drawer-profile-box');
@@ -801,19 +737,14 @@
     const totalPhotosEl = document.getElementById('gal-total-photos');
     const totalLikesEl = document.getElementById('gal-total-likes');
     const purgeAllBtn = document.getElementById('gal-purge-all-btn');
-    const filterButtons = Array.from(document.querySelectorAll('.gal-filter-btn'));
+    const toggleUploadBtn = document.getElementById('gal-toggle-upload');
+    const closeUploadBtn = document.getElementById('gal-close-upload');
+    const uploadPanel = document.getElementById('gal-upload-panel');
+    const filterButtons = Array.from(document.querySelectorAll('.gal-pill'));
     const searchInput = document.getElementById('gal-search');
-
     const alertEl = document.getElementById('gal-alert');
-    const composerBox = document.getElementById('gal-composer-box');
 
-    const dot1 = document.getElementById('gal-dot-1');
-    const dot2 = document.getElementById('gal-dot-2');
-    const titleStage = document.getElementById('gal-title-stage');
-    const stepHeading = document.getElementById('gal-step-heading');
-    const stepSub = document.getElementById('gal-step-sub');
-
-    const step1Form = document.getElementById('gal-step-1-form');
+    const publishForm = document.getElementById('gal-publish-form');
     const srcFileBtn = document.getElementById('src-file-btn');
     const srcUrlBtn = document.getElementById('src-url-btn');
     const srcFileGroup = document.getElementById('src-file-group');
@@ -822,24 +753,25 @@
     const dropzone = document.getElementById('gal-dropzone');
     const filePill = document.getElementById('gal-file-pill');
     const urlInput = document.getElementById('gal-url');
-    const step1PreviewBox = document.getElementById('gal-step1-preview-box');
-    const step1PreviewImg = document.getElementById('gal-step1-preview-img');
-
-    const step2Form = document.getElementById('gal-step-2-form');
-    const pickedThumb = document.getElementById('gal-picked-thumb');
-    const backBtn = document.getElementById('gal-back-btn');
+    const previewBox = document.getElementById('gal-preview-box');
+    const previewImg = document.getElementById('gal-preview-img');
     const titleInput = document.getElementById('gal-title');
-    const categorySelect = document.getElementById('gal-category');
     const descInput = document.getElementById('gal-desc');
     const submitBtn = document.getElementById('gal-submit-btn');
 
-    const gridEl = document.getElementById('gal-grid');
+    const catSelectWrap = document.getElementById('gal-cat-select-wrap');
+    const catSelectBtn = document.getElementById('gal-cat-select-btn');
+    const catSelectLabel = document.getElementById('gal-cat-select-label');
+    const catSelectMenu = document.getElementById('gal-cat-select-menu');
 
+    const gridEl = document.getElementById('gal-grid');
     const lightbox = document.getElementById('gal-lightbox');
     const lbImg = document.getElementById('lb-img');
     const lbTitle = document.getElementById('lb-title');
     const lbMeta = document.getElementById('lb-meta');
     const lbCloseBtn = document.getElementById('lb-close-btn');
+
+    const CATEGORIES = ['Manœuvres', 'Matériel & Engins', 'Cohésion & Cérémonies', 'Autre'];
 
     let currentUser = null;
     let currentProfile = { pseudo: 'Membre', role: 'membre' };
@@ -848,6 +780,7 @@
     let allItems = [];
     let activeCat = 'all';
     let searchQuery = '';
+    let selectedUploadCat = 'Manœuvres';
     let compressedDataUrl = '';
 
     function showAlert(msg, isSuccess = false) {
@@ -866,8 +799,7 @@
         .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
         .trim() || 'JS';
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-      return clean.slice(0, 2).toUpperCase();
+      return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : clean.slice(0, 2).toUpperCase();
     }
 
     function formatAdminPseudo(userData, fallbackDisplay) {
@@ -893,6 +825,47 @@
       return isSafeHttpUrl(s);
     }
 
+    function renderCatSelect() {
+      catSelectLabel.textContent = selectedUploadCat;
+      catSelectMenu.innerHTML = '';
+      CATEGORIES.forEach((cat) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `custom-select-option ${selectedUploadCat === cat ? 'is-selected' : ''}`;
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+          selectedUploadCat = cat;
+          catSelectWrap.classList.remove('open');
+          catSelectBtn.setAttribute('aria-expanded', 'false');
+          renderCatSelect();
+        });
+        catSelectMenu.appendChild(btn);
+      });
+    }
+
+    catSelectBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const willOpen = !catSelectWrap.classList.contains('open');
+      catSelectWrap.classList.toggle('open', willOpen);
+      catSelectBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!catSelectWrap.contains(e.target)) {
+        catSelectWrap.classList.remove('open');
+        catSelectBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    renderCatSelect();
+
+    toggleUploadBtn.addEventListener('click', () => {
+      uploadPanel.classList.toggle('open');
+    });
+    closeUploadBtn.addEventListener('click', () => {
+      uploadPanel.classList.remove('open');
+    });
+
     function openLightbox(item) {
       if (!isSafeImageSrc(item.imageUrl)) return;
       lbImg.src = item.imageUrl;
@@ -913,46 +886,13 @@
       if (e.target === lightbox) closeLightbox();
     });
 
-    function triggerStageAnim(el, cls) {
-      if (!el) return;
-      el.classList.remove('anim-forward', 'anim-backward');
-      void el.offsetWidth;
-      el.classList.add(cls);
-    }
-
-    function goToStep(stepNum, direction = 'forward') {
-      const animCls = direction === 'backward' ? 'anim-backward' : 'anim-forward';
-      hideAlert();
-      triggerStageAnim(titleStage, animCls);
-
-      if (stepNum === 1) {
-        dot1.classList.add('active');
-        dot2.classList.remove('active');
-        step2Form.style.display = 'none';
-        step1Form.style.display = 'block';
-        triggerStageAnim(step1Form, animCls);
-        stepHeading.textContent = 'Choisis ton image';
-        stepSub.textContent = 'Étape 1/2 — Dépose une photo ou colle un lien image, puis continue.';
-      } else {
-        dot1.classList.remove('active');
-        dot2.classList.add('active');
-        step1Form.style.display = 'none';
-        step2Form.style.display = 'block';
-        triggerStageAnim(step2Form, animCls);
-        stepHeading.textContent = 'Détails de la photo';
-        stepSub.textContent = 'Étape 2/2 — Ajoute un titre, une catégorie et publie.';
-        pickedThumb.src = compressedDataUrl || urlInput.value.trim();
-        titleInput.focus();
-      }
-    }
-
     srcFileBtn.addEventListener('click', () => {
       srcFileBtn.classList.add('active');
       srcUrlBtn.classList.remove('active');
       srcFileGroup.style.display = 'block';
       srcUrlGroup.style.display = 'none';
       urlInput.value = '';
-      syncStep1Preview();
+      syncPreview();
     });
 
     srcUrlBtn.addEventListener('click', () => {
@@ -964,7 +904,7 @@
       compressedDataUrl = '';
       filePill.textContent = '';
       filePill.classList.remove('visible');
-      syncStep1Preview();
+      syncPreview();
     });
 
     dropzone.addEventListener('click', () => fileInput.click());
@@ -1021,17 +961,17 @@
       });
     }
 
-    function syncStep1Preview() {
+    function syncPreview() {
       const urlVal = urlInput.value.trim();
       if (compressedDataUrl) {
-        step1PreviewImg.src = compressedDataUrl;
-        step1PreviewBox.classList.add('active');
+        previewImg.src = compressedDataUrl;
+        previewBox.classList.add('active');
       } else if (isSafeHttpUrl(urlVal)) {
-        step1PreviewImg.src = urlVal;
-        step1PreviewBox.classList.add('active');
+        previewImg.src = urlVal;
+        previewBox.classList.add('active');
       } else {
-        step1PreviewImg.removeAttribute('src');
-        step1PreviewBox.classList.remove('active');
+        previewImg.removeAttribute('src');
+        previewBox.classList.remove('active');
       }
     }
 
@@ -1041,7 +981,7 @@
         compressedDataUrl = '';
         filePill.textContent = '';
         filePill.classList.remove('visible');
-        syncStep1Preview();
+        syncPreview();
         return;
       }
       try {
@@ -1052,13 +992,13 @@
           compressedDataUrl = '';
           filePill.textContent = '';
           filePill.classList.remove('visible');
-          syncStep1Preview();
+          syncPreview();
           return;
         }
         compressedDataUrl = dataUrl;
         filePill.textContent = file.name;
         filePill.classList.add('visible');
-        syncStep1Preview();
+        syncPreview();
       } catch (err) {
         showAlert(err.message || 'Impossible de lire cette image.');
       }
@@ -1069,37 +1009,17 @@
       await handleSelectedFile(file);
     });
 
-    urlInput.addEventListener('input', () => {
-      syncStep1Preview();
-    });
-
-    step1Form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      hideAlert();
-      const urlVal = urlInput.value.trim();
-      if (!compressedDataUrl && !isSafeHttpUrl(urlVal)) {
-        showAlert('Choisis une photo ou saisis un lien valide (https://...).');
-        return;
-      }
-      goToStep(2, 'forward');
-    });
-
-    backBtn.addEventListener('click', () => {
-      goToStep(1, 'backward');
-    });
+    urlInput.addEventListener('input', syncPreview);
 
     function updateStats() {
       totalPhotosEl.textContent = String(allItems.length);
       let sumLikes = 0;
-      allItems.forEach((it) => {
-        sumLikes += Number(it.likes || 0);
-      });
+      allItems.forEach((it) => { sumLikes += Number(it.likes || 0); });
       totalLikesEl.textContent = String(sumLikes);
     }
 
     function renderGallery() {
       updateStats();
-
       const qText = searchQuery.trim().toLowerCase();
       const filtered = allItems.filter((it) => {
         const catOk = activeCat === 'all' || String(it.category || 'Autre') === activeCat;
@@ -1110,7 +1030,7 @@
       });
 
       if (filtered.length === 0) {
-        gridEl.innerHTML = '<div class="gal-empty">Aucune photo ne correspond aux filtres sélectionnés.</div>';
+        gridEl.innerHTML = '<div class="gal-empty">Aucune photo ne correspond à ta recherche ou au filtre.</div>';
         return;
       }
 
@@ -1123,9 +1043,9 @@
         const card = document.createElement('article');
         card.className = 'gal-card';
 
-        const thumbWrap = document.createElement('div');
-        thumbWrap.className = 'gal-thumb-wrap';
-        thumbWrap.addEventListener('click', () => openLightbox(item));
+        const thumb = document.createElement('div');
+        thumb.className = 'gal-thumb';
+        thumb.addEventListener('click', () => openLightbox(item));
 
         const img = document.createElement('img');
         img.src = item.imageUrl;
@@ -1133,34 +1053,33 @@
         img.loading = 'lazy';
 
         const chip = document.createElement('span');
-        chip.className = 'gal-cat-chip';
+        chip.className = 'gal-chip';
         chip.textContent = item.category || 'Autre';
 
-        thumbWrap.appendChild(img);
-        thumbWrap.appendChild(chip);
+        thumb.append(img, chip);
 
         const body = document.createElement('div');
-        body.className = 'gal-card-body';
+        body.className = 'gal-body';
 
         const h3 = document.createElement('h3');
-        h3.className = 'gal-card-title';
+        h3.className = 'gal-title';
         h3.textContent = item.title || 'Sans titre';
         body.appendChild(h3);
 
         if (item.description) {
           const p = document.createElement('p');
-          p.className = 'gal-card-desc';
+          p.className = 'gal-desc';
           p.textContent = item.description;
           body.appendChild(p);
         }
 
         const authorDiv = document.createElement('div');
-        authorDiv.className = 'gal-card-author';
+        authorDiv.className = 'gal-author';
         authorDiv.textContent = `Par ${item.authorPseudo || 'Membre'}`;
         body.appendChild(authorDiv);
 
-        const actions = document.createElement('div');
-        actions.className = 'gal-card-actions';
+        const foot = document.createElement('div');
+        foot.className = 'gal-foot';
 
         const likeBtn = document.createElement('button');
         likeBtn.type = 'button';
@@ -1172,14 +1091,12 @@
             return;
           }
           try {
-            await updateDoc(doc(db, "galerie", item.id), {
-              likes: increment(1)
-            });
+            await updateDoc(doc(db, "galerie", item.id), { likes: increment(1) });
           } catch (err) {
             showAlert('Action impossible : ' + (err.code || err.message));
           }
         });
-        actions.appendChild(likeBtn);
+        foot.appendChild(likeBtn);
 
         const canDelete = currentUser && (isUserAdmin || item.authorUid === currentUser.uid);
         if (canDelete) {
@@ -1194,12 +1111,10 @@
               showAlert('Suppression impossible : ' + (err.code || err.message));
             }
           });
-          actions.appendChild(delBtn);
+          foot.appendChild(delBtn);
         }
 
-        card.appendChild(thumbWrap);
-        card.appendChild(body);
-        card.appendChild(actions);
+        card.append(thumb, body, foot);
         gridEl.appendChild(card);
       });
     }
@@ -1233,13 +1148,13 @@
         }
         showAlert('Toutes les photos ont été supprimées.', true);
       } catch (err) {
-        showAlert('Suppression partielle ou impossible : ' + (err.code || err.message));
+        showAlert('Suppression impossible : ' + (err.code || err.message));
       } finally {
         purgeAllBtn.disabled = false;
       }
     });
 
-    step2Form.addEventListener('submit', async (e) => {
+    publishForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       hideAlert();
 
@@ -1250,14 +1165,11 @@
 
       const finalImage = compressedDataUrl || urlInput.value.trim();
       if (!isSafeImageSrc(finalImage)) {
-        showAlert('Image invalide. Reviens à l’étape 1.');
+        showAlert('Choisis une photo ou saisis un lien image valide (https://...).');
         return;
       }
 
       const titleVal = titleInput.value.trim();
-      const catVal = categorySelect.value || 'Autre';
-      const descVal = descInput.value.trim();
-
       if (!titleVal) {
         showAlert('Ajoute un titre à ta photo.');
         return;
@@ -1272,8 +1184,8 @@
           authorPseudo: currentProfile.pseudo,
           authorRole: currentProfile.role,
           title: titleVal,
-          category: catVal,
-          description: descVal,
+          category: selectedUploadCat || 'Autre',
+          description: descInput.value.trim(),
           imageUrl: finalImage,
           likes: 0,
           createdAt: serverTimestamp()
@@ -1286,14 +1198,14 @@
         compressedDataUrl = '';
         filePill.textContent = '';
         filePill.classList.remove('visible');
-        syncStep1Preview();
-        goToStep(1, 'backward');
+        syncPreview();
+        uploadPanel.classList.remove('open');
         showAlert('Photo publiée dans la galerie.', true);
       } catch (err) {
         showAlert('Publication impossible : ' + (err.code || err.message));
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Publier la photo';
+        submitBtn.textContent = 'Publier dans la galerie';
       }
     });
 
@@ -1327,13 +1239,10 @@
     function startGalleryListener() {
       stopGalleryListener();
       const q = query(collection(db, "galerie"), orderBy("createdAt", "desc"), limit(120));
-
       galleryUnsubscribe = onSnapshot(q, (snap) => {
         hideAlert();
         const list = [];
-        snap.forEach((d) => {
-          list.push({ id: d.id, ...(d.data() || {}) });
-        });
+        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
         allItems = list;
         renderGallery();
       }, (err) => {
@@ -1360,7 +1269,8 @@
       currentUser = user || null;
 
       if (!user) {
-        composerBox.style.display = 'none';
+        toggleUploadBtn.style.display = 'none';
+        uploadPanel.classList.remove('open');
         purgeAllBtn.style.display = 'none';
         profileBox.style.display = 'none';
         drawerLogoutBtn.style.display = 'none';
@@ -1371,7 +1281,7 @@
         return;
       }
 
-      composerBox.style.display = 'block';
+      toggleUploadBtn.style.display = 'inline-flex';
       drawerAuthBtn.style.display = 'none';
       drawerLogoutBtn.style.display = 'inline-flex';
 
@@ -1388,9 +1298,7 @@
         const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
         const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
         const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
-        const pseudo = isAdmin
-          ? formatAdminPseudo(data, fallbackName)
-          : (data.pseudo || fallbackName);
+        const pseudo = isAdmin ? formatAdminPseudo(data, fallbackName) : (data.pseudo || fallbackName);
 
         currentProfile = { pseudo, role: roleLabel };
 
@@ -1403,9 +1311,7 @@
         drawerMailLink.style.display = isAdmin ? 'block' : 'none';
         purgeAllBtn.style.display = isAdmin ? 'inline-flex' : 'none';
 
-        if (!galleryUnsubscribe) {
-          startGalleryListener();
-        }
+        if (!galleryUnsubscribe) startGalleryListener();
       }, () => {
         currentProfile = { pseudo: fallbackName, role: 'membre' };
         purgeAllBtn.style.display = 'none';
@@ -1417,9 +1323,7 @@
         drawerAdminLink.style.display = 'none';
         drawerMailLink.style.display = 'none';
 
-        if (!galleryUnsubscribe) {
-          startGalleryListener();
-        }
+        if (!galleryUnsubscribe) startGalleryListener();
       });
     });
   </script>

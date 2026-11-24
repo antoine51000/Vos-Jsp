@@ -69,25 +69,37 @@
       margin-top: 0.1rem;
     }
 
+    /* BARRE FILTRES + RECHERCHE STABLE */
     .gal-toolbar {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 22px;
-      padding: 0.8rem 1rem;
+      padding: 0.85rem 1rem;
       box-shadow: var(--shadow);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
+      gap: 0.9rem;
+    }
+
+    @media (max-width: 920px) {
+      .gal-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
     }
 
     .gal-pills {
       display: flex;
-      gap: 0.4rem;
-      flex-wrap: wrap;
+      gap: 0.45rem;
       align-items: center;
-      flex: 1 1 auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+
+    .gal-pills::-webkit-scrollbar {
+      display: none;
     }
 
     .gal-pill {
@@ -97,11 +109,12 @@
       color: var(--text);
       font-weight: 700;
       font-size: 0.8rem;
-      padding: 0.42rem 0.8rem;
+      padding: 0.46rem 0.85rem;
       border-radius: 999px;
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.14s ease;
+      flex-shrink: 0;
+      transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
     }
 
     .gal-pill:hover {
@@ -118,13 +131,13 @@
     .gal-search {
       width: 240px !important;
       max-width: 100%;
-      flex: 0 0 auto;
+      flex-shrink: 0;
       border-radius: 14px !important;
-      padding: 0.54rem 0.85rem !important;
+      padding: 0.54rem 0.88rem !important;
       font-size: 0.84rem !important;
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 920px) {
       .gal-search {
         width: 100% !important;
       }
@@ -472,7 +485,6 @@
       color: #fff;
     }
 
-    /* MODALES CUSTOM (LIGHTBOX + CONFIRMATION) */
     .gal-modal-backdrop {
       position: fixed;
       inset: 0;
@@ -629,7 +641,6 @@
 
       <div id="gal-alert" class="alert"></div>
 
-      <!-- FORMULAIRE PLIANT -->
       <section class="gal-upload-panel" id="gal-upload-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
           <div>
@@ -692,7 +703,6 @@
         </form>
       </section>
 
-      <!-- FILTRES & RECHERCHE -->
       <div class="gal-toolbar">
         <div class="gal-pills" role="group" aria-label="Filtrer par catégorie">
           <button type="button" class="gal-pill active" data-cat="all">Tout</button>
@@ -705,14 +715,12 @@
         <input type="search" id="gal-search" class="gal-search" placeholder="Rechercher une photo...">
       </div>
 
-      <!-- GRILLE -->
       <section class="gal-grid" id="gal-grid">
         <div class="gal-empty">Chargement de la galerie...</div>
       </section>
     </div>
   </main>
 
-  <!-- MODALE CONFIRMATION SUPPRESSION TOTALE -->
   <div class="gal-modal-backdrop" id="gal-confirm-modal" aria-hidden="true">
     <div class="gal-confirm-box">
       <h3>Tout supprimer ?</h3>
@@ -724,7 +732,6 @@
     </div>
   </div>
 
-  <!-- MODALE LIGHTBOX -->
   <div class="gal-modal-backdrop" id="gal-lightbox" aria-hidden="true">
     <div class="gal-lightbox-inner">
       <img id="lb-img" alt="">

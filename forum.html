@@ -5,485 +5,128 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vos JSP — Forum</title>
   <link rel="stylesheet" href="css/style.css">
-  <script type="module" src="js/maintenance-guard.js"></script>
   <style>
-    .forum-page {
-      max-width: 1040px;
-      margin: 2rem auto 3.5rem;
+    .locked-gate {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      margin-top: 1.25rem;
+    }
+
+    .locked-preview {
+      filter: blur(7px);
+      opacity: 0.45;
+      pointer-events: none;
+      user-select: none;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1.4rem;
+      gap: 0.85rem;
     }
 
-    .forum-masthead {
-      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+    .fake-msg {
+      background: var(--surface-2, #f1f5f9);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 1.75rem 1.9rem;
-      box-shadow: var(--shadow);
+      border-radius: 14px;
+      padding: 0.9rem 1rem;
+    }
+
+    .locked-overlay {
+      position: absolute;
+      inset: 0;
       display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 1.25rem;
-      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      background: rgba(15, 23, 42, 0.58);
+      backdrop-filter: blur(2px);
+      color: #ffffff;
     }
 
-    .forum-masthead-title {
-      margin: 0.55rem 0 0.3rem;
-      font-size: 1.9rem;
-      letter-spacing: -0.02em;
-      line-height: 1.12;
-    }
-
-    .forum-masthead-sub {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.94rem;
-      max-width: 600px;
-      line-height: 1.5;
-    }
-
-    .forum-stats-strip {
+    .forum-feed {
       display: flex;
-      gap: 0.65rem;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-top: 1.25rem;
     }
 
-    .forum-stat-pill {
+    .forum-msg {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 0.65rem 0.95rem;
-      min-width: 108px;
-    }
-
-    .forum-stat-pill small {
-      display: block;
-      font-size: 0.72rem;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .forum-stat-pill strong {
-      display: block;
-      font-size: 1.05rem;
-      margin-top: 0.1rem;
-    }
-
-    .forum-layout {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 1.35rem;
-      align-items: start;
-    }
-
-    @media (max-width: 860px) {
-      .forum-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .forum-sidebar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 1rem;
+      padding: 1rem 1.15rem;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
-      position: sticky;
-      top: 1.2rem;
+      gap: 0.4rem;
     }
 
-    @media (max-width: 860px) {
-      .forum-sidebar {
-        position: static;
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-    }
-
-    .forum-sidebar-heading {
-      font-size: 0.74rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted);
-      padding: 0.25rem 0.65rem 0.4rem;
-      width: 100%;
-    }
-
-    .topic-tab {
-      appearance: none;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--text);
-      padding: 0.62rem 0.78rem;
-      border-radius: 13px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      text-align: left;
-      cursor: pointer;
+    .forum-msg-head {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 0.5rem;
-      transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
-    }
-
-    .topic-tab:hover {
-      background: var(--bg);
-    }
-
-    .topic-tab.active {
-      background: rgba(225, 29, 42, 0.1);
-      border-color: rgba(225, 29, 42, 0.25);
-      color: var(--primary);
-    }
-
-    .topic-tab-badge {
-      font-size: 0.72rem;
-      padding: 0.12rem 0.5rem;
-      border-radius: 999px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-
-    .forum-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.15rem;
-    }
-
-    .composer-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 1.45rem 1.6rem;
-      box-shadow: var(--shadow);
-    }
-
-    .composer-row-top {
-      display: grid;
-      grid-template-columns: 1fr 220px;
-      gap: 0.85rem;
-      margin-bottom: 0.85rem;
-    }
-
-    @media (max-width: 640px) {
-      .composer-row-top {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .composer-card textarea {
-      width: 100%;
-      min-height: 105px;
-      resize: vertical;
-      border-radius: 14px;
-      padding: 0.85rem 1rem;
-      font-family: inherit;
-    }
-
-    .composer-footer {
-      display: flex;
       justify-content: space-between;
-      align-items: center;
       gap: 0.75rem;
-      margin-top: 0.85rem;
-      flex-wrap: wrap;
     }
 
-    .thread-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.95rem;
-    }
-
-    .thread-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 1.35rem 1.55rem;
-      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.04);
-      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
-    }
-
-    .thread-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(225, 29, 42, 0.32);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
-    }
-
-    .thread-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.85rem;
-      margin-bottom: 0.7rem;
-      flex-wrap: wrap;
-    }
-
-    .thread-author-box {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-    }
-
-    .thread-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 13px;
-      background: rgba(225, 29, 42, 0.14);
-      color: var(--primary);
-      font-weight: 800;
-      font-size: 0.86rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .thread-author-name {
-      font-weight: 800;
+    .forum-text {
+      white-space: pre-line;
+      line-height: 1.5;
+      color: var(--text);
       font-size: 0.95rem;
-    }
-
-    .thread-meta-line {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      margin-top: 0.15rem;
-      flex-wrap: wrap;
-    }
-
-    .thread-role-tag {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 0.12rem 0.5rem;
-      border-radius: 999px;
-      background: var(--bg);
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    .thread-role-tag.admin {
-      background: rgba(225, 29, 42, 0.11);
-      color: var(--primary);
-      border-color: rgba(225, 29, 42, 0.26);
-    }
-
-    .thread-cat-tag {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 0.12rem 0.55rem;
-      border-radius: 999px;
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .thread-right-meta {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .thread-title {
-      margin: 0 0 0.4rem;
-      font-size: 1.08rem;
-      font-weight: 800;
-      letter-spacing: -0.01em;
-    }
-
-    .thread-content {
-      margin: 0;
-      font-size: 0.94rem;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .thread-foot {
-      margin-top: 0.95rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .upvote-btn {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      font-weight: 700;
-      font-size: 0.8rem;
-      padding: 0.38rem 0.78rem;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease;
-    }
-
-    .upvote-btn:hover {
-      border-color: var(--primary);
-      background: rgba(225, 29, 42, 0.06);
-    }
-
-    .forum-empty {
-      text-align: center;
-      padding: 2.3rem 1.2rem;
-      background: var(--surface);
-      border: 1px dashed var(--border);
-      border-radius: 22px;
-      color: var(--muted);
-      font-size: 0.92rem;
     }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-left">
-      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <a href="index.html" class="brand">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
-    </div>
-    <a href="index.html" class="btn btn-secondary btn-small">Accueil</a>
-  </div>
+  <main>
+    <section class="hero" style="padding: 2.2rem 2rem; margin-bottom: 1.5rem;">
+      <span class="badge">Forum • Membres connectés</span>
+      <h1>Forum Vos JSP</h1>
+      <p class="subtitle" style="margin-bottom: 0;">Espace de discussion réservé aux membres connectés.</p>
+    </section>
 
-  <div class="nav-backdrop" id="nav-backdrop"></div>
+    <div id="forum-alert" class="alert"></div>
 
-  <aside class="drawer" id="drawer">
-    <div class="drawer-header">
-      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
-      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
-    </div>
+    <div id="forum-locked" class="locked-gate" style="display: none;">
+      <div class="locked-preview" aria-hidden="true">
+        <div class="fake-msg">
+          <strong>Membre</strong>
+          <p style="font-size: 0.88rem; color: var(--muted);">Message réservé aux membres connectés...</p>
+        </div>
+        <div class="fake-msg">
+          <strong>Membre</strong>
+          <p style="font-size: 0.88rem; color: var(--muted);">Connecte-toi pour voir les messages et écrire...</p>
+        </div>
+      </div>
 
-    <div class="drawer-label">Navigation</div>
-    <nav>
-      <a href="index.html">Accueil</a>
-      <a href="actus.html">Actualités</a>
-      <a href="ressources.html">Ressources</a>
-      <a href="galerie.html">Galerie</a>
-      <a href="proposer.html">Proposer</a>
-      <a href="a-propos.html">À propos</a>
-      <a href="contester.html">Contester</a>
-      <a href="forum.html" class="active">Forum</a>
-      <a href="recrutement.html">Recrutement</a>
-      <a href="profil.html">Profil</a>
-      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
-      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
-    </nav>
-
-    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
-      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
-      <div class="profile-meta">
-        <strong class="profile-name" id="drawer-profile-name"></strong>
-        <span class="profile-tag" id="drawer-profile-role">membre</span>
+      <div class="locked-overlay">
+        <span class="badge" style="margin-bottom: 0.65rem;">Accès réservé</span>
+        <h2 style="font-size: 1.4rem; margin-bottom: 0.45rem;">Connexion requise</h2>
+        <p id="locked-desc" style="max-width: 440px; font-size: 0.94rem; opacity: 0.92; margin-bottom: 1.15rem;">Tu vois la page du forum, mais l'accès est réservé aux membres connectés.</p>
+        <div id="locked-actions" style="display: flex; gap: 0.7rem; flex-wrap: wrap; justify-content: center;">
+          <a href="login.html" class="btn btn-small">Se connecter</a>
+          <a href="index.html" class="btn btn-secondary btn-small">Retour à l'accueil</a>
+        </div>
       </div>
     </div>
 
-    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
-    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
-  </aside>
-
-  <main>
-    <div class="forum-page">
-      <header class="forum-masthead">
-        <div>
-          <span class="badge">Espace Membres • Forum Vos JSP</span>
-          <h1 class="forum-masthead-title">Forum communautaire</h1>
-          <p class="forum-masthead-sub">Retours de manœuvres, entraide sur les modules, questions d'orientation et discussions entre Jeunes Sapeurs-Pompiers.</p>
-        </div>
-        <div class="forum-stats-strip">
-          <div class="forum-stat-pill">
-            <small>Sujets publiés</small>
-            <strong id="stat-total-posts">0</strong>
+    <div id="forum-unlocked" style="display: none;">
+      <div class="form-box" style="max-width: 100%; margin: 0;">
+        <form id="forum-form">
+          <div class="form-group">
+            <label for="forum-text">Message</label>
+            <textarea id="forum-text" rows="3" maxlength="1000" placeholder="Écris ton message..." required></textarea>
           </div>
-          <div class="forum-stat-pill">
-            <small>Soutiens cumulés</small>
-            <strong id="stat-total-likes">0</strong>
-          </div>
-        </div>
-      </header>
+          <button type="submit" id="forum-submit-btn" class="btn" style="width: 100%;">Envoyer</button>
+        </form>
+      </div>
 
-      <div id="forum-alert" class="alert"></div>
-
-      <div class="forum-layout">
-        <aside class="forum-sidebar" aria-label="Rubriques du forum">
-          <div class="forum-sidebar-heading">Rubriques</div>
-          <button type="button" class="topic-tab active" data-topic="all">
-            <span>Toutes les discussions</span>
-            <span class="topic-tab-badge" id="badge-all">0</span>
-          </button>
-          <button type="button" class="topic-tab" data-topic="Manœuvres &amp; JSP">
-            <span>Manœuvres &amp; JSP</span>
-            <span class="topic-tab-badge" id="badge-manoeuvres">0</span>
-          </button>
-          <button type="button" class="topic-tab" data-topic="Entraide &amp; Cours">
-            <span>Entraide &amp; Cours</span>
-            <span class="topic-tab-badge" id="badge-entraide">0</span>
-          </button>
-          <button type="button" class="topic-tab" data-topic="Orientation">
-            <span>Orientation</span>
-            <span class="topic-tab-badge" id="badge-orientation">0</span>
-          </button>
-          <button type="button" class="topic-tab" data-topic="Général">
-            <span>Général</span>
-            <span class="topic-tab-badge" id="badge-general">0</span>
-          </button>
-        </aside>
-
-        <div class="forum-column">
-          <section class="composer-card" id="forum-composer-box">
-            <form id="forum-form">
-              <div class="composer-row-top">
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label for="forum-title">Titre du sujet</label>
-                  <input type="text" id="forum-title" placeholder="Ex. : Retour sur la manœuvre du samedi..." maxlength="110" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label for="forum-category">Rubrique</label>
-                  <select id="forum-category">
-                    <option value="Manœuvres & JSP">Manœuvres &amp; JSP</option>
-                    <option value="Entraide & Cours">Entraide &amp; Cours</option>
-                    <option value="Orientation">Orientation</option>
-                    <option value="Général">Général</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group" style="margin-bottom: 0;">
-                <label for="forum-message">Message</label>
-                <textarea id="forum-message" placeholder="Développe ton sujet, pose ta question ou partage ton expérience..." maxlength="2000" required></textarea>
-              </div>
-
-              <div class="composer-footer">
-                <span style="font-size: 0.8rem; color: var(--muted);" id="forum-char-count">0 / 2000</span>
-                <button type="submit" id="forum-submit-btn" class="btn">Publier le sujet</button>
-              </div>
-            </form>
-          </section>
-
-          <section class="thread-list" id="forum-feed">
-            <div class="forum-empty">Chargement des discussions...</div>
-          </section>
-        </div>
+      <div id="forum-feed" class="forum-feed">
+        <p>Chargement...</p>
       </div>
     </div>
   </main>
@@ -501,445 +144,212 @@
     </div>
   </footer>
 
-  <script>
-    const drawer = document.getElementById('drawer');
-    const backdrop = document.getElementById('nav-backdrop');
-    document.getElementById('menu-open').addEventListener('click', () => {
-      drawer.classList.add('open');
-      backdrop.classList.add('open');
-    });
-    function closeDrawer() {
-      drawer.classList.remove('open');
-      backdrop.classList.remove('open');
-    }
-    document.getElementById('menu-close').addEventListener('click', closeDrawer);
-    backdrop.addEventListener('click', closeDrawer);
-    drawer.querySelectorAll('nav a').forEach((link) => {
-      link.addEventListener('click', closeDrawer);
-    });
-  </script>
-
+  <script type="module" src="js/nav.js" data-active="forum.html" data-logout-redirect="forum.html"></script>
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
-    import {
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
       collection,
       query,
       orderBy,
-      limit,
+      getDocs,
       addDoc,
-      updateDoc,
       deleteDoc,
       doc,
       getDoc,
-      onSnapshot,
-      serverTimestamp,
-      increment
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    const profileBox = document.getElementById('drawer-profile-box');
-    const profileAvatar = document.getElementById('drawer-profile-avatar');
-    const profileName = document.getElementById('drawer-profile-name');
-    const profileRole = document.getElementById('drawer-profile-role');
-    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
-    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
-    const drawerAdminLink = document.getElementById('drawer-admin-link');
-    const drawerMailLink = document.getElementById('drawer-mail-link');
+    const rightSlot = document.getElementById('topbar-right-slot');
+    if (rightSlot) rightSlot.innerHTML = '<a href="profil.html" class="btn btn-secondary btn-small">Mon profil</a>';
 
-    const statTotalPosts = document.getElementById('stat-total-posts');
-    const statTotalLikes = document.getElementById('stat-total-likes');
-    const badgeAll = document.getElementById('badge-all');
-    const badgeManoeuvres = document.getElementById('badge-manoeuvres');
-    const badgeEntraide = document.getElementById('badge-entraide');
-    const badgeOrientation = document.getElementById('badge-orientation');
-    const badgeGeneral = document.getElementById('badge-general');
-    const topicTabs = Array.from(document.querySelectorAll('.topic-tab'));
-
-    const alertEl = document.getElementById('forum-alert');
-    const composerBox = document.getElementById('forum-composer-box');
-    const formEl = document.getElementById('forum-form');
-    const titleInput = document.getElementById('forum-title');
-    const categorySelect = document.getElementById('forum-category');
-    const messageInput = document.getElementById('forum-message');
-    const charCountEl = document.getElementById('forum-char-count');
-    const submitBtn = document.getElementById('forum-submit-btn');
-    const feedEl = document.getElementById('forum-feed');
+    const alertBox = document.getElementById('forum-alert');
+    const lockedEl = document.getElementById('forum-locked');
+    const lockedDesc = document.getElementById('locked-desc');
+    const lockedActions = document.getElementById('locked-actions');
+    const unlockedEl = document.getElementById('forum-unlocked');
+    const forumForm = document.getElementById('forum-form');
+    const forumSubmitBtn = document.getElementById('forum-submit-btn');
+    const forumFeedEl = document.getElementById('forum-feed');
 
     let currentUser = null;
-    let currentProfile = { pseudo: 'Membre', role: 'membre' };
-    let userUnsubscribe = null;
-    let forumUnsubscribe = null;
-    let allPosts = [];
-    let activeTopic = 'all';
+    let currentPseudo = 'Membre';
+    let isAdmin = false;
+    let isBanned = false;
 
     function showAlert(msg, isSuccess = false) {
-      alertEl.style.display = 'block';
-      alertEl.className = isSuccess ? 'alert success' : 'alert';
-      alertEl.textContent = msg;
+      alertBox.style.display = 'block';
+      alertBox.className = isSuccess ? 'alert success' : 'alert';
+      alertBox.textContent = msg;
     }
 
-    function hideAlert() {
-      alertEl.style.display = 'none';
-      alertEl.textContent = '';
-    }
+    function showLocked(desc, showAppeal = false) {
+      unlockedEl.style.display = 'none';
+      lockedEl.style.display = 'block';
+      lockedDesc.textContent = desc;
+      lockedActions.innerHTML = '';
 
-    function getInitials(label) {
-      const clean = String(label || 'JS')
-        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
-        .trim() || 'JS';
-      const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-      return clean.slice(0, 2).toUpperCase();
-    }
-
-    function formatAdminPseudo(userData, fallbackDisplay) {
-      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
-      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
-      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
-      return `[ ADMIN ] ${firstName}`;
-    }
-
-    function formatDate(ts) {
-      if (!ts) return 'À l’instant';
-      const d = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts);
-      if (Number.isNaN(d.getTime())) return '';
-      return d.toLocaleString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-
-    function updateBadgesAndStats() {
-      let cMan = 0;
-      let cEnt = 0;
-      let cOri = 0;
-      let cGen = 0;
-      let totalLikes = 0;
-
-      allPosts.forEach((p) => {
-        totalLikes += Number(p.likes || 0);
-        const cat = String(p.category || 'Général');
-        if (cat.includes('Manœuvre')) cMan += 1;
-        else if (cat.includes('Entraide')) cEnt += 1;
-        else if (cat.includes('Orientation')) cOri += 1;
-        else cGen += 1;
-      });
-
-      statTotalPosts.textContent = String(allPosts.length);
-      statTotalLikes.textContent = String(totalLikes);
-      badgeAll.textContent = String(allPosts.length);
-      badgeManoeuvres.textContent = String(cMan);
-      badgeEntraide.textContent = String(cEnt);
-      badgeOrientation.textContent = String(cOri);
-      badgeGeneral.textContent = String(cGen);
-    }
-
-    function renderFeed() {
-      updateBadgesAndStats();
-
-      const filtered = allPosts.filter((p) => {
-        if (activeTopic === 'all') return true;
-        return String(p.category || 'Général') === activeTopic;
-      });
-
-      if (filtered.length === 0) {
-        feedEl.innerHTML = '<div class="forum-empty">Aucun sujet dans cette rubrique pour le moment.</div>';
-        return;
+      if (showAppeal) {
+        const appealBtn = document.createElement('a');
+        appealBtn.href = 'contester.html';
+        appealBtn.className = 'btn btn-small';
+        appealBtn.textContent = 'Contester le bannissement';
+        lockedActions.appendChild(appealBtn);
+      } else {
+        const loginA = document.createElement('a');
+        loginA.href = 'login.html';
+        loginA.className = 'btn btn-small';
+        loginA.textContent = 'Se connecter';
+        lockedActions.appendChild(loginA);
       }
 
-      const isUserAdmin = currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
-      feedEl.innerHTML = '';
-
-      filtered.forEach((post) => {
-        const card = document.createElement('article');
-        card.className = 'thread-card';
-
-        const head = document.createElement('div');
-        head.className = 'thread-head';
-
-        const authorBox = document.createElement('div');
-        authorBox.className = 'thread-author-box';
-
-        const av = document.createElement('div');
-        av.className = 'thread-avatar';
-        av.textContent = getInitials(post.authorPseudo || 'Membre');
-
-        const infoCol = document.createElement('div');
-
-        const authorName = document.createElement('div');
-        authorName.className = 'thread-author-name';
-        authorName.textContent = post.authorPseudo || 'Membre';
-
-        const metaLine = document.createElement('div');
-        metaLine.className = 'thread-meta-line';
-
-        const roleSpan = document.createElement('span');
-        const pRole = post.authorRole || 'membre';
-        roleSpan.className = 'thread-role-tag' + ((pRole === 'admin' || pRole === 'superadmin') ? ' admin' : '');
-        roleSpan.textContent = pRole;
-
-        const catSpan = document.createElement('span');
-        catSpan.className = 'thread-cat-tag';
-        catSpan.textContent = post.category || 'Général';
-
-        metaLine.appendChild(roleSpan);
-        metaLine.appendChild(catSpan);
-
-        infoCol.appendChild(authorName);
-        infoCol.appendChild(metaLine);
-
-        authorBox.appendChild(av);
-        authorBox.appendChild(infoCol);
-
-        const rightMeta = document.createElement('div');
-        rightMeta.className = 'thread-right-meta';
-
-        const dtSpan = document.createElement('span');
-        dtSpan.textContent = formatDate(post.createdAt);
-        rightMeta.appendChild(dtSpan);
-
-        const canDelete = currentUser && (isUserAdmin || post.authorUid === currentUser.uid);
-        if (canDelete) {
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.className = 'btn btn-secondary btn-small';
-          delBtn.textContent = 'Supprimer';
-          delBtn.addEventListener('click', async () => {
-            try {
-              await deleteDoc(doc(db, "forum", post.id));
-            } catch (err) {
-              showAlert('Suppression impossible : ' + (err.code || err.message));
-            }
-          });
-          rightMeta.appendChild(delBtn);
-        }
-
-        head.appendChild(authorBox);
-        head.appendChild(rightMeta);
-        card.appendChild(head);
-
-        if (post.title) {
-          const h2 = document.createElement('h2');
-          h2.className = 'thread-title';
-          h2.textContent = post.title;
-          card.appendChild(h2);
-        }
-
-        const bodyP = document.createElement('p');
-        bodyP.className = 'thread-content';
-        bodyP.textContent = post.message || post.content || '';
-        card.appendChild(bodyP);
-
-        const foot = document.createElement('div');
-        foot.className = 'thread-foot';
-
-        const likeBtn = document.createElement('button');
-        likeBtn.type = 'button';
-        likeBtn.className = 'upvote-btn';
-        const likesVal = Number(post.likes || 0);
-        likeBtn.textContent = `Soutenir (${likesVal})`;
-        likeBtn.addEventListener('click', async () => {
-          if (!currentUser) {
-            showAlert('Connecte-toi pour soutenir un sujet.');
-            return;
-          }
-          try {
-            await updateDoc(doc(db, "forum", post.id), {
-              likes: increment(1)
-            });
-          } catch (err) {
-            showAlert('Action impossible : ' + (err.code || err.message));
-          }
-        });
-
-        foot.appendChild(likeBtn);
-        card.appendChild(foot);
-        feedEl.appendChild(card);
-      });
+      const homeA = document.createElement('a');
+      homeA.href = 'index.html';
+      homeA.className = 'btn btn-secondary btn-small';
+      homeA.textContent = 'Retour à l\'accueil';
+      lockedActions.appendChild(homeA);
     }
 
-    topicTabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        activeTopic = tab.dataset.topic || 'all';
-        topicTabs.forEach((t) => t.classList.toggle('active', t === tab));
-        renderFeed();
-      });
-    });
-
-    function sanitizeIpDocId(ip) {
-      return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
-    }
-
-    async function redirectIfIpBanned() {
-      try {
-        const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
-        if (!res.ok) return false;
-        const data = await res.json();
-        const ip = data && data.ip ? String(data.ip).trim() : '';
-        if (!ip) return false;
-        const snap = await getDoc(doc(db, "banned_ips", sanitizeIpDocId(ip)));
-        if (snap.exists()) {
-          window.location.replace('ban.html');
-          return true;
-        }
-      } catch (_) {}
-      return false;
-    }
-
-    function stopForumListener() {
-      if (forumUnsubscribe) {
-        forumUnsubscribe();
-        forumUnsubscribe = null;
-      }
-    }
-
-    function startForumListener() {
-      stopForumListener();
-      const q = query(collection(db, "forum"), orderBy("createdAt", "desc"), limit(100));
-
-      forumUnsubscribe = onSnapshot(q, (snap) => {
-        hideAlert();
-        const list = [];
-        snap.forEach((d) => {
-          list.push({ id: d.id, ...(d.data() || {}) });
-        });
-        allPosts = list;
-        renderFeed();
-      }, (err) => {
-        feedEl.innerHTML = `<div class="forum-empty">Impossible de charger les discussions (${err.code || 'erreur'}).</div>`;
-        showAlert('Erreur Firestore : ' + (err.code || err.message));
-      });
-    }
-
-    messageInput.addEventListener('input', () => {
-      charCountEl.textContent = `${messageInput.value.length} / 2000`;
-    });
-
-    formEl.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      hideAlert();
-
-      if (!currentUser) {
-        showAlert('Connecte-toi pour publier un sujet.');
-        return;
-      }
-
-      const titleVal = titleInput.value.trim();
-      const catVal = categorySelect.value || 'Général';
-      const msgVal = messageInput.value.trim();
-
-      if (!titleVal || !msgVal) {
-        showAlert('Renseigne un titre et un message avant de publier.');
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Publication...';
+    async function loadMessages() {
+      forumFeedEl.textContent = '';
+      const loadingP = document.createElement('p');
+      loadingP.textContent = 'Chargement...';
+      forumFeedEl.appendChild(loadingP);
 
       try {
-        await addDoc(collection(db, "forum"), {
-          authorUid: currentUser.uid,
-          authorPseudo: currentProfile.pseudo,
-          authorRole: currentProfile.role,
-          title: titleVal,
-          category: catVal,
-          message: msgVal,
-          likes: 0,
-          createdAt: serverTimestamp()
-        });
+        const q = query(collection(db, "forum_messages"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        forumFeedEl.textContent = '';
 
-        titleInput.value = '';
-        messageInput.value = '';
-        charCountEl.textContent = '0 / 2000';
-      } catch (err) {
-        showAlert('Publication impossible : ' + (err.code || err.message));
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Publier le sujet';
-      }
-    });
-
-    drawerLogoutBtn.addEventListener('click', async () => {
-      stopForumListener();
-      await signOut(auth);
-      window.location.replace('login.html');
-    });
-
-    onAuthStateChanged(auth, async (user) => {
-      if (userUnsubscribe) {
-        userUnsubscribe();
-        userUnsubscribe = null;
-      }
-      stopForumListener();
-
-      if (await redirectIfIpBanned()) return;
-
-      currentUser = user || null;
-
-      if (!user) {
-        composerBox.style.display = 'none';
-        profileBox.style.display = 'none';
-        drawerLogoutBtn.style.display = 'none';
-        drawerAdminLink.style.display = 'none';
-        drawerMailLink.style.display = 'none';
-        drawerAuthBtn.style.display = 'inline-flex';
-        feedEl.innerHTML = '<div class="forum-empty">Connecte-toi pour accéder au forum. <a href="login.html">Se connecter</a></div>';
-        return;
-      }
-
-      composerBox.style.display = 'block';
-      drawerAuthBtn.style.display = 'none';
-      drawerLogoutBtn.style.display = 'inline-flex';
-
-      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-
-      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
-        const data = snap.exists() ? (snap.data() || {}) : {};
-        if (data.banned === true) {
-          stopForumListener();
-          window.location.replace('ban.html');
+        if (snap.empty) {
+          const emptyP = document.createElement('p');
+          emptyP.textContent = 'Aucun message pour le moment.';
+          forumFeedEl.appendChild(emptyP);
           return;
         }
 
-        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
-        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
-        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
-        const pseudo = isAdmin
-          ? formatAdminPseudo(data, fallbackName)
-          : (data.pseudo || fallbackName);
+        snap.forEach(d => {
+          const item = d.data();
+          const card = document.createElement('article');
+          card.className = 'forum-msg';
 
-        currentProfile = { pseudo, role: roleLabel };
+          const head = document.createElement('div');
+          head.className = 'forum-msg-head';
 
-        profileBox.style.display = 'flex';
-        profileAvatar.textContent = getInitials(pseudo);
-        profileName.textContent = pseudo;
-        profileRole.textContent = roleLabel;
-        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-        drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
-        drawerMailLink.style.display = isAdmin ? 'block' : 'none';
+          const authorStrong = document.createElement('strong');
+          authorStrong.textContent = item.author || 'Membre';
+          head.appendChild(authorStrong);
 
-        if (!forumUnsubscribe) {
-          startForumListener();
+          const canDelete = Boolean(currentUser) && (isAdmin || item.authorUid === currentUser.uid);
+          if (canDelete) {
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'btn btn-secondary btn-small';
+            delBtn.textContent = 'Supprimer';
+            delBtn.addEventListener('click', async () => {
+              delBtn.disabled = true;
+              try {
+                await deleteDoc(doc(db, "forum_messages", d.id));
+                await loadMessages();
+              } catch (err) {
+                delBtn.disabled = false;
+                showAlert('Suppression impossible (' + (err.code || err.message) + ').');
+              }
+            });
+            head.appendChild(delBtn);
+          }
+
+          const bodyP = document.createElement('p');
+          bodyP.className = 'forum-text';
+          bodyP.textContent = item.text || '';
+
+          card.appendChild(head);
+          card.appendChild(bodyP);
+          forumFeedEl.appendChild(card);
+        });
+      } catch (err) {
+        forumFeedEl.textContent = '';
+        const errP = document.createElement('p');
+        errP.textContent = 'Impossible de charger les messages (' + (err.code || err.message) + ').';
+        forumFeedEl.appendChild(errP);
+      }
+    }
+
+    forumForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser || isBanned) {
+        showAlert('Connecte-toi avec un compte actif pour poster.');
+        return;
+      }
+
+      const text = document.getElementById('forum-text').value.trim();
+      if (!text) return;
+
+      forumSubmitBtn.disabled = true;
+      forumSubmitBtn.textContent = 'Envoi...';
+      alertBox.style.display = 'none';
+
+      try {
+        let latestPseudo = currentPseudo;
+        try {
+          const freshSnap = await getDoc(doc(db, "users", currentUser.uid));
+          if (freshSnap.exists() && freshSnap.data().pseudo) {
+            latestPseudo = freshSnap.data().pseudo;
+            currentPseudo = latestPseudo;
+          }
+        } catch (err) {}
+
+        await addDoc(collection(db, "forum_messages"), {
+          text,
+          author: latestPseudo,
+          authorUid: currentUser.uid,
+          createdAt: serverTimestamp()
+        });
+
+        document.getElementById('forum-text').value = '';
+        await loadMessages();
+      } catch (err) {
+        showAlert('Impossible d\'envoyer (' + (err.code || err.message) + ').');
+      } finally {
+        forumSubmitBtn.disabled = false;
+        forumSubmitBtn.textContent = 'Envoyer';
+      }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      isAdmin = false;
+      isBanned = false;
+
+      if (!user) {
+        showLocked('Tu vois la page du forum, mais l\'accès est réservé aux membres connectés.', false);
+        return;
+      }
+
+      let pseudo = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      let role = 'membre';
+
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.pseudo) pseudo = data.pseudo;
+          if (data.role) role = data.role;
+          isBanned = data.banned === true;
         }
-      }, () => {
-        currentProfile = { pseudo: fallbackName, role: 'membre' };
-        profileBox.style.display = 'flex';
-        profileAvatar.textContent = getInitials(fallbackName);
-        profileName.textContent = fallbackName;
-        profileRole.textContent = 'membre';
-        profileRole.className = 'profile-tag';
-        drawerAdminLink.style.display = 'none';
-        drawerMailLink.style.display = 'none';
+      } catch (e) {}
 
-        if (!forumUnsubscribe) {
-          startForumListener();
-        }
-      });
+      currentPseudo = pseudo;
+      isAdmin = !isBanned && (role === 'admin' || role === 'superadmin');
+
+      if (isBanned) {
+        showLocked('Ton compte est suspendu : tu n\'as pas accès au forum.', true);
+        return;
+      }
+
+      lockedEl.style.display = 'none';
+      unlockedEl.style.display = 'block';
+      await loadMessages();
     });
   </script>
 </body>

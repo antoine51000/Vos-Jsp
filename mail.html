@@ -4,880 +4,1106 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vos JSP — Messagerie Admin</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script type="module" src="js/maintenance-guard.js"></script>
   <style>
-    .mail-page {
-      max-width: 1120px;
-      margin: 1.8rem auto 3.6rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
+    :root {
+      --bg: #f4f6fa;
+      --surface: #ffffff;
+      --surface-alt: #eef2f8;
+      --red: #e11d2a;
+      --red-dark: #b91c1c;
+      --red-soft: rgba(225, 29, 42, 0.09);
+      --red-glow: rgba(225, 29, 42, 0.24);
+      --cyber: #0284c7;
+      --cyber-soft: rgba(2, 132, 199, 0.1);
+      --green: #059669;
+      --text: #0b1120;
+      --muted: #526075;
+      --border: #dfe6f0;
+      --radius: 20px;
+      --shadow: 0 12px 32px -14px rgba(11, 17, 32, 0.09);
+      --shadow-hover: 0 22px 46px -16px rgba(11, 17, 32, 0.15);
     }
 
-    .mail-hero {
-      background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
-      border: 1px solid var(--border);
-      border-radius: 26px;
-      padding: 1.65rem 1.85rem;
-      box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .mail-hero h1 {
-      margin: 0.4rem 0 0.25rem;
-      font-size: 1.75rem;
-      letter-spacing: -0.02em;
-    }
-
-    .mail-hero p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-      max-width: 600px;
-    }
-
-    .mail-layout {
-      display: grid;
-      grid-template-columns: 310px 1fr;
-      gap: 1.25rem;
-      align-items: start;
-    }
-
-    @media (max-width: 880px) {
-      .mail-layout {
-        grid-template-columns: 1fr;
+    @keyframes pulseDot {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(225, 29, 42, 0.55);
+      }
+      50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 7px rgba(225, 29, 42, 0);
       }
     }
 
-    .mail-sidebar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 1.2rem;
-      box-shadow: var(--shadow);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.locked {
+      overflow: hidden;
+    }
+
+    body.locked #site-nav-root,
+    body.locked main,
+    body.locked footer,
+    body.locked .modal-overlay {
+      display: none !important;
+    }
+
+    .auth-gate {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    body.locked .auth-gate {
+      display: flex;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1.5rem;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
       gap: 0.85rem;
     }
 
-    .mail-box-selector label {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 800;
-      color: var(--muted);
-      margin-bottom: 0.35rem;
+    .menu-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4.5px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
     }
 
-    .mail-folders {
+    .menu-btn:hover {
+      border-color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .menu-btn span {
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--text);
+      display: block;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 900;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+      padding: 0.35rem 0.7rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .brand span {
+      color: var(--red);
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulseDot 2.2s infinite;
+      flex-shrink: 0;
+    }
+
+    .nav-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 17, 32, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 60;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+    }
+
+    .nav-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(320px, 88vw);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      box-shadow: 20px 0 50px rgba(11, 17, 32, 0.18);
+      z-index: 70;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      font-size: 1.3rem;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-btn:hover {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .drawer-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 0 0.35rem;
+    }
+
+    .drawer nav {
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
     }
 
-    .mail-folder-btn {
-      appearance: none;
-      width: 100%;
-      text-align: left;
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text);
-      font-weight: 700;
-      font-size: 0.88rem;
+    .drawer nav a {
       padding: 0.65rem 0.85rem;
-      border-radius: 13px;
-      cursor: pointer;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .drawer nav a:hover {
+      background: var(--surface-alt);
+    }
+
+    .drawer nav a.active {
+      background: var(--red-soft);
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .profile-widget {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      transition: all 0.14s ease;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 16px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      margin-top: auto;
     }
 
-    .mail-folder-btn:hover {
-      background: var(--bg);
-    }
-
-    .mail-folder-btn.active {
-      background: rgba(225, 29, 42, 0.1);
-      border-color: rgba(225, 29, 42, 0.28);
-      color: var(--primary);
-    }
-
-    .mail-count-pill {
-      font-size: 0.72rem;
+    .profile-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: #ffffff;
       font-weight: 800;
-      padding: 0.12rem 0.5rem;
-      border-radius: 999px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--muted);
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    .mail-main {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 1.5rem 1.65rem;
-      box-shadow: var(--shadow);
+    .profile-meta {
       display: flex;
       flex-direction: column;
+      min-width: 0;
+    }
+
+    .profile-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-tag {
+      display: inline-block;
+      width: fit-content;
+      margin-top: 0.15rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem 1.8rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.65rem, 4vw, 2.3rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 900;
+      margin: 0.6rem 0 0.75rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.98rem;
+      max-width: 680px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid rgba(225, 29, 42, 0.18);
+    }
+
+    .actu-cat {
+      display: inline-block;
+      padding: 0.24rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: var(--cyber-soft);
+      color: var(--cyber);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.72rem 1.3rem;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      background: var(--red);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px -8px var(--red-glow);
+      transition: background 0.18s ease, transform 0.15s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--red-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--surface-alt);
+    }
+
+    .btn-small {
+      padding: 0.48rem 0.9rem;
+      font-size: 0.84rem;
+      border-radius: 11px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      box-shadow: var(--shadow);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1.15rem;
     }
 
-    .mail-toolbar {
+    .mail-tabs {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
       flex-wrap: wrap;
-      padding-bottom: 0.85rem;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
     }
 
-    .mail-toolbar h2 {
-      margin: 0;
-      font-size: 1.18rem;
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-btn.active {
+      background: var(--red);
+      color: #ffffff;
+      border-color: var(--red);
+      box-shadow: 0 6px 16px -6px var(--red-glow);
+    }
+
+    .mail-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.25rem;
+      align-items: start;
     }
 
     .mail-list {
       display: flex;
       flex-direction: column;
-      gap: 0.7rem;
+      gap: 0.65rem;
+      max-height: 520px;
+      overflow-y: auto;
     }
 
-    .mail-msg-card {
-      background: var(--bg);
+    .mail-item {
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 0.95rem 1.1rem;
-      cursor: pointer;
-      transition: border-color 0.15s ease;
-    }
-
-    .mail-msg-card:hover {
-      border-color: var(--primary);
-    }
-
-    .mail-msg-card.unread {
-      border-left: 4px solid var(--primary);
       background: var(--surface);
-    }
-
-    .mail-msg-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .mail-msg-subject {
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: var(--text);
-    }
-
-    .mail-msg-meta {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 0.2rem;
-    }
-
-    .mail-msg-preview {
-      margin: 0.45rem 0 0;
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1.45;
-      white-space: pre-wrap;
-    }
-
-    .mail-reader {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1.2rem 1.3rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
       display: flex;
       flex-direction: column;
-      gap: 0.8rem;
+      gap: 0.25rem;
     }
 
-    .mail-reader-head {
+    .mail-item:hover {
+      border-color: var(--red);
+      transform: translateY(-1px);
+    }
+
+    .mail-item.active {
+      border-color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .mail-item.unread {
+      border-left: 4px solid var(--red);
+      font-weight: 700;
+    }
+
+    .mail-meta-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      padding-bottom: 0.7rem;
-      border-bottom: 1px solid var(--border);
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--muted);
     }
 
     .mail-reader-body {
-      margin: 0;
-      font-size: 0.9rem;
-      line-height: 1.58;
       white-space: pre-wrap;
-      color: var(--text);
+      line-height: 1.65;
+      padding-top: 0.9rem;
+      margin-top: 0.9rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.96rem;
     }
 
-    .mail-compose textarea {
-      width: 100%;
-      min-height: 140px;
-      resize: vertical;
-      border-radius: 14px;
-      padding: 0.85rem 0.95rem;
-      font-family: inherit;
+    .mailbox-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.32rem 0.75rem;
+      border-radius: 999px;
+      background: var(--cyber-soft);
+      color: var(--cyber);
+      font-weight: 700;
+      font-size: 0.82rem;
     }
 
-    .mail-empty {
-      text-align: center;
-      padding: 1.8rem 1rem;
-      border: 1px dashed var(--border);
-      border-radius: 16px;
-      color: var(--muted);
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
       font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.72rem 0.9rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 0.95rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px var(--red-soft);
+    }
+
+    .alert {
+      display: none;
+      padding: 0.85rem 1.05rem;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: var(--red-soft);
+      color: var(--red-dark);
+      border: 1px solid rgba(225, 29, 42, 0.25);
+      margin-bottom: 1rem;
+    }
+
+    .alert.success {
+      background: rgba(5, 150, 105, 0.1);
+      color: var(--green);
+      border-color: rgba(5, 150, 105, 0.25);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 17, 32, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1.35rem 1.5rem;
+      margin-top: auto;
+    }
+
+    .footer-container {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.15rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 900px) {
+      .mail-layout,
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 0.75rem 1rem;
+      }
+      main {
+        padding: 1.25rem 0.9rem 2.25rem;
+      }
+      .hero {
+        padding: 1.5rem 1.2rem;
+      }
+      .card {
+        padding: 1.15rem;
+        border-radius: 16px;
+      }
     }
   </style>
 </head>
-<body>
-  <div class="topbar">
-    <div class="topbar-left">
-      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <a href="index.html" class="brand">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
+<body class="locked">
+  <div class="auth-gate" id="auth-gate">
+    <div class="card" style="max-width: 440px;">
+      <span class="badge" style="margin-bottom: 0.65rem;">Accès Restreint</span>
+      <h1 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Vérification des droits admin...</h1>
+      <p id="gate-msg" style="color: var(--muted); font-size: 0.92rem; margin-bottom: 1rem;">Cette page est strictement réservée aux administrateurs.</p>
+      <a href="index.html" class="btn" id="gate-back-btn" style="display: none;">Retour à l'accueil</a>
     </div>
-    <a href="admin.html" class="btn btn-secondary btn-small">Panel Admin</a>
   </div>
 
-  <div class="nav-backdrop" id="nav-backdrop"></div>
-
-  <aside class="drawer" id="drawer">
-    <div class="drawer-header">
-      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
-      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
-    </div>
-
-    <div class="drawer-label">Navigation</div>
-    <nav>
-      <a href="index.html">Accueil</a>
-      <a href="actus.html">Actualités</a>
-      <a href="ressources.html">Ressources</a>
-      <a href="galerie.html">Galerie</a>
-      <a href="proposer.html">Proposer</a>
-      <a href="a-propos.html">À propos</a>
-      <a href="contester.html">Contester</a>
-      <a href="forum.html">Forum</a>
-      <a href="recrutement.html">Recrutement</a>
-      <a href="profil.html">Profil</a>
-      <a href="mail.html" id="drawer-mail-link" class="active" style="display: none;">Messagerie Admin</a>
-      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
-    </nav>
-
-    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
-      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
-      <div class="profile-meta">
-        <strong class="profile-name" id="drawer-profile-name"></strong>
-        <span class="profile-tag" id="drawer-profile-role">membre</span>
-      </div>
-    </div>
-
-    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
-    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
-  </aside>
-
   <main>
-    <div class="mail-page">
-      <div id="mail-alert" class="alert"></div>
-
-      <div id="mail-denied" class="mail-main" style="display: none; text-align: center;">
-        <span class="badge">Accès restreint</span>
-        <h1 style="margin: 0.5rem 0 0.25rem; font-size: 1.55rem;">Messagerie réservée à l'administration</h1>
-        <p style="margin: 0 auto 1rem; color: var(--muted); font-size: 0.9rem;">Connecte-toi avec un compte admin ou superadmin pour consulter et envoyer des messages internes.</p>
-        <div><a href="login.html" class="btn btn-small">Se connecter</a></div>
+    <section class="hero">
+      <span class="badge">Messagerie Interne Sécurisée</span>
+      <h1>Boîte mail équipe Vos JSP</h1>
+      <p class="subtitle" style="margin-bottom: 0.9rem;">Échange entre administrateurs et réception directe des messages envoyés depuis la page contact, sans exposer les adresses au public.</p>
+      <div id="my-mailbox-display">
+        <span class="mailbox-pill">Chargement de ta boîte...</span>
       </div>
+    </section>
 
-      <div id="mail-shell" style="display: none; flex-direction: column; gap: 1.2rem;">
-        <header class="mail-hero">
-          <div>
-            <span class="badge">Messagerie interne • Vos JSP</span>
-            <h1>Boîte mail d'administration</h1>
-            <p>Échange entre administrateurs et gère les messages reçus sur les adresses internes de la plateforme.</p>
-          </div>
-          <div style="display: flex; gap: 0.55rem; flex-wrap: wrap;">
-            <a href="admin.html" class="btn btn-secondary btn-small">Retour Panel Admin</a>
-            <button type="button" id="mail-compose-open" class="btn btn-small">Nouveau message</button>
-          </div>
-        </header>
+    <div class="alert" id="global-alert"></div>
 
-        <div class="mail-layout">
-          <aside class="mail-sidebar">
-            <div class="mail-box-selector">
-              <label for="mail-active-box">Boîte active</label>
-              <select id="mail-active-box"></select>
-            </div>
+    <div class="mail-tabs">
+      <button type="button" class="filter-btn active" data-tab="inbox">Boîte de réception</button>
+      <button type="button" class="filter-btn" data-tab="sent">Messages envoyés</button>
+      <button type="button" class="filter-btn" data-tab="manage">Créer / Gérer les adresses</button>
+    </div>
 
-            <div class="mail-folders">
-              <button type="button" class="mail-folder-btn active" data-folder="inbox">
-                <span>Boîte de réception</span>
-                <span class="mail-count-pill" id="count-inbox">0</span>
-              </button>
-              <button type="button" class="mail-folder-btn" data-folder="sent">
-                <span>Messages envoyés</span>
-                <span class="mail-count-pill" id="count-sent">0</span>
-              </button>
-              <button type="button" class="mail-folder-btn" data-folder="archive">
-                <span>Archivés</span>
-                <span class="mail-count-pill" id="count-archive">0</span>
-              </button>
-            </div>
-          </aside>
-
-          <section class="mail-main">
-            <div class="mail-toolbar">
-              <h2 id="mail-view-title">Boîte de réception</h2>
-              <input type="search" id="mail-search" placeholder="Filtrer par objet, expéditeur ou texte..." style="max-width: 280px;">
-            </div>
-
-            <!-- VUE LISTE -->
-            <div id="mail-list-view">
-              <div class="mail-list" id="mail-messages-list">
-                <div class="mail-empty">Chargement des messages...</div>
-              </div>
-            </div>
-
-            <!-- VUE LECTURE -->
-            <div id="mail-reader-view" style="display: none;">
-              <div class="mail-reader">
-                <div class="mail-reader-head">
-                  <div>
-                    <h3 id="reader-subject" style="margin: 0 0 0.25rem; font-size: 1.12rem;"></h3>
-                    <div id="reader-meta" style="font-size: 0.8rem; color: var(--muted);"></div>
-                  </div>
-                  <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
-                    <button type="button" id="reader-back" class="btn btn-secondary btn-small">Retour</button>
-                    <button type="button" id="reader-reply" class="btn btn-secondary btn-small">Répondre</button>
-                    <button type="button" id="reader-archive" class="btn btn-secondary btn-small">Archiver</button>
-                    <button type="button" id="reader-delete" class="btn btn-secondary btn-small">Supprimer</button>
-                  </div>
-                </div>
-                <p class="mail-reader-body" id="reader-body"></p>
-              </div>
-            </div>
-
-            <!-- VUE RÉDACTION -->
-            <div id="mail-compose-view" style="display: none;" class="mail-compose">
-              <form id="mail-send-form">
-                <div class="form-group">
-                  <label for="compose-to">Destinataire (adresse mail admin ou identifiant)</label>
-                  <input type="text" id="compose-to" list="mail-known-addresses" required placeholder="Ex. : contact@vos-jsp.com ou leo@vos-jsp.com">
-                  <datalist id="mail-known-addresses"></datalist>
-                </div>
-                <div class="form-group">
-                  <label for="compose-subject">Objet</label>
-                  <input type="text" id="compose-subject" required placeholder="Objet du message">
-                </div>
-                <div class="form-group">
-                  <label for="compose-body">Message</label>
-                  <textarea id="compose-body" required placeholder="Rédige ton message..."></textarea>
-                </div>
-                <div style="display: flex; gap: 0.55rem; flex-wrap: wrap;">
-                  <button type="submit" id="compose-submit" class="btn btn-small">Envoyer</button>
-                  <button type="button" id="compose-cancel" class="btn btn-secondary btn-small">Annuler</button>
-                </div>
-              </form>
-            </div>
-          </section>
+    <section id="view-messages" class="mail-layout">
+      <div class="card" style="padding: 1rem;">
+        <div class="mail-list" id="mail-list">
+          <p style="color: var(--muted); font-size: 0.9rem;">Chargement des messages...</p>
         </div>
       </div>
-    </div>
+
+      <div class="card" id="mail-reader">
+        <p style="color: var(--muted);">Sélectionne un message à gauche pour le lire.</p>
+      </div>
+    </section>
+
+    <section id="view-manage" style="display: none;">
+      <div class="grid-2">
+        <div class="card">
+          <h2 style="font-size: 1.2rem; margin-bottom: 0.4rem;">Créer une adresse @vos-jsp.com</h2>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Attribue une adresse interne à un compte administrateur existant.</p>
+          <form id="create-mailbox-form">
+            <div class="form-group">
+              <label for="mb-uid">UID Firebase de l'admin</label>
+              <input type="text" id="mb-uid" placeholder="Ex: xK92mPq..." required>
+            </div>
+            <div class="form-group">
+              <label for="mb-pseudo">Pseudo public affiché dans Contact</label>
+              <input type="text" id="mb-pseudo" placeholder="Ex: Léo" required>
+            </div>
+            <div class="form-group">
+              <label for="mb-prenom">Prénom (sans accent)</label>
+              <input type="text" id="mb-prenom" placeholder="Ex: leo" required>
+            </div>
+            <div class="form-group">
+              <label for="mb-nom">Nom (sans accent)</label>
+              <input type="text" id="mb-nom" placeholder="Ex: pujolas" required>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem;">
+              Aperçu : <strong id="mb-preview" style="color: var(--cyber);">prenom.nom@vos-jsp.com</strong>
+            </p>
+            <button type="submit" class="btn">Créer l'adresse mail</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size: 1.2rem; margin-bottom: 0.4rem;">Adresses actives de l'équipe</h2>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Visible uniquement par les administrateurs connectés.</p>
+          <div id="mailboxes-list" style="display: flex; flex-direction: column; gap: 0.65rem;">
+            <p style="color: var(--muted); font-size: 0.9rem;">Chargement...</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <div class="modal-overlay" id="compose-modal">
+    <div class="card modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="font-size: 1.2rem;">Nouveau message interne</h2>
+        <button type="button" class="close-btn" id="close-compose-btn">&times;</button>
+      </div>
+      <form id="compose-form">
+        <div class="form-group">
+          <label for="compose-to">Destinataire (@vos-jsp.com)</label>
+          <select id="compose-to" required>
+            <option value="">Choisir un admin...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="compose-subject">Objet</label>
+          <input type="text" id="compose-subject" placeholder="Objet du message" required>
+        </div>
+        <div class="form-group">
+          <label for="compose-body">Message</label>
+          <textarea id="compose-body" rows="6" placeholder="Écris ton message ici..." required></textarea>
+        </div>
+        <div style="display: flex; gap: 0.65rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" id="cancel-compose-btn">Annuler</button>
+          <button type="submit" class="btn">Envoyer le mail</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <footer>
     <div class="footer-container">
-      <div><strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.</div>
+      <div><strong>Vos JSP</strong> — Messagerie interne réservée à l'administration.</div>
       <div class="footer-links">
-        <a href="mentions-legales.html">Mentions légales</a>
-        <a href="confidentialite.html">Confidentialité</a>
+        <a href="admin.html">Panel Admin</a>
         <a href="a-propos.html">Contact</a>
       </div>
     </div>
   </footer>
 
-  <script>
-    const drawer = document.getElementById('drawer');
-    const backdrop = document.getElementById('nav-backdrop');
-    document.getElementById('menu-open').addEventListener('click', () => {
-      drawer.classList.add('open');
-      backdrop.classList.add('open');
-    });
-    function closeDrawer() {
-      drawer.classList.remove('open');
-      backdrop.classList.remove('open');
-    }
-    document.getElementById('menu-close').addEventListener('click', closeDrawer);
-    backdrop.addEventListener('click', closeDrawer);
-    drawer.querySelectorAll('nav a').forEach((link) => {
-      link.addEventListener('click', closeDrawer);
-    });
-  </script>
-
+  <script type="module" src="js/nav.js" data-active="mail.html" data-logout-redirect="login.html"></script>
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
       collection,
       doc,
+      getDoc,
+      getDocs,
+      setDoc,
       addDoc,
       updateDoc,
       deleteDoc,
-      onSnapshot,
+      query,
+      where,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    const profileBox = document.getElementById('drawer-profile-box');
-    const profileAvatar = document.getElementById('drawer-profile-avatar');
-    const profileName = document.getElementById('drawer-profile-name');
-    const profileRole = document.getElementById('drawer-profile-role');
-    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
-    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
-    const drawerAdminLink = document.getElementById('drawer-admin-link');
-    const drawerMailLink = document.getElementById('drawer-mail-link');
-
-    const alertEl = document.getElementById('mail-alert');
-    const deniedEl = document.getElementById('mail-denied');
-    const shellEl = document.getElementById('mail-shell');
-
-    const activeBoxSelect = document.getElementById('mail-active-box');
-    const knownAddressesList = document.getElementById('mail-known-addresses');
-    const folderBtns = Array.from(document.querySelectorAll('.mail-folder-btn'));
-    const viewTitleEl = document.getElementById('mail-view-title');
-    const searchInput = document.getElementById('mail-search');
-
-    const listViewEl = document.getElementById('mail-list-view');
-    const messagesListEl = document.getElementById('mail-messages-list');
-    const readerViewEl = document.getElementById('mail-reader-view');
-    const composeViewEl = document.getElementById('mail-compose-view');
-
-    const readerSubjectEl = document.getElementById('reader-subject');
-    const readerMetaEl = document.getElementById('reader-meta');
-    const readerBodyEl = document.getElementById('reader-body');
-
-    const sendForm = document.getElementById('mail-send-form');
-    const composeToInput = document.getElementById('compose-to');
-    const composeSubjectInput = document.getElementById('compose-subject');
-    const composeBodyInput = document.getElementById('compose-body');
-    const composeSubmitBtn = document.getElementById('compose-submit');
+    const gateMsg = document.getElementById('gate-msg');
+    const gateBackBtn = document.getElementById('gate-back-btn');
+    const alertBox = document.getElementById('global-alert');
+    const mailListEl = document.getElementById('mail-list');
+    const mailReaderEl = document.getElementById('mail-reader');
+    const composeModal = document.getElementById('compose-modal');
+    const composeToSelect = document.getElementById('compose-to');
+    const mailboxesListEl = document.getElementById('mailboxes-list');
 
     let currentUser = null;
-    let currentAdminLabel = 'Admin';
-    let userAdminMail = '';
-    let authSub = null;
-    let mailsSub = null;
-    let msgsSub = null;
+    let currentRole = '';
+    let myMailbox = null;
+    let allMailboxes = [];
+    let currentTab = 'inbox';
+    let currentMessages = [];
+    let selectedMailId = null;
 
-    let allAdminMails = [];
-    let allMessages = [];
-    let currentFolder = 'inbox';
-    let selectedMessageId = null;
-
-    const FOLDER_LABELS = {
-      inbox: 'Boîte de réception',
-      sent: 'Messages envoyés',
-      archive: 'Archivés'
-    };
-
-    function notify(msg, ok = false) {
-      alertEl.style.display = 'block';
-      alertEl.className = ok ? 'alert success' : 'alert';
-      alertEl.textContent = msg;
+    function denyAccess(message, redirectTo) {
+      document.body.classList.add('locked');
+      gateMsg.textContent = message;
+      gateBackBtn.style.display = 'inline-flex';
+      setTimeout(() => {
+        window.location.replace(redirectTo);
+      }, 900);
     }
 
-    function getInitials(label) {
-      const clean = String(label || 'JS')
-        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
-        .trim() || 'JS';
-      const p = clean.split(/[\s._-]+/).filter(Boolean);
-      return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : clean.slice(0, 2).toUpperCase();
+    function showAlert(msg, success = false) {
+      alertBox.textContent = msg;
+      alertBox.className = success ? 'alert success' : 'alert';
+      alertBox.style.display = 'block';
+      setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
     }
 
-    function formatAdminPseudo(d, fallback) {
-      const raw = (d && (d.prenom || d.pseudo || d.displayName)) || fallback || 'Membre';
-      const first = String(raw).replace(/^\s*\[[^\]]+\]\s*/g, '').trim().split(/\s+/)[0] || 'Membre';
-      return `[ ADMIN ] ${first}`;
+    function slugifyPart(str) {
+      return String(str || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '')
+        .trim();
     }
 
-    function paintAvatar(el, src, pseudo) {
-      el.innerHTML = '';
-      if (src) {
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = pseudo || 'Avatar';
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;';
-        el.appendChild(img);
-      } else {
-        el.textContent = getInitials(pseudo);
-      }
+    const prenomInput = document.getElementById('mb-prenom');
+    const nomInput = document.getElementById('mb-nom');
+    const previewEl = document.getElementById('mb-preview');
+
+    function updatePreview() {
+      const p = slugifyPart(prenomInput.value) || 'prenom';
+      const n = slugifyPart(nomInput.value) || 'nom';
+      previewEl.textContent = `${p}.${n}@vos-jsp.com`;
     }
+    prenomInput.addEventListener('input', updatePreview);
+    nomInput.addEventListener('input', updatePreview);
 
-    function normalizeAddr(val) {
-      const clean = String(val || '').trim().toLowerCase();
-      if (!clean) return '';
-      return clean.includes('@') ? clean : `${clean}@vos-jsp.com`;
-    }
+    document.getElementById('close-compose-btn').addEventListener('click', () => composeModal.classList.remove('open'));
+    document.getElementById('cancel-compose-btn').addEventListener('click', () => composeModal.classList.remove('open'));
 
-    function switchSubView(mode) {
-      listViewEl.style.display = mode === 'list' ? 'block' : 'none';
-      readerViewEl.style.display = mode === 'reader' ? 'block' : 'none';
-      composeViewEl.style.display = mode === 'compose' ? 'block' : 'none';
-      if (mode === 'list') {
-        viewTitleEl.textContent = FOLDER_LABELS[currentFolder] || 'Messages';
-      } else if (mode === 'reader') {
-        viewTitleEl.textContent = 'Lecture du message';
-      } else if (mode === 'compose') {
-        viewTitleEl.textContent = 'Nouveau message';
-      }
-    }
-
-    function renderBoxOptions() {
-      const previous = activeBoxSelect.value;
-      const options = new Map();
-      options.set('all', 'Toutes les boîtes admin');
-      options.set('contact@vos-jsp.com', 'contact@vos-jsp.com');
-
-      if (userAdminMail) {
-        const addr = normalizeAddr(userAdminMail);
-        options.set(addr, addr);
-      }
-      allAdminMails.forEach((m) => {
-        const addr = normalizeAddr(m.address || m.id);
-        if (addr) options.set(addr, addr);
-      });
-
-      activeBoxSelect.innerHTML = '';
-      knownAddressesList.innerHTML = '';
-
-      options.forEach((label, key) => {
-        const opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = label;
-        activeBoxSelect.appendChild(opt);
-
-        if (key !== 'all') {
-          const dl = document.createElement('option');
-          dl.value = label;
-          knownAddressesList.appendChild(dl);
-        }
-      });
-
-      if (previous && options.has(previous)) {
-        activeBoxSelect.value = previous;
-      } else if (userAdminMail && options.has(normalizeAddr(userAdminMail))) {
-        activeBoxSelect.value = normalizeAddr(userAdminMail);
-      } else {
-        activeBoxSelect.value = 'all';
-      }
-    }
-
-    function getScopedMessages() {
-      const boxFilter = activeBoxSelect.value || 'all';
-      return allMessages.filter((m) => {
-        if (boxFilter === 'all') return true;
-        const from = normalizeAddr(m.from);
-        const to = normalizeAddr(m.to);
-        return from === boxFilter || to === boxFilter;
-      });
-    }
-
-    function updateFolderCounts() {
-      const scoped = getScopedMessages();
-      const inboxCount = scoped.filter((m) => !m.archived && m.direction !== 'sent' && m.senderUid !== (currentUser && currentUser.uid)).length;
-      const sentCount = scoped.filter((m) => !m.archived && (m.direction === 'sent' || m.senderUid === (currentUser && currentUser.uid))).length;
-      const archiveCount = scoped.filter((m) => m.archived === true).length;
-
-      document.getElementById('count-inbox').textContent = String(inboxCount);
-      document.getElementById('count-sent').textContent = String(sentCount);
-      document.getElementById('count-archive').textContent = String(archiveCount);
-    }
-
-    function openMessage(msg) {
-      selectedMessageId = msg.id;
-      readerSubjectEl.textContent = msg.subject || 'Sans objet';
-      readerMetaEl.textContent = `De : ${msg.from || 'Admin'}  •  À : ${msg.to || 'contact@vos-jsp.com'}`;
-      readerBodyEl.textContent = msg.body || '';
-      switchSubView('reader');
-
-      if (msg.read === false) {
-        updateDoc(doc(db, 'admin_messages', msg.id), { read: true }).catch(() => {});
-      }
-    }
-
-    function renderMessages() {
-      updateFolderCounts();
-      const scoped = getScopedMessages();
-      const queryText = (searchInput.value || '').trim().toLowerCase();
-      const myUid = currentUser && currentUser.uid;
-
-      const filtered = scoped
-        .filter((m) => {
-          if (currentFolder === 'archive') return m.archived === true;
-          if (m.archived === true) return false;
-          const isSent = m.direction === 'sent' || (myUid && m.senderUid === myUid);
-          return currentFolder === 'sent' ? isSent : !isSent;
-        })
-        .filter((m) => {
-          if (!queryText) return true;
-          const hay = `${m.subject || ''} ${m.from || ''} ${m.to || ''} ${m.body || ''}`.toLowerCase();
-          return hay.includes(queryText);
-        })
-        .sort((a, b) => {
-          const sa = a.createdAt && a.createdAt.seconds ? a.createdAt.seconds : 0;
-          const sb = b.createdAt && b.createdAt.seconds ? b.createdAt.seconds : 0;
-          return sb - sa;
-        });
-
-      messagesListEl.innerHTML = '';
-      if (!filtered.length) {
-        messagesListEl.innerHTML = '<div class="mail-empty">Aucun message dans ce dossier.</div>';
-        return;
-      }
-
-      filtered.forEach((msg) => {
-        const card = document.createElement('article');
-        card.className = `mail-msg-card ${msg.read === false ? 'unread' : ''}`;
-
-        const top = document.createElement('div');
-        top.className = 'mail-msg-top';
-
-        const subj = document.createElement('span');
-        subj.className = 'mail-msg-subject';
-        subj.textContent = msg.subject || 'Sans objet';
-
-        const route = document.createElement('span');
-        route.style.cssText = 'font-size:0.76rem;color:var(--muted);font-weight:700;';
-        route.textContent = currentFolder === 'sent' ? `À : ${msg.to || '—'}` : `De : ${msg.from || '—'}`;
-
-        top.append(subj, route);
-
-        const meta = document.createElement('div');
-        meta.className = 'mail-msg-meta';
-        meta.textContent = `Boîte : ${msg.to || 'contact@vos-jsp.com'}`;
-
-        const preview = document.createElement('p');
-        preview.className = 'mail-msg-preview';
-        const txt = String(msg.body || '');
-        preview.textContent = txt.length > 160 ? `${txt.slice(0, 160)}...` : txt;
-
-        card.append(top, meta, preview);
-        card.addEventListener('click', () => openMessage(msg));
-        messagesListEl.appendChild(card);
-      });
-    }
-
-    folderBtns.forEach((btn) => {
+    document.querySelectorAll('.mail-tabs .filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        currentFolder = btn.dataset.folder;
-        folderBtns.forEach((b) => b.classList.toggle('active', b === btn));
-        switchSubView('list');
-        renderMessages();
+        document.querySelectorAll('.mail-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTab = btn.dataset.tab;
+        if (currentTab === 'manage') {
+          document.getElementById('view-messages').style.display = 'none';
+          document.getElementById('view-manage').style.display = 'block';
+        } else {
+          document.getElementById('view-manage').style.display = 'none';
+          document.getElementById('view-messages').style.display = 'grid';
+          selectedMailId = null;
+          mailReaderEl.innerHTML = '<p style="color: var(--muted);">Sélectionne un message à gauche pour le lire.</p>';
+          loadMessages();
+        }
       });
     });
 
-    activeBoxSelect.addEventListener('change', () => {
-      switchSubView('list');
-      renderMessages();
-    });
+    async function loadMailboxes() {
+      const snap = await getDocs(collection(db, 'admin_mailboxes'));
+      allMailboxes = [];
+      snap.forEach(d => allMailboxes.push({ id: d.id, ...d.data() }));
 
-    searchInput.addEventListener('input', renderMessages);
-
-    document.getElementById('mail-compose-open').addEventListener('click', () => {
-      sendForm.reset();
-      if (activeBoxSelect.value && activeBoxSelect.value !== 'all') {
-        composeToInput.value = activeBoxSelect.value;
-      }
-      switchSubView('compose');
-    });
-
-    document.getElementById('compose-cancel').addEventListener('click', () => switchSubView('list'));
-    document.getElementById('reader-back').addEventListener('click', () => {
-      selectedMessageId = null;
-      switchSubView('list');
-    });
-
-    document.getElementById('reader-reply').addEventListener('click', () => {
-      const msg = allMessages.find((m) => m.id === selectedMessageId);
-      if (!msg) return;
-      composeToInput.value = msg.from || 'contact@vos-jsp.com';
-      const baseSubj = msg.subject || 'Message';
-      composeSubjectInput.value = baseSubj.toLowerCase().startsWith('re :') ? baseSubj : `Re : ${baseSubj}`;
-      composeBodyInput.value = '';
-      switchSubView('compose');
-    });
-
-    document.getElementById('reader-archive').addEventListener('click', async () => {
-      if (!selectedMessageId) return;
-      const msg = allMessages.find((m) => m.id === selectedMessageId);
-      const nextArchived = !(msg && msg.archived === true);
-      await updateDoc(doc(db, 'admin_messages', selectedMessageId), { archived: nextArchived });
-      notify(nextArchived ? 'Message archivé.' : 'Message restauré.', true);
-      switchSubView('list');
-    });
-
-    document.getElementById('reader-delete').addEventListener('click', async () => {
-      if (!selectedMessageId) return;
-      await deleteDoc(doc(db, 'admin_messages', selectedMessageId));
-      selectedMessageId = null;
-      notify('Message supprimé.', true);
-      switchSubView('list');
-    });
-
-    sendForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!currentUser) return;
-
-      const toAddr = normalizeAddr(composeToInput.value);
-      const subject = composeSubjectInput.value.trim();
-      const body = composeBodyInput.value.trim();
-
-      if (!toAddr || !subject || !body) {
-        notify('Remplis le destinataire, l’objet et le message.');
-        return;
+      myMailbox = allMailboxes.find(m => m.uid === currentUser.uid) || null;
+      const badgeEl = document.getElementById('my-mailbox-display');
+      if (myMailbox) {
+        badgeEl.innerHTML = `<span class="mailbox-pill">Ton adresse : ${myMailbox.email}</span>`;
+      } else {
+        badgeEl.innerHTML = `<span class="mailbox-pill" style="background:var(--red-soft);color:var(--red);">Aucune adresse @vos-jsp.com attribuée — crée-la dans l'onglet dédié</span>`;
       }
 
-      const senderAddr = userAdminMail
-        ? normalizeAddr(userAdminMail)
-        : (activeBoxSelect.value && activeBoxSelect.value !== 'all' ? activeBoxSelect.value : 'contact@vos-jsp.com');
+      composeToSelect.innerHTML = '<option value="">Choisir un admin...</option>' +
+        allMailboxes.map(m => `<option value="${m.uid}">${m.pseudo} (${m.email})</option>`).join('');
 
-      composeSubmitBtn.disabled = true;
-      composeSubmitBtn.textContent = 'Envoi...';
+      mailboxesListEl.innerHTML = allMailboxes.length
+        ? allMailboxes.map(m => `
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; padding:0.75rem; border:1px solid var(--border); border-radius:14px;">
+              <div>
+                <strong>${m.pseudo}</strong>
+                <div style="font-size:0.84rem; color:var(--cyber); font-weight:700;">${m.email}</div>
+                <div style="font-size:0.74rem; color:var(--muted);">UID : ${m.uid}</div>
+              </div>
+              <button type="button" class="btn btn-secondary btn-small" data-del-uid="${m.uid}">Supprimer</button>
+            </div>
+          `).join('')
+        : '<p style="color:var(--muted); font-size:0.9rem;">Aucune adresse créée pour le moment.</p>';
 
-      try {
-        await addDoc(collection(db, 'admin_messages'), {
-          from: senderAddr,
-          fromName: currentAdminLabel,
-          to: toAddr,
-          subject,
-          body,
-          senderUid: currentUser.uid,
-          direction: 'sent',
-          read: true,
-          archived: false,
-          createdAt: serverTimestamp()
+      mailboxesListEl.querySelectorAll('[data-del-uid]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm("Supprimer cette adresse mail interne ?")) return;
+          await deleteDoc(doc(db, 'admin_mailboxes', btn.dataset.delUid));
+          showAlert("Adresse supprimée.", true);
+          await loadMailboxes();
         });
-
-        sendForm.reset();
-        currentFolder = 'sent';
-        folderBtns.forEach((b) => b.classList.toggle('active', b.dataset.folder === 'sent'));
-        switchSubView('list');
-        notify('Message envoyé.', true);
-      } catch (err) {
-        notify('Envoi impossible : ' + (err.code || err.message));
-      } finally {
-        composeSubmitBtn.disabled = false;
-        composeSubmitBtn.textContent = 'Envoyer';
-      }
-    });
-
-    function stopMailStreams() {
-      if (mailsSub) { mailsSub(); mailsSub = null; }
-      if (msgsSub) { msgsSub(); msgsSub = null; }
-    }
-
-    function startMailStreams() {
-      stopMailStreams();
-
-      mailsSub = onSnapshot(collection(db, 'admin_mails'), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        allAdminMails = list;
-        renderBoxOptions();
-      });
-
-      msgsSub = onSnapshot(collection(db, 'admin_messages'), (snap) => {
-        const list = [];
-        snap.forEach((d) => list.push({ id: d.id, ...(d.data() || {}) }));
-        allMessages = list;
-        renderMessages();
       });
     }
 
-    async function doLogout() {
-      stopMailStreams();
-      await signOut(auth);
-      window.location.replace('login.html');
+    async function loadMessages() {
+      mailListEl.innerHTML = '<p style="color: var(--muted); font-size: 0.9rem;">Chargement...</p>';
+      const field = currentTab === 'sent' ? 'fromUid' : 'toUid';
+      const q = query(collection(db, 'admin_mails'), where(field, '==', currentUser.uid));
+      const snap = await getDocs(q);
+
+      currentMessages = [];
+      snap.forEach(d => currentMessages.push({ id: d.id, ...d.data() }));
+      currentMessages.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+      renderMailList();
     }
 
-    drawerLogoutBtn.addEventListener('click', doLogout);
+    function formatDate(ts) {
+      if (!ts || !ts.seconds) return "À l'instant";
+      return new Date(ts.seconds * 1000).toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
 
-    onAuthStateChanged(auth, (user) => {
-      if (authSub) { authSub(); authSub = null; }
-      stopMailStreams();
-      currentUser = user || null;
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
 
-      if (!user) {
-        profileBox.style.display = 'none';
-        drawerLogoutBtn.style.display = 'none';
-        drawerAdminLink.style.display = 'none';
-        drawerMailLink.style.display = 'none';
-        drawerAuthBtn.style.display = 'inline-flex';
-        deniedEl.style.display = 'block';
-        shellEl.style.display = 'none';
+    function renderMailList() {
+      if (!currentMessages.length) {
+        mailListEl.innerHTML = '<p style="color: var(--muted); font-size: 0.9rem;">Aucun message dans ce dossier.</p>';
         return;
       }
 
-      drawerAuthBtn.style.display = 'none';
-      drawerLogoutBtn.style.display = 'inline-flex';
-      const fallback = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
+      mailListEl.innerHTML = currentMessages.map(m => {
+        const isUnread = currentTab === 'inbox' && !m.read;
+        const isActive = m.id === selectedMailId;
+        const label = currentTab === 'sent'
+          ? `À : ${escapeHtml(m.toPseudo || m.toEmail)}`
+          : `De : ${escapeHtml(m.fromName)} ${m.isExternal ? '(Contact)' : ''}`;
 
-      authSub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
-        const d = snap.exists() ? (snap.data() || {}) : {};
-        if (d.banned === true) {
-          stopMailStreams();
-          window.location.replace('ban.html');
-          return;
-        }
+        return `
+          <div class="mail-item ${isUnread ? 'unread' : ''} ${isActive ? 'active' : ''}" data-mail-id="${m.id}">
+            <div class="mail-meta-row">
+              <span>${label}</span>
+              <span>${formatDate(m.createdAt)}</span>
+            </div>
+            <div style="font-size: 0.93rem;">${escapeHtml(m.subject)}</div>
+          </div>
+        `;
+      }).join('');
 
-        const rawRole = String(d.role || d.grade || 'membre').toLowerCase();
-        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
-        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
-        const pseudo = isAdmin ? formatAdminPseudo(d, fallback) : (d.pseudo || fallback);
-
-        currentAdminLabel = pseudo;
-        userAdminMail = d.adminMail || '';
-
-        profileBox.style.display = 'flex';
-        paintAvatar(profileAvatar, d.photoDataUrl || '', pseudo);
-        profileName.textContent = pseudo;
-        profileRole.textContent = roleLabel;
-        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-        drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
-        drawerMailLink.style.display = isAdmin ? 'block' : 'none';
-
-        if (!isAdmin) {
-          stopMailStreams();
-          deniedEl.style.display = 'block';
-          shellEl.style.display = 'none';
-          return;
-        }
-
-        deniedEl.style.display = 'none';
-        shellEl.style.display = 'flex';
-        renderBoxOptions();
-        if (!mailsSub || !msgsSub) {
-          startMailStreams();
-        }
+      mailListEl.querySelectorAll('.mail-item').forEach(el => {
+        el.addEventListener('click', () => openMail(el.dataset.mailId));
       });
+    }
+
+    async function openMail(id) {
+      const mail = currentMessages.find(m => m.id === id);
+      if (!mail) return;
+      selectedMailId = id;
+
+      if (currentTab === 'inbox' && !mail.read) {
+        mail.read = true;
+        await updateDoc(doc(db, 'admin_mails', id), { read: true });
+      }
+      renderMailList();
+
+      const replyBtn = (!mail.isExternal && mail.fromUid)
+        ? `<button type="button" class="btn btn-small" id="reply-mail-btn">Répondre en interne</button>`
+        : '';
+
+      mailReaderEl.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.75rem; flex-wrap:wrap;">
+          <div>
+            <span class="actu-cat">${mail.isExternal ? 'Formulaire Contact Public' : 'Mail Interne Admin'}</span>
+            <h2 style="font-size:1.3rem; margin-top:0.5rem;">${escapeHtml(mail.subject)}</h2>
+          </div>
+          <div style="display:flex; gap:0.5rem;">
+            ${replyBtn}
+            <button type="button" class="btn btn-secondary btn-small" id="delete-mail-btn">Supprimer</button>
+          </div>
+        </div>
+        <div style="margin-top:0.75rem; font-size:0.86rem; color:var(--muted);">
+          <div><strong>Expéditeur :</strong> ${escapeHtml(mail.fromName)} (${escapeHtml(mail.fromEmail)})</div>
+          <div><strong>Destinataire :</strong> ${escapeHtml(mail.toPseudo)} (${escapeHtml(mail.toEmail)})</div>
+          <div><strong>Date :</strong> ${formatDate(mail.createdAt)}</div>
+        </div>
+        <div class="mail-reader-body">${escapeHtml(mail.body)}</div>
+      `;
+
+      const rBtn = document.getElementById('reply-mail-btn');
+      if (rBtn) {
+        rBtn.addEventListener('click', () => {
+          composeToSelect.value = mail.fromUid;
+          document.getElementById('compose-subject').value = mail.subject.startsWith('Re:') ? mail.subject : `Re: ${mail.subject}`;
+          composeModal.classList.add('open');
+        });
+      }
+
+      document.getElementById('delete-mail-btn').addEventListener('click', async () => {
+        if (!confirm("Supprimer ce message ?")) return;
+        await deleteDoc(doc(db, 'admin_mails', id));
+        selectedMailId = null;
+        mailReaderEl.innerHTML = '<p style="color: var(--muted);">Message supprimé.</p>';
+        await loadMessages();
+      });
+    }
+
+    document.getElementById('create-mailbox-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const uid = document.getElementById('mb-uid').value.trim();
+      const pseudo = document.getElementById('mb-pseudo').value.trim();
+      const prenom = slugifyPart(prenomInput.value);
+      const nom = slugifyPart(nomInput.value);
+
+      if (!uid || !pseudo || !prenom || !nom) {
+        showAlert("Remplis tous les champs correctement.");
+        return;
+      }
+
+      const email = `${prenom}.${nom}@vos-jsp.com`;
+      const duplicate = allMailboxes.find(m => m.email === email && m.uid !== uid);
+      if (duplicate) {
+        showAlert("Cette adresse @vos-jsp.com existe déjà !");
+        return;
+      }
+
+      await setDoc(doc(db, 'admin_mailboxes', uid), {
+        uid,
+        pseudo,
+        email,
+        active: true,
+        createdAt: serverTimestamp()
+      });
+
+      await setDoc(doc(db, 'public_admins', uid), {
+        uid,
+        pseudo,
+        active: true
+      });
+
+      e.target.reset();
+      updatePreview();
+      showAlert(`Adresse ${email} créée et ajoutée à la liste Contact !`, true);
+      await loadMailboxes();
+    });
+
+    document.getElementById('compose-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const toUid = composeToSelect.value;
+      const target = allMailboxes.find(m => m.uid === toUid);
+      if (!target || !myMailbox) return;
+
+      await addDoc(collection(db, 'admin_mails'), {
+        fromUid: currentUser.uid,
+        fromName: myMailbox.pseudo,
+        fromEmail: myMailbox.email,
+        toUid: target.uid,
+        toPseudo: target.pseudo,
+        toEmail: target.email,
+        subject: document.getElementById('compose-subject').value.trim(),
+        body: document.getElementById('compose-body').value.trim(),
+        isExternal: false,
+        read: false,
+        createdAt: serverTimestamp()
+      });
+
+      e.target.reset();
+      composeModal.classList.remove('open');
+      showAlert("Mail interne envoyé !", true);
+      if (currentTab === 'sent') await loadMessages();
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        denyAccess("Connexion admin obligatoire. Redirection...", "login.html");
+        return;
+      }
+
+      currentUser = user;
+      const userSnap = await getDoc(doc(db, 'users', user.uid));
+      const userData = userSnap.exists() ? userSnap.data() : {};
+      currentRole = String(userData.role || userData.grade || '').toLowerCase();
+
+      if (!currentRole.includes('admin')) {
+        denyAccess("Accès refusé : tu n'as pas les droits administrateur.", "index.html");
+        return;
+      }
+
+      const rightSlot = document.getElementById('topbar-right-slot');
+      if (rightSlot && !document.getElementById('open-compose-btn')) {
+        const compBtn = document.createElement('button');
+        compBtn.type = 'button';
+        compBtn.id = 'open-compose-btn';
+        compBtn.className = 'btn btn-small';
+        compBtn.textContent = 'Nouveau mail';
+        compBtn.addEventListener('click', () => {
+          if (!myMailbox) {
+            showAlert("Crée d'abord ton adresse @vos-jsp.com dans l'onglet Créer / Gérer les adresses.");
+            return;
+          }
+          composeModal.classList.add('open');
+        });
+        rightSlot.appendChild(compBtn);
+      }
+
+      document.body.classList.remove('locked');
+      await loadMailboxes();
+      await loadMessages();
     });
   </script>
 </body>

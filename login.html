@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vos JSP — Connexion &amp; Inscription</title>
   <link rel="stylesheet" href="css/style.css">
-  <script type="module" src="js/maintenance-guard.js"></script>
   <style>
     .step-auth-wrap {
-      max-width: 480px;
-      margin: 2.3rem auto 2.6rem;
+      max-width: 500px;
+      margin: 2.2rem auto 2.6rem;
     }
 
     .step-auth-card {
@@ -36,15 +35,15 @@
     }
 
     .step-dot {
-      width: 24px;
-      height: 5px;
+      width: 26px;
+      height: 6px;
       border-radius: 999px;
       background: var(--border);
       transition: background 0.25s ease, width 0.25s ease;
     }
 
     .step-dot.active {
-      width: 36px;
+      width: 38px;
       background: var(--primary);
     }
 
@@ -69,7 +68,7 @@
       padding: 0.56rem 0.75rem;
       border-radius: 10px;
       cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
     }
 
     .mode-btn.active {
@@ -81,22 +80,22 @@
     @keyframes slideInForward {
       0% {
         opacity: 0;
-        transform: translateX(26px);
+        transform: translateX(28px) scale(0.985);
       }
       100% {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateX(0) scale(1);
       }
     }
 
     @keyframes slideInBackward {
       0% {
         opacity: 0;
-        transform: translateX(-26px);
+        transform: translateX(-28px) scale(0.985);
       }
       100% {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateX(0) scale(1);
       }
     }
 
@@ -105,11 +104,11 @@
     }
 
     .step-stage.anim-forward {
-      animation: slideInForward 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: slideInForward 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     .step-stage.anim-backward {
-      animation: slideInBackward 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: slideInBackward 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -119,55 +118,42 @@
       }
     }
 
-    .account-summary-box {
+    .identity-pill {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 0.8rem 0.95rem;
-      margin-bottom: 1.1rem;
+      border-radius: 14px;
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 1rem;
+      font-size: 0.86rem;
     }
 
-    .account-summary-left {
+    .identity-pill-left {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.65rem;
       min-width: 0;
     }
 
     .mini-badge {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
       background: rgba(225, 29, 42, 0.14);
       color: var(--primary);
       font-weight: 800;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
 
-    .account-summary-texts {
-      min-width: 0;
-    }
-
-    .account-welcome-title {
-      font-weight: 800;
-      font-size: 0.98rem;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .account-mail-sub {
-      font-size: 0.8rem;
-      color: var(--muted);
+    .identity-mail {
+      font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -232,60 +218,6 @@
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-left">
-      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <a href="index.html" class="brand">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
-    </div>
-    <a href="index.html" class="btn btn-secondary btn-small">Accueil</a>
-  </div>
-
-  <div class="nav-backdrop" id="nav-backdrop"></div>
-
-  <aside class="drawer" id="drawer">
-    <div class="drawer-header">
-      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
-      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
-    </div>
-
-    <div class="drawer-label">Navigation</div>
-    <nav>
-      <a href="index.html">Accueil</a>
-      <a href="actus.html">Actualités</a>
-      <a href="ressources.html">Ressources</a>
-      <a href="galerie.html">Galerie</a>
-      <a href="proposer.html">Proposer</a>
-      <a href="a-propos.html">À propos</a>
-      <a href="contester.html">Contester</a>
-      <a href="forum.html">Forum</a>
-      <a href="recrutement.html">Recrutement</a>
-      <a href="profil.html">Profil</a>
-      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
-      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
-    </nav>
-
-    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
-      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
-      <div class="profile-meta">
-        <strong class="profile-name" id="drawer-profile-name"></strong>
-        <span class="profile-tag" id="drawer-profile-role">membre</span>
-      </div>
-    </div>
-
-    <a href="login.html" id="drawer-auth-btn" class="btn active">Connexion</a>
-    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
-  </aside>
-
   <main>
     <div class="step-auth-wrap">
       <div class="step-auth-card">
@@ -299,7 +231,7 @@
 
         <div id="title-stage" class="step-stage">
           <h1 id="step-heading" style="font-size: 1.65rem; margin: 0 0 0.25rem;">Connexion</h1>
-          <p id="step-subtitle" style="color: var(--muted); font-size: 0.9rem; margin: 0 0 1.2rem;">Étape 1/2 — Tape ton adresse e-mail puis appuie sur Entrée.</p>
+          <p id="step-subtitle" style="color: var(--muted); font-size: 0.9rem; margin: 0 0 1.2rem;">Étape 1/2 — Saisis ton adresse e-mail pour continuer.</p>
         </div>
 
         <div class="mode-switch-bar" role="tablist">
@@ -309,7 +241,6 @@
 
         <div id="auth-alert" class="alert"></div>
 
-        <!-- ÉTAPE 1 : ADRESSE E-MAIL -->
         <form id="step-1-form" class="step-stage">
           <div class="form-group">
             <label for="step-email">Adresse e-mail</label>
@@ -318,15 +249,11 @@
           <button type="submit" id="step-next-btn" class="btn" style="width: 100%;">Continuer →</button>
         </form>
 
-        <!-- ÉTAPE 2 : BIENVENUE + MOT DE PASSE (+ PSEUDO SI INSCRIPTION) -->
         <form id="step-2-form" class="step-stage" style="display: none;">
-          <div class="account-summary-box">
-            <div class="account-summary-left">
+          <div class="identity-pill">
+            <div class="identity-pill-left">
               <div class="mini-badge" id="step-mini-initials">JS</div>
-              <div class="account-summary-texts">
-                <div class="account-welcome-title" id="step-welcome-label">Bienvenue</div>
-                <div class="account-mail-sub" id="step-confirmed-email">exemple@mail.com</div>
-              </div>
+              <div class="identity-mail" id="step-confirmed-email">exemple@mail.com</div>
             </div>
             <button type="button" id="step-back-btn" class="btn btn-secondary btn-small">Modifier</button>
           </div>
@@ -370,54 +297,25 @@
     </div>
   </footer>
 
-  <script>
-    const drawer = document.getElementById('drawer');
-    const backdrop = document.getElementById('nav-backdrop');
-    document.getElementById('menu-open').addEventListener('click', () => {
-      drawer.classList.add('open');
-      backdrop.classList.add('open');
-    });
-    function closeDrawer() {
-      drawer.classList.remove('open');
-      backdrop.classList.remove('open');
-    }
-    document.getElementById('menu-close').addEventListener('click', closeDrawer);
-    backdrop.addEventListener('click', closeDrawer);
-    drawer.querySelectorAll('nav a').forEach((link) => {
-      link.addEventListener('click', closeDrawer);
-    });
-  </script>
-
+  <script type="module" src="js/nav.js" data-active="login.html" data-logout-redirect="login.html"></script>
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
     import {
       onAuthStateChanged,
       signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
-      updateProfile,
-      signOut
+      updateProfile
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import {
-      collection,
-      query,
-      where,
-      limit,
       doc,
       getDoc,
-      getDocs,
       setDoc,
       onSnapshot,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    const profileBox = document.getElementById('drawer-profile-box');
-    const profileAvatar = document.getElementById('drawer-profile-avatar');
-    const profileName = document.getElementById('drawer-profile-name');
-    const profileRole = document.getElementById('drawer-profile-role');
-    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
-    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
-    const drawerAdminLink = document.getElementById('drawer-admin-link');
-    const drawerMailLink = document.getElementById('drawer-mail-link');
+    const rightSlot = document.getElementById('topbar-right-slot');
+    if (rightSlot) rightSlot.innerHTML = '<a href="index.html" class="btn btn-secondary btn-small">Accueil</a>';
 
     const dotStep1 = document.getElementById('dot-step-1');
     const dotStep2 = document.getElementById('dot-step-2');
@@ -431,11 +329,9 @@
 
     const step1Form = document.getElementById('step-1-form');
     const stepEmailInput = document.getElementById('step-email');
-    const stepNextBtn = document.getElementById('step-next-btn');
 
     const step2Form = document.getElementById('step-2-form');
     const miniInitialsEl = document.getElementById('step-mini-initials');
-    const welcomeLabelEl = document.getElementById('step-welcome-label');
     const confirmedEmailEl = document.getElementById('step-confirmed-email');
     const stepBackBtn = document.getElementById('step-back-btn');
     const stepPseudoGroup = document.getElementById('step-pseudo-group');
@@ -461,24 +357,11 @@
       alertEl.textContent = msg;
     }
 
-    function stripAdminTag(rawLabel) {
-      return String(rawLabel || '')
-        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
-        .trim();
-    }
-
     function getInitials(label) {
-      const clean = stripAdminTag(label) || 'JS';
+      const clean = (label || 'JS').trim();
       const parts = clean.split(/[\s._-]+/).filter(Boolean);
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return clean.slice(0, 2).toUpperCase();
-    }
-
-    function formatAdminPseudo(userData, fallbackDisplay) {
-      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
-      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
-      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
-      return `[ ADMIN ] ${firstName}`;
     }
 
     function formatAuthError(err) {
@@ -495,40 +378,7 @@
       return 'Erreur : ' + (code || (err && err.message) || 'inconnue');
     }
 
-    async function syncPublicProfile(uid, email, rawPseudo) {
-      if (!uid || !email) return;
-      const cleanPseudo = stripAdminTag(rawPseudo) || email.split('@')[0];
-      try {
-        await setDoc(doc(db, "public_profiles", uid), {
-          email: email.toLowerCase(),
-          pseudo: cleanPseudo
-        }, { merge: true });
-      } catch (_) {}
-    }
-
-    async function findAccountByEmail(email) {
-      const cleanEmail = String(email || '').trim();
-      const lowerEmail = cleanEmail.toLowerCase();
-      const candidates = Array.from(new Set([lowerEmail, cleanEmail].filter(Boolean)));
-
-      for (const target of candidates) {
-        try {
-          const q = query(collection(db, "public_profiles"), where("email", "==", target), limit(1));
-          const snap = await getDocs(q);
-          if (!snap.empty) {
-            const data = snap.docs[0].data() || {};
-            const rawName = data.pseudo || cleanEmail.split('@')[0];
-            const cleanName = stripAdminTag(rawName) || cleanEmail.split('@')[0];
-            return { displayName: cleanName };
-          }
-        } catch (_) {}
-      }
-
-      const mailPrefix = stripAdminTag(cleanEmail.split('@')[0]) || cleanEmail;
-      return { displayName: mailPrefix };
-    }
-
-    function goToStep(stepNum, direction = 'forward', accountInfo = null) {
+    function goToStep(stepNum, direction = 'forward') {
       const animClass = direction === 'backward' ? 'anim-backward' : 'anim-forward';
       currentStep = stepNum;
       alertEl.style.display = 'none';
@@ -541,7 +391,7 @@
         step1Form.style.display = 'block';
         triggerStageAnim(step1Form, animClass);
         headingEl.textContent = isRegisterMode ? 'Inscription' : 'Connexion';
-        subtitleEl.textContent = 'Étape 1/2 — Tape ton adresse e-mail puis appuie sur Entrée.';
+        subtitleEl.textContent = 'Étape 1/2 — Saisis ton adresse e-mail pour continuer.';
         stepEmailInput.focus();
       } else {
         dotStep1.classList.remove('active');
@@ -551,12 +401,9 @@
         triggerStageAnim(step2Form, animClass);
 
         const em = stepEmailInput.value.trim();
-        const ps = stripAdminTag(stepPseudoInput.value.trim());
-        const resolvedName = (accountInfo && accountInfo.displayName) || ps || stripAdminTag(em.split('@')[0]) || em;
-
+        const ps = stepPseudoInput.value.trim();
         confirmedEmailEl.textContent = em;
-        miniInitialsEl.textContent = getInitials(resolvedName);
-        welcomeLabelEl.textContent = isRegisterMode ? `Compte ${resolvedName}` : `Bienvenue ${resolvedName}`;
+        miniInitialsEl.textContent = getInitials(ps || em);
 
         if (isRegisterMode) {
           stepPseudoGroup.style.display = 'block';
@@ -635,16 +482,7 @@
         stepEmailInput.focus();
         return;
       }
-
-      stepNextBtn.disabled = true;
-      stepNextBtn.textContent = 'Vérification...';
-
-      const accountInfo = await findAccountByEmail(em);
-
-      stepNextBtn.disabled = false;
-      stepNextBtn.textContent = 'Continuer →';
-
-      goToStep(2, 'forward', accountInfo);
+      goToStep(2, 'forward');
     });
 
     stepBackBtn.addEventListener('click', (e) => {
@@ -653,12 +491,8 @@
     });
 
     stepPseudoInput.addEventListener('input', () => {
-      const ps = stripAdminTag(stepPseudoInput.value.trim());
-      const name = ps || stripAdminTag(stepEmailInput.value.trim().split('@')[0]);
-      miniInitialsEl.textContent = getInitials(name);
-      if (isRegisterMode) {
-        welcomeLabelEl.textContent = `Compte ${name}`;
-      }
+      const ps = stepPseudoInput.value.trim();
+      miniInitialsEl.textContent = getInitials(ps || stepEmailInput.value.trim());
     });
 
     stepEyeBtn.addEventListener('click', (e) => {
@@ -703,20 +537,15 @@
             createdAt: serverTimestamp(),
             lastLoginAt: serverTimestamp()
           }, { merge: true });
-          await syncPublicProfile(cred.user.uid, email, finalPseudo);
         } else {
           const cred = await signInWithEmailAndPassword(auth, email, password);
           const userRef = doc(db, "users", cred.user.uid);
           const snap = await getDoc(userRef);
-          const existingData = snap.exists() ? (snap.data() || {}) : {};
 
-          if (existingData.banned === true) {
+          if (snap.exists() && snap.data().banned === true) {
             window.location.replace('ban.html');
             return;
           }
-
-          const resolvedPseudo = existingData.pseudo || cred.user.displayName || email.split('@')[0];
-          await syncPublicProfile(cred.user.uid, email, resolvedPseudo);
 
           const patch = {
             email,
@@ -724,7 +553,7 @@
           };
           if (currentIp) patch.lastIp = currentIp;
           if (!snap.exists()) {
-            patch.pseudo = resolvedPseudo;
+            patch.pseudo = cred.user.displayName || email.split('@')[0];
             patch.role = 'membre';
             patch.banned = false;
           }
@@ -738,11 +567,6 @@
       }
     });
 
-    drawerLogoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.reload();
-    });
-
     onAuthStateChanged(auth, async (user) => {
       if (userUnsubscribe) {
         userUnsubscribe();
@@ -750,46 +574,14 @@
       }
 
       if (await redirectIfIpBanned()) return;
+      if (!user) return;
 
-      if (!user) {
-        profileBox.style.display = 'none';
-        drawerLogoutBtn.style.display = 'none';
-        drawerAdminLink.style.display = 'none';
-        drawerMailLink.style.display = 'none';
-        drawerAuthBtn.style.display = 'inline-flex';
-        return;
-      }
-
-      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-
-      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), async (snap) => {
+      userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snap) => {
         const data = snap.exists() ? (snap.data() || {}) : {};
         if (data.banned === true) {
           window.location.replace('ban.html');
           return;
         }
-
-        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
-        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
-        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
-        const pseudo = isAdmin
-          ? formatAdminPseudo(data, fallbackName)
-          : (data.pseudo || fallbackName);
-
-        if (user.email) {
-          await syncPublicProfile(user.uid, user.email, stripAdminTag(pseudo) || fallbackName);
-        }
-
-        profileBox.style.display = 'flex';
-        profileAvatar.textContent = getInitials(pseudo);
-        profileName.textContent = pseudo;
-        profileRole.textContent = roleLabel;
-        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-        drawerAuthBtn.style.display = 'none';
-        drawerLogoutBtn.style.display = 'inline-flex';
-        drawerAdminLink.style.display = isAdmin ? 'block' : 'none';
-        drawerMailLink.style.display = isAdmin ? 'block' : 'none';
-
         window.location.replace('index.html');
       });
     });

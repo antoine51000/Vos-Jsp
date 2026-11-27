@@ -3,103 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Actualités</title>
+  <title>Actualités — Vos JSP</title>
   <link rel="stylesheet" href="css/style.css">
   <script type="module" src="js/maintenance-guard.js"></script>
+  <script type="module" src="js/nav.js"></script>
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-left">
-      <button type="button" class="menu-btn" id="menu-open" aria-label="Ouvrir le menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <a href="index.html" class="brand">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
-    </div>
-    <a href="proposer.html" class="btn btn-small">Proposer une actu</a>
-  </div>
-
-  <div class="nav-backdrop" id="nav-backdrop"></div>
-
-  <aside class="drawer" id="drawer">
-    <div class="drawer-header">
-      <a href="index.html" class="brand" style="box-shadow:none; border:none; padding:0.25rem;">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
-      <button type="button" class="close-btn" id="menu-close" aria-label="Fermer le menu">&times;</button>
-    </div>
-
-    <div class="drawer-label">Navigation</div>
-    <nav>
-      <a href="index.html">Accueil</a>
-      <a href="actus.html" class="active">Actualités</a>
-      <a href="ressources.html">Ressources</a>
-      <a href="galerie.html">Galerie</a>
-      <a href="proposer.html">Proposer</a>
-      <a href="a-propos.html">À propos</a>
-      <a href="contester.html">Contester</a>
-      <a href="forum.html">Forum</a>
-      <a href="recrutement.html">Recrutement</a>
-      <a href="profil.html">Profil</a>
-      <a href="mail.html" id="drawer-mail-link" style="display: none;">Messagerie Admin</a>
-      <a href="admin.html" id="drawer-admin-link" style="display: none;">Panel Admin</a>
-    </nav>
-
-    <div id="drawer-profile-box" class="profile-widget" style="display: none;">
-      <div class="profile-avatar" id="drawer-profile-avatar">JS</div>
-      <div class="profile-meta">
-        <strong class="profile-name" id="drawer-profile-name"></strong>
-        <span class="profile-tag" id="drawer-profile-role">membre</span>
+  <main class="container">
+    <section class="panel" style="margin-bottom:1.5rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; flex-wrap:wrap;">
+        <div>
+          <div class="badge" style="margin-bottom:0.6rem;">Fil d’actualités</div>
+          <h1>Actualités & annonces JSP</h1>
+          <p class="muted" style="margin-top:0.4rem;">
+            Retrouvez les dernières publications, rendez-vous et informations partagées par la communauté.
+          </p>
+        </div>
+        <a href="proposer.html" class="btn btn-small">Proposer un article</a>
       </div>
-    </div>
 
-    <a href="login.html" id="drawer-auth-btn" class="btn">Connexion</a>
-    <button type="button" id="drawer-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Déconnexion</button>
-  </aside>
-
-  <div id="reader-backdrop" style="display: none; position: fixed; inset: 0; background: rgba(11, 17, 32, 0.52); backdrop-filter: blur(5px); z-index: 100; padding: 1.25rem; overflow-y: auto; align-items: center; justify-content: center;">
-    <article style="background: var(--surface); border: 1px solid var(--border); border-radius: 22px; max-width: 740px; width: 100%; padding: 2rem; box-shadow: 0 28px 65px -16px rgba(11, 17, 32, 0.35); position: relative; margin: auto;">
-      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem;">
-        <span class="card-meta" id="reader-cat" style="margin: 0;">Infos SP</span>
-        <button type="button" class="close-btn" id="reader-close" aria-label="Fermer l'article">&times;</button>
-      </div>
-      <h2 id="reader-title" style="font-size: 1.55rem; margin-bottom: 0.45rem;"></h2>
-      <p id="reader-meta" style="font-size: 0.82rem; color: var(--muted); margin-bottom: 1.35rem; font-weight: 600;"></p>
-      <div id="reader-body" style="display: flex; flex-direction: column; gap: 0.95rem; color: var(--text); font-size: 0.98rem; line-height: 1.74;"></div>
-      <div style="margin-top: 1.75rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
-        <a id="reader-link" href="#" target="_blank" rel="noopener noreferrer" style="font-size: 0.78rem; color: var(--muted); text-decoration: underline; text-underline-offset: 3px;">Lien vers l'article</a>
-        <button type="button" class="btn btn-small" id="reader-done">Fermer la lecture</button>
-      </div>
-    </article>
-  </div>
-
-  <main>
-    <section class="hero" style="padding: 2.3rem 2rem; margin-bottom: 1.75rem;">
-      <span class="badge">Fil Sapeurs-Pompiers &amp; JSP</span>
-      <h1>Actualités des pompiers, blocus, interventions &amp; formation JSP.</h1>
-      <p class="subtitle" style="margin-bottom: 1.25rem;">Lis l'intégralité de chaque article directement ici, avec le nom du rédacteur et un lien discret vers l'article si tu veux consulter la page d'origine.</p>
-      <div class="actions" id="category-filters">
-        <button type="button" class="btn btn-small filter-btn active" data-cat="all">Toutes</button>
-        <button type="button" class="btn btn-secondary btn-small filter-btn" data-cat="Blocus & Violences">Blocus &amp; Violences</button>
-        <button type="button" class="btn btn-secondary btn-small filter-btn" data-cat="Sécurité Civile">Sécurité Civile</button>
-        <button type="button" class="btn btn-secondary btn-small filter-btn" data-cat="Cursus JSP">Cursus JSP</button>
-        <button type="button" class="btn btn-secondary btn-small filter-btn" data-cat="Secourisme">Secourisme</button>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1.25rem;">
+        <input type="search" id="actus-search" class="input" placeholder="Rechercher un titre, un mot-clé..." style="max-width:320px;">
+        <select id="actus-category" class="input" style="max-width:220px;">
+          <option value="all">Toutes les catégories</option>
+          <option value="Annonce">Annonce</option>
+          <option value="Vie des sections">Vie des sections</option>
+          <option value="Formation">Formation</option>
+          <option value="Événement">Événement</option>
+          <option value="Communauté">Communauté</option>
+        </select>
       </div>
     </section>
 
-    <div id="actus-list" class="grid"></div>
+    <section id="actus-reader" class="panel" style="display:none; margin-bottom:1.5rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1rem;">
+        <span class="badge" id="reader-category">Article</span>
+        <button type="button" id="reader-close" class="btn btn-secondary btn-small">Fermer la lecture</button>
+      </div>
+      <h2 id="reader-title" style="margin-bottom:0.5rem;"></h2>
+      <div id="reader-meta" class="muted" style="font-size:0.86rem; margin-bottom:1.2rem;"></div>
+      <div id="reader-image-wrap" style="display:none; margin-bottom:1.25rem;">
+        <img id="reader-image" alt="" style="width:100%; max-height:420px; object-fit:cover; border-radius:14px;">
+      </div>
+      <div id="reader-body" style="line-height:1.7; white-space:pre-line;"></div>
+    </section>
+
+    <section id="actus-list" class="grid-3">
+      <div class="panel">Chargement des actualités...</div>
+    </section>
   </main>
 
   <footer>
     <div class="footer-container">
-      <div>
-        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
-      </div>
+      <div><strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.</div>
       <div class="footer-links">
         <a href="mentions-legales.html">Mentions légales</a>
         <a href="confidentialite.html">Confidentialité</a>
@@ -108,362 +64,114 @@
     </div>
   </footer>
 
-  <script>
-    const drawer = document.getElementById('drawer');
-    const backdrop = document.getElementById('nav-backdrop');
-    document.getElementById('menu-open').addEventListener('click', () => {
-      drawer.classList.add('open');
-      backdrop.classList.add('open');
-    });
-    function closeDrawer() {
-      drawer.classList.remove('open');
-      backdrop.classList.remove('open');
-    }
-    document.getElementById('menu-close').addEventListener('click', closeDrawer);
-    backdrop.addEventListener('click', closeDrawer);
-    drawer.querySelectorAll('nav a').forEach((link) => {
-      link.addEventListener('click', closeDrawer);
-    });
+  <script type="module">
+    import { db } from './js/firebase-config.js';
+    import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const listEl = document.getElementById('actus-list');
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const readerBackdrop = document.getElementById('reader-backdrop');
-    const readerCat = document.getElementById('reader-cat');
+    const searchEl = document.getElementById('actus-search');
+    const categoryEl = document.getElementById('actus-category');
+    const readerEl = document.getElementById('actus-reader');
+    const readerCloseBtn = document.getElementById('reader-close');
+    const readerCategory = document.getElementById('reader-category');
     const readerTitle = document.getElementById('reader-title');
     const readerMeta = document.getElementById('reader-meta');
+    const readerImageWrap = document.getElementById('reader-image-wrap');
+    const readerImage = document.getElementById('reader-image');
     const readerBody = document.getElementById('reader-body');
-    const readerLink = document.getElementById('reader-link');
 
-    const spNews = [
-      {
-        category: 'Blocus & Violences',
-        title: 'Marseille : un véhicule des marins-pompiers attaqué, pillé et incendié devant le lycée Saint-Exupéry',
-        author: 'Rédaction Police & Réalités',
-        sourceUrl: 'https://policeetrealites.com/2026/10/01/marseille-un-vehicule-des-marins-pompiers-attaque-pille-et-incendie-devant-le-lycee-saint-exupery-un-secouriste-blesse/',
-        summary: 'Lors d\'un blocage devant le lycée Saint-Exupéry à Marseille, un véhicule de première intervention des marins-pompiers a été attaqué, pillé et incendié, et un marin-pompier a été légèrement blessé.',
-        fullText: [
-          'Le 1er octobre 2026, lors d\'un mouvement de blocage devant le lycée Saint-Exupéry à Marseille, les marins-pompiers ont enchaîné les interventions autour d\'établissements scolaires face à de nombreux feux de détritus et des tensions sur la voie publique.',
-          'Selon un communiqué des Marins-Pompiers de Marseille relayé par les médias, un fourgon incendie engagé sur un feu de détritus devant le lycée Saint-Exupéry a été pris à partie par des manifestants, puis un véhicule de première intervention a été attaqué, pillé et incendié.',
-          'Dans ce même contexte d\'incidents autour des lycées, un marin-pompier a été légèrement blessé, tandis que les moyens des marins-pompiers restaient engagés sur plus de quarante interventions pour contenir les départs de feu et sécuriser les abords.',
-          'Cet épisode rappelle les risques encourus par les secours lorsqu\'ils interviennent sur des feux urbains en plein blocage et l\'importance de ne pas gêner ou prendre pour cible ceux qui portent secours.'
-        ]
-      },
-      {
-        category: 'Blocus & Violences',
-        title: 'Violences en intervention : un sapeur-pompier grièvement blessé par arme à feu',
-        author: 'Question écrite au Sénat (novembre 2026)',
-        sourceUrl: 'https://www.senat.fr/questions/base/2026/qSEQ261110657.html',
-        summary: 'Le 1er novembre 2026, un sapeur-pompier a été grièvement blessé par arme à feu alors qu\'il intervenait sur un incendie de véhicules, relançant le débat sur la protection des secours.',
-        fullText: [
-          'Le 1er novembre 2026, un sapeur-pompier a été grièvement blessé par arme à feu alors qu\'il intervenait sur un incendie de véhicules.',
-          'Ce drame a suscité une vive émotion et donné lieu à une question au Sénat en novembre 2026 sur la protection des sapeurs-pompiers contre les violences en intervention.',
-          'L\'enjeu porte sur la sécurisation des opérations de secours exposées à des menaces, le soutien aux agents victimes d\'agressions et la fermeté de la réponse judiciaire face aux violences visant les personnels de sécurité civile.'
-        ]
-      },
-      {
-        category: 'Sécurité Civile',
-        title: 'Plan de prévention et de lutte contre les violences envers les sapeurs-pompiers',
-        author: 'Direction générale de la sécurité civile et de la gestion des crises (DGSCGC)',
-        sourceUrl: 'https://www.securite-civile.interieur.gouv.fr/actualites/actualites/plan-de-prevention-et-de-lutte-contre-violences-envers-sapeurs-pompiers',
-        summary: 'La Sécurité civile décline 19 mesures pour anticiper les risques d\'agression, protéger les équipages et lutter contre toute forme d\'impunité.',
-        fullText: [
-          'Publié le 2 avril 2026 sur demande du ministre de l\'Intérieur, le plan de prévention et de lutte contre les violences envers les sapeurs-pompiers décline 19 mesures dans les territoires pour faire baisser les agressions et rétablir le respect dû aux secours.',
-          'Le dispositif prévoit notamment de désigner un référent sûreté dans chaque SIS, de consolider les remontées d\'informations, d\'intégrer un outil de prévision des risques d\'agression dans NexSIS 18-112 et de déployer caméras piétons ou embarquées.',
-          'Il renforce également la formation à l\'autoprotection, à l\'évitement et à la désescalade, l\'accès aux protections adaptées, le soutien aux agents victimes et la coopération avec l\'autorité judiciaire.'
-        ]
-      },
-      {
-        category: 'Sécurité Civile',
-        title: 'Plan d\'actions 2026-2028 pour les sapeurs-pompiers volontaires',
-        author: 'Sécurité Civile — Ministère de l\'Intérieur',
-        sourceUrl: 'https://www.securite-civile.interieur.gouv.fr/actualites/actualites/volontariat-des-sapeurs-pompiers-securite-civile-et-lentreprise-goron-sengagent-ensemble',
-        summary: 'Lancé en avril 2026, ce plan vise à renforcer l\'attractivité et la fidélisation des sapeurs-pompiers volontaires ainsi que l\'engagement citoyen.',
-        fullText: [
-          'En avril 2026, la Sécurité civile a lancé le plan d\'actions 2026-2028 pour les sapeurs-pompiers volontaires afin de moderniser le cadre de leur engagement et d\'accompagner les centres d\'incendie et de secours.',
-          'Le plan agit sur l\'accueil, le suivi et la fidélisation des volontaires, le rapprochement avec les employeurs publics et privés, ainsi que la sensibilisation du public aux missions de sécurité civile.',
-          'Il s\'inscrit dans un modèle où les volontaires accomplissent les mêmes missions que les sapeurs-pompiers professionnels et militaires pour protéger les personnes, les biens et l\'environnement.'
-        ]
-      },
-      {
-        category: 'Sécurité Civile',
-        title: 'Statistiques des services d\'incendie et de secours : bilan des effectifs et interventions',
-        author: 'Direction générale de la sécurité civile et de la gestion des crises (DGSCGC)',
-        sourceUrl: 'https://www.securite-civile.interieur.gouv.fr/actualites/actualites/statistiques-des-services-dincendie-et-de-secours',
-        summary: 'La DGSCGC publie le bilan statistique des services d\'incendie et de secours (effectifs, JSP, engins et opérations de secours).',
-        fullText: [
-          'La Direction générale de la sécurité civile et de la gestion des crises publie les statistiques nationales des services d\'incendie et de secours arrêtées au 31 décembre 2025 (communiquées en avril 2026).',
-          'Elles recensent 258 641 sapeurs-pompiers au total — dont 200 961 volontaires, 44 303 professionnels et 13 377 militaires — ainsi que 27 326 jeunes sapeurs-pompiers et 4,89 millions d\'opérations de secours.',
-          'Ces chiffres illustrent l\'importance du secours et des soins d\'urgence aux personnes (79 % selon la nomenclature 2025), de la lutte contre les incendies (6 %) et de l\'engagement des jeunes en formation.'
-        ]
-      },
-      {
-        category: 'Cursus JSP',
-        title: '4 cycles de formation JSP et passage du Brevet National (BNJSP)',
-        author: 'Fédération nationale des sapeurs-pompiers de France (FNSPF)',
-        sourceUrl: 'https://www.pompiers.fr/jeune-sapeur-pompier/',
-        summary: 'Près de 28 200 filles et garçons se forment chaque semaine sur quatre cycles dans les sections JSP avant de pouvoir passer le BNJSP.',
-        fullText: [
-          'Environ 28 200 jeunes se retrouvent chaque semaine dans les 1 500 sections de jeunes sapeurs-pompiers pour suivre une formation répartie sur quatre cycles annuels.',
-          'Chaque cycle aborde cinq modules : le prompt secours, la lutte contre les incendies, la protection des biens et de l\'environnement, l\'engagement citoyen et les activités physiques et sportives.',
-          'Le référentiel JSP est calqué sur celui de l\'équipier sapeur-pompier volontaire, et les jeunes peuvent passer le Brevet National de Jeune Sapeur-Pompier (BNJSP) avec épreuves théoriques, pratiques (ARI, échelles, lances, opérations diverses) et sportives.'
-        ]
-      },
-      {
-        category: 'Secourisme',
-        title: 'Formation continue 2027 (PSE & PSC) : circulaire du 4 juin 2026',
-        author: 'Rédaction Secourisme.net',
-        sourceUrl: 'https://www.secourisme.net/spip.php?article923&lang=fr',
-        summary: 'La circulaire du 4 juin 2026 fixe le programme de formation continue 2027 pour les unités d\'enseignement aux premiers secours.',
-        fullText: [
-          'La circulaire du 4 juin 2026 (NOR : INTE2614737C) définit le programme de formation continue 2027 pour les unités d\'enseignement aux premiers secours des filières de sécurité civile.',
-          'Elle couvre notamment l\'arrêt cardio-respiratoire, l\'obstruction des voies aériennes, les plaies (avec focus sur l\'arrachement ou l\'amputation de membre), la défibrillation automatisée externe, la noyade et les affections liées à la chaleur.',
-          'Les orientations pédagogiques mettent l\'accent sur l\'action précoce, la simplification des messages et l\'adaptation à la réalité du terrain.'
-        ]
-      },
-      {
-        category: 'Secourisme',
-        title: 'Mondial Secours et Protection 2026 : conférences, innovations et RETEX',
-        author: 'Fédération nationale des sapeurs-pompiers de France (FNSPF)',
-        sourceUrl: 'https://www.pompiers.fr/mondial-secours-protection-2026-programme/',
-        summary: 'Le Mondial Secours et Protection 2026 a réuni acteurs du secours, débats, RETEX sur les feux de l\'été et innovations techniques.',
-        fullText: [
-          'Organisé du 30 septembre au 3 octobre 2026 à La Roche-sur-Foron et Annecy, le Mondial Secours et Protection 2026 a rassemblé congrès national, salon des acteurs du secours et village des sapeurs-pompiers.',
-          'Le programme a mis en avant les retours d\'expérience (RETEX) sur les feux de l\'été 2026, les tables rondes sur l\'évolution des risques et les conférences sur l\'IA, le secours en montagne et la santé des agents.',
-          'C\'est aussi un temps fort de rencontre avec le public pour promouvoir l\'engagement citoyen et la sensibilisation aux gestes qui sauvent.'
-        ]
-      }
-    ];
+    let allArticles = [];
 
-    window.__allActus = spNews.slice();
-    let currentCat = 'all';
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
 
-    function openArticle(item) {
-      readerCat.textContent = item.category || 'Infos SP';
-      readerTitle.textContent = item.title || 'Article';
-      readerMeta.textContent = item.author ? 'Rédigé par : ' + item.author : 'Rédaction Vos JSP';
+    function formatDate(val) {
+      if (!val) return 'Date récente';
+      const d = typeof val?.toDate === 'function' ? val.toDate() : new Date(val);
+      if (Number.isNaN(d.getTime())) return 'Date récente';
+      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
 
-      const paragraphs = Array.isArray(item.fullText) && item.fullText.length > 0
-        ? item.fullText
-        : [item.content || item.summary || ''];
-
-      readerBody.textContent = '';
-      paragraphs.filter(Boolean).forEach(p => {
-        const para = document.createElement('p');
-        para.textContent = p;
-        readerBody.appendChild(para);
-      });
-
-      if (item.sourceUrl) {
-        readerLink.href = item.sourceUrl;
-        readerLink.style.display = 'inline';
+    function openArticle(article) {
+      readerCategory.textContent = article.category || 'Actualité';
+      readerTitle.textContent = article.title || 'Sans titre';
+      readerMeta.textContent = `Publié le ${formatDate(article.createdAt)}${article.authorName ? ` • Par ${article.authorName}` : ''}`;
+      if (article.imageUrl) {
+        readerImage.src = article.imageUrl;
+        readerImage.alt = article.title || '';
+        readerImageWrap.style.display = 'block';
       } else {
-        readerLink.style.display = 'none';
+        readerImageWrap.style.display = 'none';
       }
-
-      readerBackdrop.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+      readerBody.textContent = article.content || article.summary || '';
+      readerEl.style.display = 'block';
+      readerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function closeArticle() {
-      readerBackdrop.style.display = 'none';
-      document.body.style.overflow = '';
-    }
-
-    document.getElementById('reader-close').addEventListener('click', closeArticle);
-    document.getElementById('reader-done').addEventListener('click', closeArticle);
-    readerBackdrop.addEventListener('click', (e) => {
-      if (e.target === readerBackdrop) closeArticle();
+    readerCloseBtn.addEventListener('click', () => {
+      readerEl.style.display = 'none';
     });
 
-    window.renderActusList = function renderList() {
-      const items = window.__allActus || spNews;
-      const filtered = currentCat === 'all'
-        ? items
-        : items.filter(item => (item.category || 'Infos SP').toLowerCase() === currentCat.toLowerCase());
+    function renderArticles() {
+      const qText = String(searchEl.value || '').trim().toLowerCase();
+      const cat = categoryEl.value;
 
-      listEl.textContent = '';
+      const filtered = allArticles.filter((item) => {
+        if (item.status && item.status !== 'published') return false;
+        const matchesCat = cat === 'all' || String(item.category || '').toLowerCase() === cat.toLowerCase();
+        const hay = `${item.title || ''} ${item.summary || ''} ${item.content || ''} ${item.authorName || ''}`.toLowerCase();
+        const matchesSearch = !qText || hay.includes(qText);
+        return matchesCat && matchesSearch;
+      });
 
-      if (filtered.length === 0) {
-        const emptyCard = document.createElement('div');
-        emptyCard.className = 'card';
-        const m = document.createElement('span');
-        m.className = 'card-meta';
-        m.textContent = currentCat;
-        const h = document.createElement('h3');
-        h.textContent = 'Aucune actualité dans cette catégorie';
-        const p = document.createElement('p');
-        p.textContent = 'Essaie un autre filtre ou propose un contenu depuis la page dédiée.';
-        emptyCard.appendChild(m);
-        emptyCard.appendChild(h);
-        emptyCard.appendChild(p);
-        listEl.appendChild(emptyCard);
+      if (!filtered.length) {
+        listEl.innerHTML = '<div class="panel">Aucune actualité ne correspond à votre recherche.</div>';
         return;
       }
 
-      filtered.forEach(item => {
+      listEl.innerHTML = '';
+      filtered.forEach((article) => {
         const card = document.createElement('article');
         card.className = 'card';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.justifyContent = 'space-between';
 
-        const catBadge = document.createElement('span');
-        catBadge.className = 'card-meta';
-        catBadge.textContent = item.category || 'Infos SP';
-
-        const h3 = document.createElement('h3');
-        h3.textContent = item.title || 'Sans titre';
-
-        const desc = document.createElement('p');
-        desc.textContent = item.summary || item.content || '';
-
-        const footerRow = document.createElement('div');
-        footerRow.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: auto; padding-top: 0.5rem; flex-wrap: wrap;';
-
-        const authorSpan = document.createElement('span');
-        authorSpan.style.cssText = 'font-size: 0.76rem; color: var(--muted); font-weight: 600;';
-        authorSpan.textContent = item.author ? 'Par ' + item.author : 'Rédaction Vos JSP';
-
-        const readBtn = document.createElement('button');
-        readBtn.type = 'button';
-        readBtn.className = 'btn btn-secondary btn-small';
-        readBtn.textContent = 'Lire l\'article';
-        readBtn.addEventListener('click', () => openArticle(item));
-
-        footerRow.appendChild(authorSpan);
-        footerRow.appendChild(readBtn);
-
-        card.appendChild(catBadge);
-        card.appendChild(h3);
-        card.appendChild(desc);
-        card.appendChild(footerRow);
+        const preview = article.summary || article.content || '';
+        card.innerHTML = `
+          <div>
+            ${article.imageUrl ? `<img src="${escapeHtml(article.imageUrl)}" alt="${escapeHtml(article.title)}" style="width:100%; height:175px; object-fit:cover; border-radius:12px; margin-bottom:0.9rem;">` : ''}
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; margin-bottom:0.55rem;">
+              <span class="badge">${escapeHtml(article.category || 'Actualité')}</span>
+              <span class="muted" style="font-size:0.8rem;">${escapeHtml(formatDate(article.createdAt))}</span>
+            </div>
+            <h3 style="margin-bottom:0.5rem;">${escapeHtml(article.title || 'Sans titre')}</h3>
+            <p class="muted" style="font-size:0.92rem; line-height:1.55;">${escapeHtml(preview.slice(0, 170))}${preview.length > 170 ? '…' : ''}</p>
+          </div>
+          <div style="margin-top:1.1rem; display:flex; justify-content:space-between; align-items:center;">
+            <span class="muted" style="font-size:0.82rem;">${escapeHtml(article.authorName || 'Équipe Vos JSP')}</span>
+            <button type="button" class="btn btn-small read-btn">Lire l’article</button>
+          </div>
+        `;
+        card.querySelector('.read-btn').addEventListener('click', () => openArticle(article));
         listEl.appendChild(card);
       });
-    };
-
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentCat = btn.dataset.cat;
-        filterBtns.forEach(b => {
-          b.classList.remove('active', 'btn');
-          b.classList.add('btn-secondary');
-        });
-        btn.classList.remove('btn-secondary');
-        btn.classList.add('btn', 'active');
-        window.renderActusList();
-      });
-    });
-
-    window.renderActusList();
-  </script>
-
-  <script type="module">
-    import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import { collection, query, orderBy, getDocs, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-
-    const profileBox = document.getElementById('drawer-profile-box');
-    const profileAvatar = document.getElementById('drawer-profile-avatar');
-    const profileName = document.getElementById('drawer-profile-name');
-    const profileRole = document.getElementById('drawer-profile-role');
-    const authBtn = document.getElementById('drawer-auth-btn');
-    const logoutBtn = document.getElementById('drawer-logout-btn');
-    const adminLink = document.getElementById('drawer-admin-link');
-    const mailLink = document.getElementById('drawer-mail-link');
-
-    let unsubscribeUser = null;
-
-    function getInitials(label) {
-      const clean = String(label || 'JS')
-        .replace(/^\s*\[\s*(?:SUPER\s*ADMIN|SUPERADMIN|ADMIN|MODO|MODERATEUR|MODÉRATEUR)\s*\]\s*[-–:]?\s*/i, '')
-        .trim() || 'JS';
-      const parts = clean.split(/[\s._-]+/).filter(Boolean);
-      if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
-      return clean.slice(0, 2).toUpperCase();
     }
 
-    function formatAdminPseudo(userData, fallbackDisplay) {
-      const rawSource = (userData && (userData.prenom || userData.pseudo || userData.displayName)) || fallbackDisplay || 'Membre';
-      const cleaned = String(rawSource).replace(/^\s*\[[^\]]+\]\s*/g, '').trim();
-      const firstName = (cleaned.split(/\s+/)[0] || 'Membre').trim();
-      return `[ ADMIN ] ${firstName}`;
-    }
+    searchEl.addEventListener('input', renderArticles);
+    categoryEl.addEventListener('change', renderArticles);
 
-    onAuthStateChanged(auth, (user) => {
-      if (unsubscribeUser) {
-        unsubscribeUser();
-        unsubscribeUser = null;
-      }
-
-      if (!user) {
-        profileBox.style.display = 'none';
-        logoutBtn.style.display = 'none';
-        adminLink.style.display = 'none';
-        mailLink.style.display = 'none';
-        authBtn.style.display = 'inline-flex';
-        authBtn.textContent = 'Connexion';
-        authBtn.href = 'login.html';
-        return;
-      }
-
-      authBtn.style.display = 'none';
-      logoutBtn.style.display = 'inline-flex';
-
-      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Membre');
-
-      unsubscribeUser = onSnapshot(doc(db, "users", user.uid), (snap) => {
-        const data = snap.exists() ? (snap.data() || {}) : {};
-        if (data.banned === true) {
-          window.location.replace('ban.html');
-          return;
-        }
-
-        const rawRole = String(data.role || data.grade || 'membre').toLowerCase();
-        const isAdmin = rawRole === 'admin' || rawRole === 'superadmin';
-        const roleLabel = rawRole === 'superadmin' ? 'superadmin' : (isAdmin ? 'admin' : 'membre');
-        const pseudo = isAdmin
-          ? formatAdminPseudo(data, fallbackName)
-          : (data.pseudo || fallbackName);
-
-        profileName.textContent = pseudo;
-        profileAvatar.textContent = getInitials(pseudo);
-        profileRole.textContent = roleLabel;
-        profileRole.className = isAdmin ? 'profile-tag admin' : 'profile-tag';
-        adminLink.style.display = isAdmin ? 'block' : 'none';
-        mailLink.style.display = isAdmin ? 'block' : 'none';
-        profileBox.style.display = 'flex';
-      }, () => {
-        profileName.textContent = fallbackName;
-        profileAvatar.textContent = getInitials(fallbackName);
-        profileRole.textContent = 'membre';
-        profileRole.className = 'profile-tag';
-        adminLink.style.display = 'none';
-        mailLink.style.display = 'none';
-        profileBox.style.display = 'flex';
-      });
+    onSnapshot(query(collection(db, 'articles'), orderBy('createdAt', 'desc')), (snap) => {
+      allArticles = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      renderArticles();
+    }, () => {
+      listEl.innerHTML = '<div class="panel">Impossible de charger les actualités pour le moment.</div>';
     });
-
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.replace('actus.html');
-    });
-
-    async function loadDbActus() {
-      try {
-        const q = query(collection(db, "actus"), orderBy("createdAt", "desc"));
-        const snap = await getDocs(q);
-        const dbItems = [];
-        snap.forEach(d => dbItems.push(d.data()));
-        if (dbItems.length > 0 && Array.isArray(window.__allActus)) {
-          const base = window.__allActus.slice(0, 8);
-          window.__allActus = dbItems.concat(base);
-          if (typeof window.renderActusList === 'function') {
-            window.renderActusList();
-          }
-        }
-      } catch (e) {}
-    }
-
-    loadDbActus();
   </script>
 </body>
 </html>

@@ -3,72 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vos JSP — Compte suspendu</title>
+  <title>Compte suspendu — Vos JSP</title>
   <link rel="stylesheet" href="css/style.css">
-  <script type="module" src="js/maintenance-guard.js"></script>
-  <style>
-    .ban-wrapper {
-      max-width: 640px;
-      margin: 2.2rem auto;
-    }
-
-    .ban-message-box {
-      background: var(--bg);
-      border: 1px solid rgba(225, 29, 42, 0.35);
-      border-radius: 16px;
-      padding: 1.15rem 1.25rem;
-      margin: 1rem 0;
-      white-space: pre-line;
-      line-height: 1.6;
-      font-size: 0.95rem;
-    }
-
-    .ban-meta-line {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-top: 0.4rem;
-    }
-
-    .ban-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem;
-      margin-top: 1.25rem;
-    }
-  </style>
+  <script type="module" src="js/nav.js"></script>
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-left">
-      <a href="index.html" class="brand">
-        <span class="brand-dot"></span>
-        <div>VOS <span>JSP</span></div>
-      </a>
-    </div>
-    <a href="contester.html" class="btn btn-small">Contester</a>
-  </div>
+  <main class="container" style="max-width:760px;">
+    <section class="panel" style="text-align:center; padding:3rem 2rem; border-color:rgba(214,40,40,0.28);">
+      <div class="badge badge-danger" style="margin-bottom:1rem;">Accès suspendu</div>
+      <h1 style="margin-bottom:0.8rem;">Votre accès à Vos JSP a été restreint</h1>
+      <p id="ban-reason" class="muted" style="max-width:560px; margin:0 auto 1.2rem;">
+        Votre compte ou votre adresse réseau fait actuellement l'objet d'une mesure de suspension.
+      </p>
+      <div id="ban-meta" class="muted" style="font-size:0.88rem; margin-bottom:1.8rem;"></div>
 
-  <main>
-    <div class="ban-wrapper card">
-      <span class="badge">Suspension • Accès restreint</span>
-      <h1 style="font-size: 1.7rem; margin: 0.5rem 0 0.25rem;">Votre accès à Vos JSP est suspendu</h1>
-      <p id="ban-subtitle" style="color: var(--muted); margin-top: 0;">Vérification des informations de suspension...</p>
-
-      <div class="ban-message-box" id="ban-message-content">Chargement du message de l'administration...</div>
-      <div class="ban-meta-line" id="ban-reason-meta"></div>
-
-      <div class="ban-actions">
-        <a href="contester.html" class="btn btn-small">Contester cette décision</a>
-        <button type="button" id="ban-logout-btn" class="btn btn-secondary btn-small" style="display: none;">Se déconnecter</button>
+      <div style="display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap;">
+        <a href="contester.html" class="btn">Contester la sanction</a>
+        <a href="index.html" class="btn btn-secondary">Retour à l'accueil</a>
       </div>
-    </div>
+    </section>
   </main>
 
   <footer>
     <div class="footer-container">
-      <div>
-        <strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.
-      </div>
+      <div><strong>Vos JSP</strong> — Plateforme communautaire indépendante dédiée aux Jeunes Sapeurs-Pompiers.</div>
       <div class="footer-links">
         <a href="mentions-legales.html">Mentions légales</a>
         <a href="confidentialite.html">Confidentialité</a>
@@ -79,95 +37,91 @@
 
   <script type="module">
     import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import { doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    const subtitleEl = document.getElementById('ban-subtitle');
-    const msgContentEl = document.getElementById('ban-message-content');
-    const reasonMetaEl = document.getElementById('ban-reason-meta');
-    const logoutBtn = document.getElementById('ban-logout-btn');
+    const reasonEl = document.getElementById('ban-reason');
+    const metaEl = document.getElementById('ban-meta');
 
-    function sanitizeIpDocId(ip) {
-      return String(ip || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    function formatBanDate(val) {
+      if (!val) return '';
+      const d = typeof val?.toDate === 'function' ? val.toDate() : new Date(val);
+      if (Number.isNaN(d.getTime())) return '';
+      return d.toLocaleString('fr-FR');
     }
 
-    async function fetchPublicIp() {
+    async function getClientIp() {
       try {
         const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
         if (!res.ok) return '';
         const data = await res.json();
-        return data && data.ip ? String(data.ip).trim() : '';
+        return String(data?.ip || '').trim();
       } catch (_) {
         return '';
       }
     }
 
-    function buildDefaultPoliteMessage(pseudo, reason) {
-      const name = pseudo || 'Membre';
-      const motif = reason ? ` pour le motif suivant : ${reason}` : '';
-      return [
-        `Bonjour ${name},`,
-        ``,
-        `Nous vous informons que votre accès à la plateforme Vos JSP a fait l'objet d'une mesure de suspension${motif}.`,
-        ``,
-        `Si vous estimez qu'il s'agit d'une erreur ou souhaitez apporter des précisions, vous pouvez soumettre une demande de réexamen via la page de contestation.`,
-        ``,
-        `Nous vous prions d'agréer, ${name}, l'expression de nos salutations distinguées.`,
-        `L'équipe d'administration — Vos JSP`
-      ].join('\n');
-    }
-
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.replace('login.html');
-    });
-
-    async function checkIpBanOnly() {
-      const ip = await fetchPublicIp();
-      if (!ip) return false;
+    async function checkIpBan(ip) {
+      if (!ip) return null;
       try {
-        const ipSnap = await getDoc(doc(db, "banned_ips", sanitizeIpDocId(ip)));
-        if (ipSnap.exists()) {
-          const d = ipSnap.data() || {};
-          subtitleEl.textContent = `Restriction active sur votre connexion (${ip}).`;
-          msgContentEl.textContent = d.banMessage || buildDefaultPoliteMessage(d.pseudo || 'Visiteur', d.reason || 'Restriction réseau appliquée par l’administration');
-          reasonMetaEl.textContent = d.reason ? `Motif enregistré : ${d.reason}` : '';
-          return true;
+        const directSnap = await getDoc(doc(db, 'banned_ips', encodeURIComponent(ip)));
+        if (directSnap.exists()) {
+          return { id: directSnap.id, ...(directSnap.data() || {}) };
         }
       } catch (_) {}
-      return false;
+
+      try {
+        const snap = await getDocs(collection(db, 'banned_ips'));
+        let match = null;
+        snap.forEach((docSnap) => {
+          const data = docSnap.data() || {};
+          if (String(data.ip || '').trim() === ip || decodeURIComponent(docSnap.id) === ip) {
+            match = { id: docSnap.id, ...data };
+          }
+        });
+        return match;
+      } catch (_) {
+        return null;
+      }
     }
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        logoutBtn.style.display = 'none';
-        const ipBlocked = await checkIpBanOnly();
-        if (!ipBlocked) {
-          subtitleEl.textContent = "Aucune suspension active détectée sur cette session.";
-          msgContentEl.textContent = "Ton compte n'est pas suspendu. Tu peux retourner sur l'accueil ou te connecter.";
-          reasonMetaEl.textContent = '';
-        }
+      const currentIp = await getClientIp();
+      const ipBan = await checkIpBan(currentIp);
+
+      if (user) {
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (snap.exists()) {
+            const d = snap.data() || {};
+            if (d.banned === true) {
+              const reason = d.banReason || d.reason || 'Non-respect des règles de la communauté.';
+              const dateStr = formatBanDate(d.bannedAt || d.updatedAt);
+              reasonEl.textContent = `Motif de la suspension : ${reason}`;
+              metaEl.textContent = [
+                d.pseudo ? `Compte : ${d.pseudo}` : '',
+                dateStr ? `Date : ${dateStr}` : '',
+                currentIp ? `IP détectée : ${currentIp}` : ''
+              ].filter(Boolean).join(' • ');
+              return;
+            }
+          }
+        } catch (_) {}
+      }
+
+      if (ipBan) {
+        const reason = ipBan.reason || ipBan.banReason || 'Suspension associée à cette adresse IP.';
+        const dateStr = formatBanDate(ipBan.createdAt || ipBan.bannedAt);
+        reasonEl.textContent = `Motif de la restriction IP : ${reason}`;
+        metaEl.textContent = [
+          `IP : ${ipBan.ip || currentIp}`,
+          dateStr ? `Date : ${dateStr}` : ''
+        ].filter(Boolean).join(' • ');
         return;
       }
 
-      logoutBtn.style.display = 'inline-flex';
-
-      onSnapshot(doc(db, "users", user.uid), async (snap) => {
-        const data = snap.exists() ? (snap.data() || {}) : {};
-        const pseudo = data.pseudo || user.displayName || user.email || 'Membre';
-
-        if (data.banned === true) {
-          subtitleEl.textContent = `Compte concerné : ${pseudo}`;
-          msgContentEl.textContent = data.banMessage || buildDefaultPoliteMessage(pseudo, data.banReason || '');
-          reasonMetaEl.textContent = data.banReason ? `Motif officiel : ${data.banReason}` : '';
-          return;
-        }
-
-        const ipBlocked = await checkIpBanOnly();
-        if (!ipBlocked) {
-          window.location.replace('index.html');
-        }
-      });
+      reasonEl.textContent = 'Aucune suspension active n’a été détectée pour votre session actuelle.';
+      metaEl.textContent = currentIp ? `IP vérifiée : ${currentIp}` : '';
     });
   </script>
 </body>
